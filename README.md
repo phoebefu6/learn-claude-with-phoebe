@@ -13,9 +13,10 @@ A 6-session, 45-minutes-per-session onboarding series that takes a whole company
 | 3 | From SOP to skill | 🟡 Medium | All teams | Introduction to agent skills |
 | 4 | Creative studio: branding, marketing, design | 🟡 Medium | Marketing & branding | Claude 101 advanced features, applied |
 | 5 | Data work with Claude Code | 🟠 Hard | DS & AI | Claude Code 101 · Claude Code in Action |
-| 6 | Power user: subagents, MCP, and the platform | 🔴 Hardest | DS & AI advanced | Introduction to subagents · Intro to MCP · MCP: Advanced Topics · Claude Platform 101 · Building with the Claude API · Claude with Amazon Bedrock · Claude with Vertex AI |
+| 6 | Power user: subagents, MCP, and the platform | 🔴 Hardest | DS & AI advanced | Introduction to subagents · Intro to MCP · Claude Platform 101 |
+| 6.1-6.8 | Engineering deep-dive track (8 pages, each runnable as an optional 45-min session) | 🔴 Hardest | DS & AI advanced | Building with the Claude API · Claude with Amazon Bedrock · Claude with Vertex AI · MCP: Advanced Topics |
 
-All 19 courses from [claude.com/resources/courses](https://claude.com/resources/courses) are mapped. Each session teaches ~80% of its source courses' working content in 45 minutes; certificates and video lectures stay with the official courses.
+All 19 courses from [claude.com/resources/courses](https://claude.com/resources/courses) are mapped. Each session teaches ~80% of its source courses' working content; certificates, videos and assessments stay with the official courses. The three 8-hour engineering courses share ~85% of their curriculum, so the deep-dive track teaches the common core once (API → prompting & evals → tool use → RAG → features → MCP → agents & workflows) plus a Bedrock/Vertex platform-onboarding page - full mapping in [`materials/official-course-map.md`](materials/official-course-map.md).
 
 ## How a session runs
 
