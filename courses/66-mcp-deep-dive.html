@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep dive 6.6 · MCP: build servers and clients - learn claude with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=2">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-claude-with-phoebe</a> / Deep dive 6.6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn Claude with Phoebe · Deep-dive track 6.6</div>
+    <h1>MCP: build <span class="accent">servers and clients</span></h1>
+    <p class="sub">Session 6 showed you MCP from the outside: connect a server, get tools. Today you build the other side. A working server in 25 lines, the inspector habit that saves hours, resources and prompts beyond plain tools, your own client, and the advanced layer - sampling, notifications, roots, and transports - that turns a demo server into something a team can run.</p>
+    <div class="chip-row">
+      <span class="chip level">🔴 Deep dive</span>
+      <span class="chip audience">DS &amp; AI</span>
+      <span class="chip time">45 min self-paced or live</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-5 · Setup</span>
+      <span class="a2" style="flex:6">5-35 · Core</span>
+      <span class="a3" style="flex:2">35-45 · Try it</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Why this page exists</h2>
+    </div>
+    <p class="lede">Tool use (deep dive 6.3) taught you to define tools inside ONE application. MCP moves those tools into a standalone server that ANY client can connect to: Claude Code, Claude.ai, your own scripts, a teammate's agent. Write the warehouse integration once, and every AI surface in the company gets it. This page covers the full build-level MCP course plus the complete advanced topics course.</p>
+    <div class="legend">
+      <span class="pill solid">Core - build your first server and client</span>
+      <span class="pill light">Advanced - the protocol layer underneath</span>
+      <span class="pill amber">★ Runnable code</span>
+      <span class="pill inkpill">Covers 2 official courses in full</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with</strong>
+      A read-only warehouse server you built and inspected, a Python client that calls it programmatically, and a working mental model of sampling, notifications, roots, and the two transports - enough to design MCP as your team's governed data-access layer.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: SERVERS ============ -->
+  <section class="section" id="servers">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers "introduction to MCP" at build level</span>
+      <h2>Building servers <span class="tag concept">15 min</span></h2>
+    </div>
+    <p class="lede">A server wraps a system you own and exposes three kinds of things: tools (functions the model calls), resources (context the client loads), and prompts (templates the user invokes).</p>
+
+    <details class="card" open>
+      <summary><span class="mode live">Core</span>Architecture recap: client, server, three primitives<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Two roles, one protocol:</p>
+        <ul>
+          <li><strong>The client</strong> is whatever hosts the model: Claude Code, the Claude apps, or your own program. It discovers what the server offers and brokers everything between the model and the server.</li>
+          <li><strong>The server</strong> wraps your system - a warehouse, a catalog, a filesystem, an internal API - and exposes capabilities in a standard shape. It never talks to the model directly; it only answers the client.</li>
+          <li><strong>Three primitives</strong>, by who initiates: <strong>tools</strong> are model-controlled (Claude decides to call them mid-task), <strong>resources</strong> are application-controlled (the client loads them as context, like attaching a file), <strong>prompts</strong> are user-controlled (a person picks a template, like a slash command).</li>
+        </ul>
+        <p>Most teams ship tools first and forget the other two exist. That's a mistake we'll fix in this page: schemas and configs usually belong in resources, and your team's standard workflows belong in prompts.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Your first server with FastMCP: a read-only warehouse<span class="mini">5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The Python <code>mcp</code> package ships FastMCP: decorate typed functions and they become tools. The type hints become the JSON schema; the docstring becomes the description the model reads. You never hand-write schema JSON like you did in deep dive 6.3.</p>
+        <div class="prompt-box good"><span class="label">★ warehouse_server.py - a complete read-only server</span>from mcp.server.fastmcp import FastMCP
+import sqlite3
+
+mcp = FastMCP("warehouse")
+DB = "analytics.db"   # stand-in for your real warehouse connection
+
+def run_query(sql: str) -> list[tuple]:
+    with sqlite3.connect(DB) as conn:
+        return conn.execute(sql).fetchall()
+
+@mcp.tool()
+def list_tables() -> list[str]:
+    """List every table available in the analytics warehouse."""
+    rows = run_query("SELECT name FROM sqlite_master WHERE type='table'")
+    return [r[0] for r in rows]
+
+@mcp.tool()
+def row_count(table: str) -> int:
+    """Return the row count for one table. Read-only."""
+    if table not in list_tables():
+        raise ValueError(f"Unknown table: {table}")
+    return run_query(f"SELECT COUNT(*) FROM {table}")[0][0]
+
+@mcp.tool()
+def sample_rows(table: str, limit: int = 5) -> list[tuple]:
+    """Return up to 20 sample rows from a table, for profiling."""
+    if table not in list_tables():
+        raise ValueError(f"Unknown table: {table}")
+    return run_query(f"SELECT * FROM {table} LIMIT {min(limit, 20)}")
+
+if __name__ == "__main__":
+    mcp.run()   # STDIO transport by default</div>
+        <ul>
+          <li><strong>Notice the validation:</strong> table names are checked against an allowlist before touching SQL, and the sample size is capped. The model is a user - validate its input like any user's.</li>
+          <li><strong>Docstrings are the interface.</strong> The model chooses tools by reading them, exactly like tool descriptions in 6.3. "Return the row count for one table. Read-only." beats "counts rows".</li>
+          <li><strong>Connect it to Claude Code</strong> with <code>claude mcp add warehouse -- python warehouse_server.py</code> and your whole team's Claude can now profile the warehouse - through only these three doors.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>The inspector: test before you connect anything<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Do not debug a server through a model. The inspector is a browser UI that connects to your server directly, so you can see and call everything yourself first.</p>
+        <div class="prompt-box good"><span class="label">★ Launch the inspector against your server</span>npx @modelcontextprotocol/inspector python warehouse_server.py</div>
+        <ul>
+          <li><strong>What you check, in order:</strong> do all three tools appear? Are the descriptions and schemas what you meant? Does <code>row_count</code> with a real table return the right number? Does it fail cleanly with a fake table name?</li>
+          <li><strong>The habit:</strong> inspector first, client second, model last. When a model misuses your tool, you then know the server itself is fine and the fix is in the description - a two-line change, not an evening of guessing.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Error messages are prompts</strong>
+          Whatever your tool raises goes back to the model as text. "Unknown table: ordersx. Call list_tables to see valid names." lets the model self-correct on the next turn. A bare stack trace doesn't.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Resources and prompts: the other two primitives<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Resources expose read-only context at a URI - things the client should be able to LOAD rather than have the model fetch through a tool call. Prompts are parameterised templates a user invokes deliberately.</p>
+        <div class="prompt-box good"><span class="label">★ Add a resource and a prompt to the warehouse server</span>@mcp.resource("schema://warehouse/{table}")
+def table_schema(table: str) -> str:
+    """Column names and types for one warehouse table."""
+    rows = run_query(f"PRAGMA table_info({table})")
+    return "\n".join(f"{r[1]}: {r[2]}" for r in rows)
+
+@mcp.resource("config://warehouse/conventions")
+def conventions() -> str:
+    """Our naming and metric conventions, as loadable context."""
+    return open("docs/warehouse_conventions.md").read()
+
+@mcp.prompt()
+def quality_check(table: str) -> str:
+    """Run the team's standard data quality review on a table."""
+    return (
+        f"Run our standard quality review on {table}: "
+        "1) row count vs last known count, 2) null rate per column, "
+        "3) duplicate keys, 4) freshness of the latest timestamp. "
+        "Report as a pass/warn/fail table."
+    )</div>
+        <ul>
+          <li><strong>Resources</strong> suit schemas, configs, docs, catalog entries - stable reference material. The client attaches them as context up front, which costs no tool-call round trips and keeps the model from "exploring" for basics.</li>
+          <li><strong>Prompts</strong> encode workflows. In Claude Code they surface as slash commands, so <code>quality_check</code> becomes the team standard instead of everyone improvising their own version - the SOP-to-skill idea from Session 3, one layer down.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Implementing a client: calling servers from Python<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Claude Code IS a client, so when do you write your own? When MCP servers need to plug into YOUR pipeline: a nightly job that calls the warehouse server, a Slack bot, an eval harness. The client speaks the protocol; there's no model involved unless you add one.</p>
+        <div class="prompt-box good"><span class="label">★ client.py - connect, list, call</span>import asyncio
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
+
+params = StdioServerParameters(
+    command="python", args=["warehouse_server.py"]
+)
+
+async def main():
+    async with stdio_client(params) as (read, write):
+        async with ClientSession(read, write) as session:
+            await session.initialize()
+
+            tools = await session.list_tools()
+            print("tools:", [t.name for t in tools.tools])
+
+            result = await session.call_tool(
+                "row_count", {"table": "orders"}
+            )
+            print("orders row count:", result.content[0].text)
+
+asyncio.run(main())</div>
+        <ul>
+          <li><strong>The lifecycle:</strong> connect over a transport, <code>initialize()</code> (a capability handshake), then list and call. Same pattern for <code>list_resources</code> / <code>read_resource</code> and <code>list_prompts</code> / <code>get_prompt</code>.</li>
+          <li><strong>Wiring in a model:</strong> feed <code>list_tools()</code> output to the Messages API as tool definitions, and route Claude's tool_use blocks to <code>call_tool</code>. That loop is deep dive 6.3's agent loop with MCP as the tool backend.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>A data platform team wrapped their metric store in one MCP server. Claude Code users got it via config, the on-call Slack bot used a Python client, and the eval harness called the same tools directly with no model at all. One integration, three consumers, and when a metric definition changed they fixed it in exactly one place.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: ADVANCED ============ -->
+  <section class="section" id="advanced">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers "MCP: advanced topics" in full</span>
+      <h2>The advanced layer <span class="tag concept">12 min</span></h2>
+    </div>
+    <p class="lede">Everything above works for a local demo. Sampling, notifications, roots, and transports are what the advanced course adds - and they are what production servers actually use.</p>
+
+    <details class="card">
+      <summary><span class="mode self">Advanced</span>Sampling: the server borrows the client's model<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Sampling inverts the usual direction: the SERVER asks the CLIENT to run a model call on its behalf. The server gets intelligence without owning an API key, choosing a model, or paying the bill - all of that stays with the client, which can also show the user what's being requested and let them approve it.</p>
+        <div class="prompt-box good"><span class="label">★ A tool that samples the client's model</span>from mcp.server.fastmcp import Context
+from mcp.types import SamplingMessage, TextContent
+
+@mcp.tool()
+async def describe_table(table: str, ctx: Context) -> str:
+    """Generate a plain-English description of a table for the catalog."""
+    schema = table_schema(table)
+    rows = sample_rows(table, limit=5)
+
+    result = await ctx.session.create_message(
+        messages=[SamplingMessage(
+            role="user",
+            content=TextContent(
+                type="text",
+                text=f"Schema:\n{schema}\n\nSample rows:\n{rows}\n\n"
+                     "Write a 2-sentence catalog description of this table.",
+            ),
+        )],
+        max_tokens=300,
+    )
+    return result.content.text</div>
+        <ul>
+          <li><strong>The flow:</strong> client calls the tool, the tool sends a <code>create_message</code> request BACK up the wire, the client (optionally with user approval) runs the model, and the completion returns to the tool, which finishes its work.</li>
+          <li><strong>The use case that sells it:</strong> a catalog server that auto-describes tables. Shipped as sampling, it works for every team that connects it, whatever model or key they use - the server stays a dumb, cheap process.</li>
+          <li><strong>Design note:</strong> sampling calls are per-request and reviewable by the client. That's the governance posture you want: the server can ask for intelligence but never owns it.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Advanced</span>Notifications and roots<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Two smaller capabilities that make long-running and file-touching servers behave like good citizens.</p>
+        <div class="prompt-box good"><span class="label">★ Log and progress notifications in a slow tool</span>@mcp.tool()
+async def profile_all_tables(ctx: Context) -> dict:
+    """Profile every warehouse table. Slow: emits progress as it goes."""
+    tables = list_tables()
+    report = {}
+    for i, t in enumerate(tables):
+        await ctx.info(f"Profiling {t}...")            # log notification
+        report[t] = {"rows": row_count(t)}
+        await ctx.report_progress(i + 1, len(tables))  # progress bar
+    return report</div>
+        <ul>
+          <li><strong>Notifications</strong> are one-way messages, no reply expected. Log notifications (<code>ctx.info</code>, <code>ctx.warning</code>) surface what a tool is doing; progress notifications drive the client's progress display. Without them a 3-minute tool is indistinguishable from a hung one, and users kill it at 40 seconds.</li>
+          <li><strong>Roots</strong> flow the other way: the client tells the server which directories it may operate in (as <code>file://</code> URIs). A filesystem server calls <code>session.list_roots()</code> and confines itself to those paths. It's client-granted scope: Claude Code working in your project grants the project directory, not your home folder.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Advanced</span>Transports: STDIO vs StreamableHTTP, and the wire underneath<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Everything in MCP is JSON-RPC 2.0 messages: <strong>requests</strong> (id, expects a response), <strong>responses</strong> (result or error for an id), and <strong>notifications</strong> (no id, no reply). The transport is just how those messages travel.</p>
+        <ul>
+          <li><strong>STDIO:</strong> the client launches the server as a subprocess and speaks over stdin/stdout. Zero network setup, one client per server process, dies with the client. The default and the right answer for local tools.</li>
+          <li><strong>StreamableHTTP:</strong> the server is a real web service on an HTTP endpoint. Multiple clients, sessions via an <code>Mcp-Session-Id</code> header, server-to-client streaming over SSE, and resumability - a dropped connection can resume its event stream instead of losing state mid-task.</li>
+          <li><strong>State lives with the session.</strong> Once a server is remote and multi-client, per-session state has to be keyed by session id, and horizontal scaling needs sessions pinned or shared - the same discipline as any stateful web service. Getting to one line of code, though, is easy: <code>mcp.run(transport="streamable-http")</code>.</li>
+        </ul>
+        <table class="clean">
+          <thead><tr><th></th><th>STDIO</th><th>StreamableHTTP</th></tr></thead>
+          <tbody>
+            <tr><td>Runs as</td><td>Subprocess of the client</td><td>Standalone web service</td></tr>
+            <tr><td>Clients</td><td>One, local</td><td>Many, remote, session ids</td></tr>
+            <tr><td>Setup cost</td><td>None</td><td>Hosting, TLS, auth</td></tr>
+            <tr><td>Resumability</td><td>Not needed (local pipe)</td><td>Yes, via SSE event replay</td></tr>
+            <tr><td>Use when</td><td>Personal and dev tools, anything on your machine</td><td>Team-shared servers, hosted integrations</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Advanced</span>Production notes: governance lives at this layer<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Auth on remote servers is non-negotiable.</strong> A StreamableHTTP server is an API to your systems; put OAuth or token auth in front of it and scope tokens per team. STDIO dodges this only because it never leaves the machine.</li>
+          <li><strong>Least-privilege tools.</strong> Expose <code>row_count</code> and <code>sample_rows</code>, not <code>run_sql</code>. The tool surface IS the permission model: the model can only do what a tool allows, so design tools like you'd design IAM policies.</li>
+          <li><strong>Version your servers.</strong> Tool names and schemas are a contract with every connected client. Additive changes are safe; renames and signature changes break agents silently, so version and announce like any API.</li>
+          <li><strong>The sys-admin story from Session 2, resolved:</strong> "how do we let Claude touch the warehouse safely?" The answer is this layer. One audited server, read-only tools, client-granted roots, logged calls - governance enforced in code, not in a policy doc nobody reads.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ TRY IT ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Try it yourself</span>
+      <h2>Three exercises <span class="tag exercise">◐ 35-45 min</span></h2>
+    </div>
+    <ul>
+      <li><strong>1 · Build and inspect a filesystem-stats server.</strong> FastMCP server with two tools: <code>dir_summary(path)</code> returning file count and total size, and <code>largest_files(path, n)</code>. Test both in the inspector before connecting any client, including a path that doesn't exist - make the error message something a model could act on.</li>
+      <li><strong>2 · Add a resource exposing your data catalog index.</strong> Add <code>@mcp.resource("catalog://index")</code> returning your table list with one-line descriptions (a CSV or markdown file is fine). Connect to Claude Code and compare: with the resource loaded as context, how many tool calls does "which table has customer churn data?" take versus without it?</li>
+      <li><strong>3 · Convert it to StreamableHTTP.</strong> Switch exercise 1's server with <code>mcp.run(transport="streamable-http")</code>, connect the inspector over HTTP, and watch the session id appear. Write down what you would now need before a teammate could use it (auth, hosting, TLS) - that list is the real cost of "remote".</li>
+    </ul>
+  </section>
+
+  <!-- ============ OFFICIAL COURSES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official courses covered</h2>
+    </div>
+    <p class="lede">This page teaches the MCP module shared by the three engineering courses at full build level, plus the complete standalone advanced course.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Introduction to MCP</span><span class="note">full build level: architecture, clients, defining tools/resources/prompts, server inspector, building a client</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">MCP: Advanced Topics</span><span class="note">1.1 hr · all modules: sampling, notifications, roots, JSON-RPC message types, STDIO and StreamableHTTP transports, state and resumability</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Deep dive 6.6 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Three primitives</b><span>Tools = model-controlled · resources = client-loaded context · prompts = user-invoked templates. Ship all three, not just tools.</span></div>
+      <div class="cheat-item"><b>FastMCP</b><span>@mcp.tool() on a typed, docstringed function. Type hints become the schema; the docstring is what the model reads. Validate inputs like user input.</span></div>
+      <div class="cheat-item"><b>Inspector first</b><span>npx @modelcontextprotocol/inspector python server.py. Inspector, then client, then model - never debug a server through a model.</span></div>
+      <div class="cheat-item"><b>Sampling</b><span>ctx.session.create_message sends a model request UP to the client. Server gets intelligence; keys, cost, and approval stay client-side.</span></div>
+      <div class="cheat-item"><b>Transports</b><span>STDIO for local subprocess tools; StreamableHTTP for remote multi-client servers with session ids and SSE resumability. All JSON-RPC underneath.</span></div>
+      <div class="cheat-item"><b>Governance layer</b><span>Least-privilege tools, auth on anything remote, client-granted roots, versioned schemas. The tool surface is the permission model.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Deep dive 6.6 · learn-claude-with-phoebe · built with Claude</span>
+    <span><a href="65-features.html">← Deep dive 6.5</a> &nbsp;·&nbsp; <a href="../index.html">All sessions</a> &nbsp;·&nbsp; <a href="67-agents-workflows.html">Next: Agents &amp; workflows →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=3"></script>
+</body>
+</html>

@@ -15,7 +15,7 @@ Source: [claude.com/resources/courses](https://claude.com/resources/courses) (19
 
 ## Session 2 - Your AI chief of staff: daily automation
 
-| Official course | Planned coverage |
+| Official course | Coverage |
 |---|---|
 | Introduction to Claude Cowork | ✓ full - Cowork concepts + the calendar/email/file/knowledge-base automations |
 | AI Fluency for Small Businesses (0.9 hr) | ✓ workflow patterns applied to our team |
@@ -23,20 +23,20 @@ Source: [claude.com/resources/courses](https://claude.com/resources/courses) (19
 
 ## Session 3 - From SOP to skill
 
-| Official course | Planned coverage |
+| Official course | Coverage |
 |---|---|
 | Introduction to agent skills (30 min) | ✓ full - skill anatomy, building, installing, live SOP conversion |
 
 ## Session 4 - Creative studio: branding, marketing, design
 
-| Source | Planned coverage |
+| Source | Coverage |
 |---|---|
 | Claude 101 advanced features | ✓ applied: Projects/Artifacts for creative work, website prototyping |
 | "Write case studies" use-case guide | ✓ folded into the content demos |
 
 ## Session 5 - Data work with Claude Code
 
-| Official course | Planned coverage |
+| Official course | Coverage |
 |---|---|
 | Claude Code 101 (1 hr) | ✓ full - fundamentals, CLAUDE.md, permissions, workflows |
 | Claude Code in Action (1 hr) | ✓ full - applied to data cleaning, catalog, offline scripts, prototypes |

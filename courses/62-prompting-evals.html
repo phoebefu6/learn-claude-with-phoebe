@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep dive 6.2 · Prompt engineering &amp; evals - learn claude with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=2">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-claude-with-phoebe</a> / Deep dive 6.2</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn Claude with Phoebe · Deep-dive track 6.2</div>
+    <h1>Prompt engineering <span class="accent">&amp; evals</span></h1>
+    <p class="sub">Session 1 taught you to describe well. This page is the engineering-grade version: three techniques that reliably lift output quality, and then the part most people skip - measuring whether your prompt actually works, on a dataset, with a number. A prompt without an eval is a vibe.</p>
+    <div class="chip-row">
+      <span class="chip level">🔴 Deep dive</span>
+      <span class="chip audience">DS &amp; AI</span>
+      <span class="chip time">45 min self-paced or live</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-5 · Setup</span>
+      <span class="a2" style="flex:6">5-35 · Core</span>
+      <span class="a3" style="flex:2">35-45 · Try it</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Why this page exists</h2>
+    </div>
+    <p class="lede">"It worked on my prompt" is the LLM equivalent of "it works on my machine." The official courses pair prompt engineering with prompt evaluation for a reason: technique tells you what to try, evals tell you whether it worked. This page covers both shared modules, and you leave with a runnable eval harness under 30 lines.</p>
+    <div class="legend">
+      <span class="pill solid">Core - do these in order</span>
+      <span class="pill light">Advanced - read once, return when needed</span>
+      <span class="pill inkpill">Shared modules of all 3 engineering courses</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      Three prompt techniques (direct + specific, XML structure, few-shot examples), two grading strategies (code-based and model-based), and a minimal harness that turns "I think the prompt is better" into "pass rate went from 71% to 92%".
+    </div>
+  </section>
+
+  <!-- ============ PART 1: PROMPT ENGINEERING ============ -->
+  <section class="section" id="prompting">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers the Prompt Engineering module</span>
+      <h2>Three techniques that actually move the needle <span class="tag concept">14 min</span></h2>
+    </div>
+    <p class="lede">Hundreds of "prompt hacks" circulate. Three survive contact with evals: be clear and specific, structure with XML tags, and show examples.</p>
+
+    <details class="card" open>
+      <summary><span class="mode live">Core</span>Clear, direct, and specific<span class="mini">5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>This is the 4D Description from Session 1, held to an engineering standard: every vague word in your prompt is a decision you delegated to the model. Name the audience, the format, the length, the edge-case behavior. The test: could a new hire execute your prompt without asking a follow-up question?</p>
+        <div class="prompt-box good"><span class="label">★ Before and after</span>BEFORE (vague - every run different):
+Summarize this customer feedback.
+
+AFTER (specific - every decision made):
+Summarize the customer feedback below for the product team.
+
+Format: exactly 3 sections - "Top complaints" (max 5 bullets, each with a
+count of how many customers mentioned it), "Feature requests" (max 3 bullets),
+"Churn risks" (customers who mention cancelling, quoted verbatim).
+
+Rules: only claims supported by the feedback text - no inference about
+sentiment trends. If a section has no content, write "None found".
+British English. Under 250 words total.</div>
+        <p>Notice what "after" pins down: audience, sections, limits, evidence rule, empty-case behavior, dialect, length. None of that is clever - it is just complete. Most prompt "engineering" is finishing your own specification.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Structure with XML tags<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Once a prompt contains more than one KIND of thing - instructions plus a document plus examples - prose runs together and Claude can confuse your data with your rules. XML tags draw hard boundaries. Claude is specifically trained to respect them, and you can reference tags by name ("the document in &lt;context&gt; tags").</p>
+        <div class="prompt-box good"><span class="label">★ A structured prompt in Python</span>prompt = f"""
+&lt;context&gt;
+{document_text}
+&lt;/context&gt;
+
+&lt;instructions&gt;
+Summarize the document in the &lt;context&gt; tags above in exactly 3 bullets.
+Each bullet under 20 words. Audience: executives who have not read it.
+If the document contradicts itself, add a 4th bullet starting "Caution:".
+&lt;/instructions&gt;
+"""
+
+response = client.messages.create(
+    model="claude-sonnet-5",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": prompt}],
+)</div>
+        <p>Common tags: <code>&lt;context&gt;</code>, <code>&lt;instructions&gt;</code>, <code>&lt;examples&gt;</code>, <code>&lt;data&gt;</code>, <code>&lt;output_format&gt;</code>. The names are yours to choose - consistency matters more than the vocabulary. Tags also defuse a classic failure: a document that itself contains instruction-like sentences no longer hijacks your prompt, because your instructions live outside the <code>&lt;context&gt;</code> block.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Few-shot: show, don't describe<span class="mini">5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The highest-leverage technique per minute spent: 1-3 gold examples of input → ideal output routinely beat paragraphs of format description. An example carries tone, structure, level of detail, and edge-case handling all at once - things prose describes badly.</p>
+        <div class="prompt-box good"><span class="label">★ Few-shot ticket classifier</span>prompt = """Classify the support ticket into exactly one category:
+billing, bug, feature_request, or other. Reply with the category only.
+
+&lt;examples&gt;
+Ticket: "I was charged twice this month, please refund one"
+Category: billing
+
+Ticket: "the export button does nothing when I click it on Safari"
+Category: bug
+
+Ticket: "would be great if dashboards could refresh hourly"
+Category: feature_request
+&lt;/examples&gt;
+
+Ticket: "my invoice shows the old company name, can you update it"
+Category:"""</div>
+        <p>Rules of thumb: pick examples that span your real variety (one easy, one messy, one edge case); keep them SHORT - the model imitates length too; and make them genuinely gold, because Claude will faithfully reproduce any sloppiness you include. If you cannot produce a gold example yourself, that is a sign the task is underspecified, not a prompting problem.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>A data team spent a week tuning instructions for converting analyst notes into release-note bullets - output kept drifting corporate and bloated. Deleting half the instructions and pasting in two real before/after pairs from their best writer fixed it in one attempt. Their eval pass rate (next section) jumped 23 points. Examples are compressed specification.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: EVALS ============ -->
+  <section class="section" id="evals">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers the Prompt Evaluation module</span>
+      <h2>Evals: from vibes to numbers <span class="tag concept">16 min</span></h2>
+    </div>
+    <p class="lede">You changed the prompt and the one output you looked at got better. Did the other 200 cases? An eval is just a test suite for a prompt: dataset in, grades out, one number to compare versions.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Why evals, and the workflow<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Prompts fail quietly and unevenly: a change that fixes your favorite test case often breaks three you never look at. The eval workflow is the same loop as ML model development:</p>
+        <ul>
+          <li><strong>1 · Define the task</strong> - inputs, expected outputs, and what "correct" means, in writing.</li>
+          <li><strong>2 · Build a test dataset</strong> - 20-100 realistic cases with expected answers, including the ugly ones.</li>
+          <li><strong>3 · Run</strong> - execute the prompt against every case.</li>
+          <li><strong>4 · Grade</strong> - code-based checks for structured tasks, model-based rubrics for subjective ones.</li>
+          <li><strong>5 · Iterate</strong> - change ONE thing in the prompt, rerun, compare pass rates. Keep what wins.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>When to build the eval</strong>
+          Before you tune the prompt, not after. Twenty cases and an exact-match grader take 30 minutes and pay for themselves on the first iteration - otherwise you are A/B testing with a sample size of one and your own optimism as the judge.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Generating test datasets with Claude<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Writing 50 test cases by hand is why people skip evals. So don't: have Claude generate them, then human-review before trusting. You are curating, not authoring.</p>
+        <div class="prompt-box good"><span class="label">★ Dataset generator prompt</span>Generate 20 test cases for a support-ticket classifier with categories:
+billing, bug, feature_request, other.
+
+Requirements:
+- One JSON object per line (JSONL): {"ticket": "...", "expected": "..."}
+- Realistic voices: typos, anger, politeness, non-native phrasing, ALL CAPS
+- Include at least 6 hard cases: tickets mixing two categories (pick the
+  dominant one), vague one-liners, and 2 that are clearly "other"
+- Vary length from 5 to 80 words
+- No two tickets about the same product feature</div>
+        <p>Then the non-negotiable step: read every generated case and fix or delete the bad ones. Claude's label IS your answer key - an unreviewed answer key silently corrupts every eval you run against it. Add real production examples (anonymized) as they accumulate; synthetic data starts the flywheel, real data keeps it honest.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Code-based grading: cheap and objective<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>If the output is structured - a category, a JSON object, a SQL string - grade it with plain Python. Exact match, regex, or schema checks: free, instant, deterministic, and immune to flattery.</p>
+        <div class="prompt-box good"><span class="label">★ Three code graders</span>import json
+import re
+
+def grade_exact(output: str, expected: str) -> bool:
+    return output.strip().lower() == expected.strip().lower()
+
+def grade_regex(output: str) -> bool:
+    # e.g. answer must contain a date in YYYY-MM-DD form
+    return re.search(r"\b\d{4}-\d{2}-\d{2}\b", output) is not None
+
+def grade_json_shape(output: str, required_keys: set) -> bool:
+    try:
+        data = json.loads(output)
+    except json.JSONDecodeError:
+        return False
+    return required_keys.issubset(data.keys())</div>
+        <p>Design your task to be code-gradable where you can - forcing a category from a fixed list, or JSON with known keys, is often a better prompt AND a free grader. Save the expensive grading for outputs that genuinely need judgment.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Model-based grading: rubrics for the subjective<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Summaries, emails, explanations - no regex can score "faithful and clear". Instead, a second Claude call grades the first against a written rubric. The rubric is the whole game: grade specific, checkable qualities, never "is this good?".</p>
+        <div class="prompt-box good"><span class="label">★ A model grader</span>import json
+import anthropic
+
+client = anthropic.Anthropic()
+
+GRADER_SYSTEM = """You are grading a summary against a rubric. Score 1-5:
+5 = all key facts present, nothing invented, under the length limit, plain language
+4 = one minor omission, otherwise correct
+3 = key facts present but includes unsupported claims OR over length
+2 = a major fact missing or distorted
+1 = misleading, off-topic, or ignores the format
+Respond with ONLY JSON: {"score": int, "reason": "one sentence"}"""
+
+def grade_summary(source: str, summary: str) -> dict:
+    response = client.messages.create(
+        model="claude-sonnet-5",
+        max_tokens=256,
+        temperature=0,
+        system=GRADER_SYSTEM,
+        messages=[
+            {"role": "user", "content": f"&lt;source&gt;\n{source}\n&lt;/source&gt;\n\n&lt;summary&gt;\n{summary}\n&lt;/summary&gt;"},
+            {"role": "assistant", "content": "{"},
+        ],
+    )
+    return json.loads("{" + response.content[0].text)</div>
+        <p>Note the 6.1 moves reused: temperature 0, JSON prefill, validation. Spot-check the grader against your own judgment on 10 cases before trusting it at scale - a grader is a prompt, and prompts need evals too. Which grader when:</p>
+        <table class="clean">
+          <thead><tr><th></th><th>Code-based</th><th>Model-based</th></tr></thead>
+          <tbody>
+            <tr><td>Best for</td><td>Categories, JSON, extraction, SQL, anything with one right answer</td><td>Summaries, tone, explanations, "did it follow the style guide"</td></tr>
+            <tr><td>Cost &amp; speed</td><td>Free, instant</td><td>One extra API call per case</td></tr>
+            <tr><td>Objectivity</td><td>Perfect</td><td>Good with a tight rubric; drifts without one</td></tr>
+            <tr><td>Watch out for</td><td>False fails on harmless format variation</td><td>Grading its own vibe - always spot-check vs a human</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Advanced</span>A minimal eval harness<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Everything above, assembled. A JSONL dataset, a loop, a grader, a pass rate. This is genuinely all an eval needs to be useful - frameworks add convenience later, not correctness.</p>
+        <div class="prompt-box good"><span class="label">★ eval.py - the whole harness</span>import json
+import anthropic
+
+client = anthropic.Anthropic()
+
+PROMPT_VERSION = "v3-fewshot"
+SYSTEM = """Classify the support ticket into exactly one category:
+billing, bug, feature_request, or other. Reply with the category only."""
+
+def run_case(ticket: str) -> str:
+    response = client.messages.create(
+        model="claude-sonnet-5",
+        max_tokens=16,
+        temperature=0,
+        system=SYSTEM,
+        messages=[{"role": "user", "content": ticket}],
+    )
+    return response.content[0].text.strip().lower()
+
+passed, failed = 0, []
+with open("tickets_eval.jsonl") as f:
+    cases = [json.loads(line) for line in f]
+
+for case in cases:
+    got = run_case(case["ticket"])
+    if got == case["expected"]:
+        passed += 1
+    else:
+        failed.append((case["ticket"][:60], case["expected"], got))
+
+print(f"{PROMPT_VERSION}: {passed}/{len(cases)} passed ({passed / len(cases):.0%})")
+for ticket, expected, got in failed:
+    print(f"  FAIL: {ticket!r}  expected={expected}  got={got}")</div>
+        <p>Workflow: change the prompt, bump <code>PROMPT_VERSION</code>, rerun, read the failures - they tell you exactly what to fix next. Keep a log of version → pass rate and prompt tuning becomes boring, measurable engineering. Which was the point.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ TRY IT ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Try it yourself</span>
+      <h2>Three builds <span class="tag exercise">◐ 10 min in session, finish after</span></h2>
+    </div>
+    <ul>
+      <li><strong>1 · Upgrade one of your prompts.</strong> Take a prompt you actually use, apply all three techniques (specific, XML tags, 2 gold examples), and run old vs new on the same 5 inputs side by side. Note WHICH technique changed the output most - it is usually the examples.</li>
+      <li><strong>2 · Build the classifier eval end to end.</strong> Generate 20 ticket cases with the dataset prompt, review every label by hand, then run the harness from Part 2. Get your baseline pass rate before touching the prompt.</li>
+      <li><strong>3 · Beat your baseline.</strong> Read the failures, change ONE thing (add an example covering the failure pattern, or tighten a category definition), rerun. Repeat until the pass rate stops moving. Two or three iterations is normal; the discipline of one-change-at-a-time is the exercise.</li>
+    </ul>
+    <div class="callout tip">
+      <strong>Keep the dataset</strong>
+      Your eval set outlives any single prompt - it also regression-tests model upgrades ("does claude-sonnet-6 still pass?") and fast-tier swaps from 6.1. Treat it like test code: version it, grow it with real failures.
+    </div>
+  </section>
+
+  <!-- ============ OFFICIAL COURSES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official courses covered</h2>
+    </div>
+    <p class="lede">This page teaches the shared Prompt Engineering and Prompt Evaluation modules from the three official 8-hour engineering courses at <a href="https://claude.com/resources/courses">claude.com/resources/courses</a>.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Prompt Engineering module - all 3 courses</span><span class="note">being clear and direct, being specific, structure with XML tags, providing examples</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Prompt Evaluation module - all 3 courses</span><span class="note">eval workflow, generating test datasets, code-based and model-based grading</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Deep dive 6.2 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Specific beats clever</b><span>Name audience, format, limits, and empty-case behavior. Every vague word is a delegated decision.</span></div>
+      <div class="cheat-item"><b>XML tags</b><span>Wrap different kinds of content: &lt;context&gt;, &lt;instructions&gt;, &lt;examples&gt;. Boundaries beat prose.</span></div>
+      <div class="cheat-item"><b>Few-shot</b><span>1-3 gold input→output examples beat paragraphs of description. Short, varied, genuinely gold.</span></div>
+      <div class="cheat-item"><b>Eval loop</b><span>Define task → build dataset → run → grade → change ONE thing → rerun. Compare pass rates, not vibes.</span></div>
+      <div class="cheat-item"><b>Grading</b><span>Structured output → code (exact/regex/schema, free). Subjective → model grader with a tight 1-5 rubric, spot-checked.</span></div>
+      <div class="cheat-item"><b>Dataset rule</b><span>Claude generates cases, a human reviews every label. Unreviewed answer keys corrupt every eval after them.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Deep dive 6.2 · learn-claude-with-phoebe · built with Claude</span>
+    <span><a href="61-claude-api.html">← 6.1 The Claude API</a> &nbsp;·&nbsp; <a href="../index.html">All sessions</a> &nbsp;·&nbsp; <a href="63-tool-use.html">Next: 6.3 Tool use →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=3"></script>
+</body>
+</html>

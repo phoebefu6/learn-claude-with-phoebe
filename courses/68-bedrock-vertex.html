@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep dive 6.8 · Claude on Bedrock &amp; Vertex - learn claude with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=2">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-claude-with-phoebe</a> / Deep dive 6.8</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn Claude with Phoebe · Deep-dive track 6.8</div>
+    <h1>Claude on <span class="accent">Bedrock &amp; Vertex</span></h1>
+    <p class="sub">Everything in 6.1-6.7 assumed the first-party API. This page moves the same Claude into the clouds: Amazon Bedrock gets the deeper treatment because OUR estate is AWS; Vertex AI mirrors it for completeness. Same model, same messages - different front door.</p>
+    <div class="chip-row">
+      <span class="chip level">🔴 Deep dive</span>
+      <span class="chip audience">DS &amp; AI</span>
+      <span class="chip time">45 min self-paced or live</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-5 · Setup</span>
+      <span class="a2" style="flex:6">5-35 · Core</span>
+      <span class="a3" style="flex:2">35-45 · Try it</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Why this page exists</h2>
+    </div>
+    <p class="lede">The three 8-hour engineering courses share ~85% of their curriculum - that shared core is pages 6.1-6.7. What remains is the platform-specific 15%: how to enable, authenticate and call Claude inside AWS and GCP. Thirty minutes here saves you the classic first-week losses: the wrong region, the missing IAM action, the model ID that isn't quite the one in the docs.</p>
+    <div class="legend">
+      <span class="pill solid">Core - the Bedrock lane (our estate)</span>
+      <span class="pill light">Advanced - Vertex mirror + portability</span>
+      <span class="pill inkpill">Covers the setup/access modules of both cloud courses</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with</strong>
+      Working Bedrock calls two ways (Anthropic SDK and boto3 converse), the identical-vs-different map so your 6.1-6.7 knowledge transfers cleanly, the Vertex equivalent, and a provider-portable client wrapper.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: WHY CLOUD-HOSTED ============ -->
+  <section class="section" id="why">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · the enterprise reasons</span>
+      <h2>Why cloud-hosted Claude at all <span class="tag concept">5 min</span></h2>
+    </div>
+    <p class="lede">If api.anthropic.com works fine on your laptop, why do enterprises route through Bedrock or Vertex? Not for the model - it's the same Claude. For everything around it.</p>
+
+    <details class="card" open>
+      <summary><span class="mode live">Core</span>The five reasons enterprises pick the cloud front door<span class="mini">5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Data residency:</strong> requests are processed inside a cloud region you choose. When legal says "this data does not leave our region/account boundary", the cloud-hosted route is how you comply without a debate per project.</li>
+          <li><strong>Private networking:</strong> with VPC endpoints (AWS PrivateLink / GCP Private Service Connect), traffic to the model never touches the public internet - it stays on the cloud backbone inside your network perimeter. Security teams stop asking about egress.</li>
+          <li><strong>IAM-native auth:</strong> no API keys to issue, rotate, leak or revoke. Access is an IAM role/service account like every other cloud resource - your existing least-privilege review process just works, and CloudTrail/Cloud Audit Logs record who called what.</li>
+          <li><strong>Unified billing and commitments:</strong> Claude usage lands on the cloud bill you already have, counts toward negotiated marketplace spend commitments, and needs no new vendor onboarding through procurement.</li>
+          <li><strong>Compliance inheritance:</strong> the model endpoint sits inside the cloud's existing certification scope (the SOC/ISO/HIPAA-eligible machinery your auditors already accepted), which shortens security review from months to a form.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>A bank's data science team prototyped happily on the first-party API for six weeks - then the production review asked three questions: does data leave our AWS account boundary? who holds the credentials? which bill does it land on? The Bedrock answers (no - VPC endpoint; nobody - IAM role; ours - consolidated billing) closed the review in one meeting. Same prompts, same model, different front door.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: BEDROCK ============ -->
+  <section class="section" id="bedrock">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · our production lane</span>
+      <h2>Claude on Amazon Bedrock <span class="tag concept">15 min</span></h2>
+    </div>
+    <p class="lede">Three things to get right: model access in the console, IAM permissions, and the model ID format. Then two ways to call it.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Bedrock setup: access, IAM, model IDs<span class="mini">5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Enable model access:</strong> in the AWS console, Bedrock → Model access → request the Anthropic models you need. This is per-region - a model enabled in us-east-1 is NOT enabled in eu-west-1. "AccessDeniedException" on your first call is almost always this or the next bullet.</li>
+          <li><strong>IAM permissions:</strong> the caller's role needs <code>bedrock:InvokeModel</code> (and <code>bedrock:InvokeModelWithResponseStream</code> for streaming) on the model resources. Scope the Resource to specific models rather than <code>*</code> - it's an easy least-privilege win and exactly what a security review checks.</li>
+          <li><strong>Model IDs:</strong> Bedrock model IDs are not the first-party names. Current convention is the cross-region <strong>inference-profile prefix</strong> format - a geography prefix plus the Anthropic ID, e.g. the <code>us.anthropic.claude-...</code> naming pattern - which lets AWS route your request across regions in that geography for capacity. IDs evolve with model releases: <strong>check the Bedrock console for the current ID</strong> rather than copying one from a blog post (including this one).</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Region is part of the address</strong>
+          Pin the region deliberately and early: model access, quotas, model availability and your VPC endpoint are all per-region. Teams that let each script default to a different region spend their first week debugging phantom permission errors.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Calling Claude on Bedrock, way 1: the Anthropic SDK<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The anthropic python package ships an <code>AnthropicBedrock</code> client. Auth comes from the standard AWS credential chain (env vars, SSO profile, instance role) - no API key. Everything after the constructor is the same <code>messages.create</code> you know from 6.1.</p>
+        <div class="prompt-box good"><span class="label">★ AnthropicBedrock: your 6.1 code, new front door</span>from anthropic import AnthropicBedrock
+
+client = AnthropicBedrock(aws_region="us-east-1")
+
+msg = client.messages.create(
+    model="us.anthropic.claude-...",  # check the console for the current ID
+    max_tokens=1024,
+    system="You are a concise data-engineering assistant.",
+    messages=[{"role": "user", "content": "Explain VPC endpoints in 3 bullets."}],
+)
+print(msg.content[0].text)
+
+# Streaming, tool use, vision: same shapes as the first-party API.
+with client.messages.stream(
+    model="us.anthropic.claude-...",  # check the console
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Stream me a haiku about IAM."}],
+) as stream:
+    for text in stream.text_stream:
+        print(text, end="")</div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Calling Claude on Bedrock, way 2: boto3 converse<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The AWS-native route: <code>boto3</code> with the <code>bedrock-runtime</code> service and the <code>converse</code> API - one uniform request shape across every Bedrock model, Claude included. Note the shape differences: content is a list of blocks with a <code>text</code> key, system is a list, and generation params live in <code>inferenceConfig</code>.</p>
+        <div class="prompt-box good"><span class="label">★ boto3 converse: the AWS-native shape</span>import boto3
+
+brt = boto3.client("bedrock-runtime", region_name="us-east-1")
+
+resp = brt.converse(
+    modelId="us.anthropic.claude-...",  # check the console for the current ID
+    system=[{"text": "You are a concise data-engineering assistant."}],
+    messages=[
+        {"role": "user",
+         "content": [{"text": "Explain VPC endpoints in 3 bullets."}]},
+    ],
+    inferenceConfig={"maxTokens": 1024, "temperature": 0.5},
+)
+print(resp["output"]["message"]["content"][0]["text"])</div>
+        <p><strong>Which way?</strong> The Anthropic SDK if your team lives in Anthropic's docs and wants code that stays close to 6.1-6.7 (and ports to first-party or Vertex with one line changed). The converse API if you're an AWS-native shop that wants one client, one IAM story and one request shape across all Bedrock models. Both are production-grade; pick one per codebase and stop.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>What's identical vs different on Bedrock<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The point of this table is relief: your 6.1-6.7 knowledge transfers almost entirely. What changes is the plumbing around the call, not the call.</p>
+        <table class="clean">
+          <thead><tr><th>Aspect</th><th>First-party API</th><th>Bedrock</th></tr></thead>
+          <tbody>
+            <tr><td>Messages, system prompts, multi-turn</td><td>Yes</td><td>Identical</td></tr>
+            <tr><td>Tool use, streaming, vision</td><td>Yes</td><td>Identical shapes</td></tr>
+            <tr><td>Auth</td><td>x-api-key header</td><td>SigV4 via IAM roles - no API keys</td></tr>
+            <tr><td>Model IDs</td><td>claude-sonnet-... style names</td><td>Inference-profile IDs (us.anthropic.... style)</td></tr>
+            <tr><td>Availability</td><td>One global endpoint</td><td>Per-region: access, models and quotas all vary</td></tr>
+            <tr><td>Quotas &amp; limits</td><td>Anthropic rate limits</td><td>AWS service quotas - raise via the console</td></tr>
+            <tr><td>Newest features</td><td>Land here first</td><td>Some features lag the first-party API</td></tr>
+            <tr><td>Logging &amp; audit</td><td>Your own</td><td>CloudTrail, CloudWatch out of the box</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: VERTEX + CHOOSING ============ -->
+  <section class="section" id="vertex">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · the GCP mirror + choosing your lane</span>
+      <h2>Vertex AI, lanes, and portability <span class="tag concept">10 min</span></h2>
+    </div>
+    <p class="lede">Vertex is the same story with GCP nouns: Model Garden instead of Model access, service accounts instead of IAM roles, an @-versioned model name instead of an inference profile.</p>
+
+    <details class="card">
+      <summary><span class="mode self">Advanced</span>Vertex AI setup and the AnthropicVertex client<span class="mini">4 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Enable:</strong> in the GCP console, find Claude in the Vertex AI <strong>Model Garden</strong> and enable it for your project. As with Bedrock, availability is per-region - pick a region that hosts the model you want.</li>
+          <li><strong>Auth:</strong> Application Default Credentials - a service account with the Vertex AI user role, or your gcloud login locally. No API keys here either.</li>
+          <li><strong>Model names:</strong> Vertex uses an @-version convention - a name like <code>claude-sonnet-5@</code> plus a version marker. Same caveat as Bedrock: names evolve, check the Model Garden page for the current one.</li>
+        </ul>
+        <div class="prompt-box good"><span class="label">★ AnthropicVertex: the GCP mirror</span>from anthropic import AnthropicVertex
+
+client = AnthropicVertex(
+    project_id="my-gcp-project",
+    region="us-east5",  # a region where the model is available
+)
+
+msg = client.messages.create(
+    model="claude-sonnet-5@...",  # check Model Garden for the current name
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Explain Model Garden in 2 lines."}],
+)
+print(msg.content[0].text)</div>
+        <p>Notice what didn't change: <code>messages.create</code>, the message shapes, tool use, streaming. The Anthropic SDK makes the three front doors nearly interchangeable at the code level - which is exactly what the portability card below exploits.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Choosing your lane<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>First-party API:</strong> fastest access to new models and features, simplest setup (one API key). The default for prototypes, evals and anything that hasn't met a security review yet.</li>
+          <li><strong>Bedrock:</strong> the choice when you're an AWS shop - IAM auth, VPC endpoints, CloudTrail, AWS billing. Production workloads that touch governed data belong here.</li>
+          <li><strong>Vertex:</strong> the same argument for GCP estates. If your data lives in BigQuery and your workloads run on GKE, Vertex keeps Claude inside that perimeter.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Our context makes this a short conversation: the estate is AWS, and the WorkSpaces reality from Session 5 means our production workloads already live inside AWS-managed boundaries with IAM everywhere. So <strong>Bedrock is our production lane</strong> - private networking, roles instead of keys, usage on the AWS bill. The first-party API stays in the toolkit for prototyping and for trying features before they reach Bedrock. Build on first-party, ship on Bedrock.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Advanced</span>Migration notes: keeping code portable<span class="mini">3 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Since prototype and production live on different front doors, make switching a config change, not a refactor:</p>
+        <ul>
+          <li><strong>Thin wrapper over the client:</strong> exactly one function in the codebase constructs a client. Business logic imports the wrapper, never a provider class.</li>
+          <li><strong>Model ID as config:</strong> IDs differ per provider (claude-sonnet-... vs us.anthropic.... vs ...@version), so they live in env vars or config files - never hardcoded in application code.</li>
+          <li><strong>No provider-specific params in business logic:</strong> stick to the shared surface (messages, system, max_tokens, tools, streaming). Anything provider-specific stays inside the wrapper, behind a comment explaining why.</li>
+        </ul>
+        <div class="prompt-box good"><span class="label">★ Provider-portable client factory</span>import os
+
+def make_client():
+    provider = os.environ.get("CLAUDE_PROVIDER", "anthropic")
+    if provider == "bedrock":
+        from anthropic import AnthropicBedrock
+        return AnthropicBedrock(
+            aws_region=os.environ.get("AWS_REGION", "us-east-1"))
+    if provider == "vertex":
+        from anthropic import AnthropicVertex
+        return AnthropicVertex(
+            project_id=os.environ["GCP_PROJECT"],
+            region=os.environ["GCP_REGION"])
+    from anthropic import Anthropic
+    return Anthropic()  # first-party: reads ANTHROPIC_API_KEY
+
+client = make_client()
+MODEL = os.environ["CLAUDE_MODEL"]  # provider-specific ID lives in config
+
+msg = client.messages.create(
+    model=MODEL, max_tokens=1024,
+    messages=[{"role": "user", "content": "Same code, three front doors."}],
+)</div>
+        <div class="callout tip">
+          <strong>Test the wrapper on day one</strong>
+          Run your eval set (6.2) through both lanes before you depend on the portability. Same model family through a different front door should score the same - and if a feature you rely on lags on Bedrock, you want to learn that from a failing eval, not a production incident.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ TRY IT ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">35-45 · hands on</span>
+      <h2>Try it yourself <span class="tag exercise">◐ 3 exercises</span></h2>
+    </div>
+    <ul>
+      <li><strong>1 · Same prompt, two front doors.</strong> Run one identical prompt via the first-party client and via AnthropicBedrock. Diff the two scripts: the delta should be the constructor line and the model ID, nothing else. If more changed, your code has provider details where they don't belong.</li>
+      <li><strong>2 · Least-privilege IAM.</strong> Create an IAM role whose policy allows <code>bedrock:InvokeModel</code> on exactly ONE model resource. Verify the happy path works, then try a different model ID and confirm the AccessDenied - now you've seen the guardrail from both sides.</li>
+      <li><strong>3 · The PROVIDER switch.</strong> Wrap client creation behind the CLAUDE_PROVIDER env var (factory above), run the same script with anthropic and bedrock values, and confirm identical behavior. Commit the wrapper - it's the first file of your production lane.</li>
+    </ul>
+  </section>
+
+  <!-- ============ OFFICIAL COURSES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official courses covered</h2>
+    </div>
+    <p class="lede">This page covers the platform-specific setup and access modules of the two cloud courses at <a href="https://claude.com/resources/courses">claude.com/resources/courses</a>; their shared-core modules are pages 6.1-6.7.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Claude with Amazon Bedrock - setup/access modules</span><span class="note">model access, IAM, inference-profile IDs, SDK + converse; shared-core modules → 6.1-6.7</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Claude with Vertex AI - setup/access modules</span><span class="note">Model Garden, project + region, AnthropicVertex; shared-core modules → 6.1-6.7</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Deep dive 6.8 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Why cloud-hosted</b><span>Data residency, VPC endpoints, IAM auth, unified billing, compliance inheritance - the plumbing, not the model.</span></div>
+      <div class="cheat-item"><b>Bedrock setup</b><span>Enable model access per REGION, grant bedrock:InvokeModel, use inference-profile IDs (us.anthropic....) - check the console.</span></div>
+      <div class="cheat-item"><b>Two ways to call</b><span>AnthropicBedrock (Anthropic-native, ports easily) or boto3 converse (AWS-native, one shape for all models). Pick one per codebase.</span></div>
+      <div class="cheat-item"><b>Identical vs different</b><span>Messages, tools, streaming, vision: identical. Auth, model IDs, regions, quotas, feature timing: different.</span></div>
+      <div class="cheat-item"><b>Our lane</b><span>AWS estate → Bedrock for production, first-party API for prototyping. Build on first-party, ship on Bedrock.</span></div>
+      <div class="cheat-item"><b>Portability</b><span>One client factory, model ID as config, no provider params in business logic. Switching lanes = changing env vars.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Deep dive 6.8 · learn-claude-with-phoebe · built with Claude</span>
+    <span><a href="67-agents-workflows.html">← Deep dive 6.7</a> &nbsp;·&nbsp; <a href="../index.html">All sessions →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=3"></script>
+</body>
+</html>

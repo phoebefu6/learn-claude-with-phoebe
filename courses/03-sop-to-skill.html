@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session 3 · From SOP to skill - learn claude with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=2">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-claude-with-phoebe</a> / Session 3 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn Claude with Phoebe · Session 3 of 6</div>
+    <h1>From SOP to <span class="accent">skill</span></h1>
+    <p class="sub">Every team has procedures written down somewhere - report formats, QA checklists, onboarding steps. Today you turn one of yours into a skill: a reusable capability Claude applies automatically, so the standard is followed every time without re-explaining it once.</p>
+    <div class="chip-row">
+      <span class="chip level">🟡 Medium</span>
+      <span class="chip audience">All teams</span>
+      <span class="chip audience">Team leads especially</span>
+      <span class="chip time">45 min live + self-study</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:3">3-18 · Concepts</span>
+      <span class="a3" style="flex:5">18-40 · Build your skill</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Why this session exists</h2>
+    </div>
+    <p class="lede">Sessions 1-2 made you good at asking. But you're still re-explaining the same standards every time: how we format the weekly report, what our QA checklist covers, how a client email should sound. A skill packages that knowledge once - and Claude pulls it in automatically whenever the task matches. This is the session where your team's expertise becomes infrastructure.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill amber">★ Build-along demo</span>
+      <span class="pill inkpill">1 official course covered in full</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      One real SOP from your own work converted into a working, tested skill - plus a curated shelf of skills worth installing and the judgment to know when a skill beats a prompt, a project, or a subagent.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: WHAT SKILLS ARE ============ -->
+  <section class="section" id="what-skills">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers "introduction to agent skills"</span>
+      <h2>What a skill actually is <span class="tag concept">8 min live</span></h2>
+    </div>
+    <p class="lede">A skill is a folder with instructions inside. That's genuinely it - no code required. The cleverness is in when Claude reads it.</p>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Anatomy: a folder, a SKILL.md, and a trigger<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <figure class="zoomable">
+          <svg viewBox="0 0 880 265" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Skill anatomy: SKILL.md with frontmatter and instructions, optional references and scripts, triggered by task match">
+            <style>
+              .skT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+              .skM { font: 600 13px "SF Mono", Menlo, monospace; fill: #E4E4F4; }
+              .skI { font: 600 14px Inter, sans-serif; fill: #1B1B2F; }
+              .skX { font: 400 13px Inter, sans-serif; fill: #6B6B80; }
+              .skA { stroke: #C9C9D6; stroke-width: 2; fill: none; marker-end: url(#skAh); }
+            </style>
+            <defs>
+              <marker id="skAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6" fill="none" stroke="#C9C9D6" stroke-width="1.5"/>
+              </marker>
+            </defs>
+            <rect x="30" y="30" width="330" height="200" rx="14" fill="#14142B"/>
+            <text class="skT" x="50" y="58">📁 weekly-report/</text>
+            <text class="skM" x="66" y="88">SKILL.md</text>
+            <text class="skM" x="84" y="112">name: weekly-report</text>
+            <text class="skM" x="84" y="134">description: when the user</text>
+            <text class="skM" x="84" y="154">  asks for the weekly report...</text>
+            <text class="skM" x="84" y="176">+ the how-to instructions</text>
+            <text class="skM" x="66" y="204">references/  scripts/  (optional)</text>
+            <line class="skA" x1="370" y1="128" x2="450" y2="128"/>
+            <rect x="458" y="55" width="390" height="60" rx="12" fill="#EEF2FF" stroke="#C9C9D6"/>
+            <text class="skI" x="478" y="80">The description is the doorbell:</text>
+            <text class="skX" x="478" y="101">Claude scans it to decide when the skill applies</text>
+            <rect x="458" y="140" width="390" height="60" rx="12" fill="#4F46E5"/>
+            <text class="skT" x="478" y="165">The body loads only when triggered:</text>
+            <text class="skT" x="478" y="186" style="font-weight:400; opacity:.9">your steps, format, rules - context-efficient</text>
+          </svg>
+          <figcaption>🔍 Click to zoom - skill anatomy: the description triggers, the body instructs</figcaption>
+        </figure>
+        <p>Two parts matter:</p>
+        <ul>
+          <li><strong>The description</strong> (in the frontmatter) tells Claude WHEN this skill applies - it's read all the time, so it must name the trigger words and situations precisely. Weak description = skill never fires. This is the #1 troubleshooting lesson.</li>
+          <li><strong>The body</strong> holds the HOW - your steps, format, tone, rules, examples. It loads only when needed, which keeps Claude fast and context-efficient even with dozens of skills installed.</li>
+          <li><strong>Optional extras:</strong> a <code>references/</code> folder for templates and examples, <code>scripts/</code> for code Claude can run. Multi-file skills split detail out so the main file stays lean.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Skill vs prompt vs project vs subagent - which tool when<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Session 1 gave you prompts, Session 2 gave you projects. Here's the full decision map - this covers the official course's "skills vs other features" lesson:</p>
+        <table class="clean">
+          <thead><tr><th>You have...</th><th>Use</th><th>Because</th></tr></thead>
+          <tbody>
+            <tr><td>A one-off task</td><td>A 4D prompt</td><td>No reuse, no setup - just describe well</td></tr>
+            <tr><td>A domain you work in daily (team, client, product)</td><td>A project</td><td>Standing knowledge + instructions for a WHOLE area</td></tr>
+            <tr><td>A repeatable PROCEDURE with rules and a format</td><td>A skill</td><td>Auto-applies whenever the task matches, works across chats and projects</td></tr>
+            <tr><td>A big task needing isolated, parallel work (engineers)</td><td>A subagent</td><td>Separate context window, returns a summary - Session 6</td></tr>
+          </tbody>
+        </table>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>The tell that you need a skill: you catch yourself pasting the same instructions for the third time, or a teammate's output doesn't match yours because they didn't know rule #4. The weekly report, the campaign brief format, the data QA checklist, the client-email tone rules - each is a skill waiting to be written.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>What makes a GOOD skill candidate<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Repeatable:</strong> happens weekly or more, or across many people.</li>
+          <li><strong>Rule-based:</strong> you can write down what "done right" means - format, sections, tone, checks.</li>
+          <li><strong>Currently inconsistent:</strong> different people produce different quality - the skill IS the standard.</li>
+          <li><strong>Bad candidates:</strong> one-offs, pure judgment calls ("should we enter this market?"), anything whose rules change weekly.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>The 30-second test</strong>
+          If you could hand the procedure to a smart new joiner as one page and they'd get it 90% right, it's a skill. If they'd need a month of shadowing you, it's still a job.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: THE CONVERSION METHOD ============ -->
+  <section class="section" id="method">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · the conversion method</span>
+      <h2>SOP in, skill out <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">The method is a pipeline: pick, draft, test, tighten, share. You'll run the whole thing in Demo 1.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SOP to skill pipeline: pick, draft, test, tighten, share">
+        <style>
+          .ppT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .ppI { font: 700 15px Inter, sans-serif; fill: #4F46E5; }
+          .ppX { font: 400 12.5px Inter, sans-serif; fill: #6B6B80; }
+          .ppA { stroke: #C9C9D6; stroke-width: 2; fill: none; marker-end: url(#ppAh); }
+        </style>
+        <defs>
+          <marker id="ppAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#C9C9D6" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <rect x="20" y="40" width="140" height="50" rx="10" fill="#312E81"/>
+        <text class="ppT" x="55" y="71">1 Pick</text>
+        <rect x="192" y="40" width="140" height="50" rx="10" fill="#4F46E5"/>
+        <text class="ppT" x="224" y="71">2 Draft</text>
+        <rect x="364" y="40" width="140" height="50" rx="10" fill="#6366F1"/>
+        <text class="ppT" x="401" y="71">3 Test</text>
+        <rect x="536" y="40" width="140" height="50" rx="10" fill="#818CF8"/>
+        <text class="ppT" x="560" y="71">4 Tighten</text>
+        <rect x="708" y="40" width="140" height="50" rx="10" fill="#1B1B2F"/>
+        <text class="ppT" x="740" y="71">5 Share</text>
+        <line class="ppA" x1="164" y1="65" x2="186" y2="65"/>
+        <line class="ppA" x1="336" y1="65" x2="358" y2="65"/>
+        <line class="ppA" x1="508" y1="65" x2="530" y2="65"/>
+        <line class="ppA" x1="680" y1="65" x2="702" y2="65"/>
+        <text class="ppX" x="20" y="120">repeatable +</text>
+        <text class="ppX" x="20" y="137">rule-based SOP</text>
+        <text class="ppX" x="192" y="120">Claude drafts the</text>
+        <text class="ppX" x="192" y="137">SKILL.md from your SOP</text>
+        <text class="ppX" x="364" y="120">run 3 real tasks:</text>
+        <text class="ppX" x="364" y="137">does it fire? follow rules?</text>
+        <text class="ppX" x="536" y="120">fix the description,</text>
+        <text class="ppX" x="536" y="137">add the missed rule</text>
+        <text class="ppX" x="708" y="120">team folder or plugin -</text>
+        <text class="ppX" x="708" y="137">one standard for everyone</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the SOP-to-skill pipeline</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Draft it WITH Claude - the converter prompt<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>You don't write the SKILL.md by hand - you paste your SOP into this converter and review what comes back. (There's also an official <code>skill-creator</code> skill that interviews you interactively; the converter below works everywhere, today.)</p>
+        <div class="prompt-box good"><span class="label">★ The SOP-to-skill converter</span>Convert this SOP into a Claude skill as a single SKILL.md file.
+
+Requirements:
+- YAML frontmatter with: name (short-kebab-case) and description. The description must state exactly WHEN to use the skill - name the trigger phrases, task types and file types, because it decides whether the skill fires.
+- Body: numbered steps in working order, the output format (with a filled example), quality rules as a checklist, and what to do in edge cases.
+- Keep the body under 150 lines. If detail overflows (long templates, many examples), note what should move to a references/ folder.
+- Flag anything in my SOP that is ambiguous or contradictory instead of guessing.
+
+My SOP:
+[paste your procedure - bullet points are fine]</div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>A marketing team's "campaign wrap-up report" SOP was 14 bullet points in Confluence that nobody followed exactly. Twenty minutes of converter + testing later: a skill that produces the same 6-section wrap-up from any campaign's raw numbers. The intern's report now matches the director's - that's the point.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Testing and troubleshooting - why skills don't fire<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The official course dedicates a lesson to this, because everyone hits it. The failure ladder, in order of likelihood:</p>
+        <ul>
+          <li><strong>Vague description.</strong> "Helps with reports" fires never; "when the user asks for the weekly performance report, a campaign wrap-up, or says 'run the report skill'" fires reliably. Name the trigger words.</li>
+          <li><strong>Trigger overlap.</strong> Two skills with similar descriptions compete - make each description name what it does NOT cover.</li>
+          <li><strong>Bloated body.</strong> A 600-line SKILL.md gets skimmed. Keep the body lean; push templates into <code>references/</code>.</li>
+          <li><strong>Wrong tool.</strong> If it should apply to EVERYTHING in a domain, you wanted project instructions, not a skill.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>The test protocol</strong>
+          Run three REAL tasks: one that obviously should trigger it, one phrased sideways ("can you do the usual Friday thing?"), one that should NOT trigger it. Fix the description until all three behave.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Multi-file skills and sharing them with the team<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Multi-file structure:</strong> <code>SKILL.md</code> stays the lean brain; <code>references/report-template.md</code> holds the full template; <code>references/examples.md</code> holds 2-3 gold-standard outputs; <code>scripts/</code> holds anything executable (engineers). Claude loads extras only when the task needs them.</li>
+          <li><strong>Sharing:</strong> on Claude.ai/Teams, skills can be shared to the workspace so the whole team gets the same standard; in Claude Code, commit the skill folder to the repo (<code>.claude/skills/</code>) and everyone who clones has it. Plugins bundle several skills for distribution.</li>
+          <li><strong>Versioning:</strong> treat skills like documents with owners - when the SOP changes, the skill changes, one place, everyone updated. That's the governance win over tribal knowledge.</li>
+          <li><strong>Validating third-party skills:</strong> read the SKILL.md before installing (it's just text), check what scripts it runs, prefer official or well-starred sources - the same Diligence habit as ever.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: THE SKILL SHELF ============ -->
+  <section class="section" id="shelf">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · don't build what you can install</span>
+      <h2>The skill shelf: install these first <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">Before building, shop. The ecosystem already has polished skills for the boring-but-critical stuff.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The starter shelf - official and battle-tested<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <table class="clean">
+          <thead><tr><th>Skill / pack</th><th>What it gives you</th><th>Who needs it</th></tr></thead>
+          <tbody>
+            <tr><td>docx · pptx · xlsx · pdf (official, anthropics/skills)</td><td>Proper Word, PowerPoint, Excel and PDF creation and editing - real files, correct formatting</td><td>Everyone</td></tr>
+            <tr><td>skill-creator (official)</td><td>Interviews you and builds new skills - the meta-skill</td><td>Everyone building skills</td></tr>
+            <tr><td>theme-factory (official)</td><td>Consistent visual themes across generated docs and pages</td><td>Marketing, anyone shipping visuals</td></tr>
+            <tr><td>marketing-skills pack (community, ~34k★)</td><td>Copywriting, ads, SEO, emails, launch playbooks - dozens of focused skills</td><td>Marketing &amp; branding (Session 4 uses these)</td></tr>
+            <tr><td>awesome-claude-skills lists (community)</td><td>Curated indexes of hundreds of community skills - shop here before building</td><td>Everyone, quarterly browse</td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>Install rule of thumb</strong>
+          Official pack first, then community skills with real stars and readable SKILL.md files. Read before you install - a skill is instructions, and you can audit instructions in two minutes.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>KOL skills - borrowing an expert's brain<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The most underrated genre: skills that encode a known expert's METHOD, not a company procedure. The pattern is called a KOL (key opinion leader) skill - you write down how a master works, and Claude applies that discipline to your material.</p>
+        <div class="prompt-box good"><span class="label">★ Example: a Karpathy-style learning skill</span>---
+name: karpathy-build-to-understand
+description: Use when the user wants to DEEPLY understand a technical concept (an algorithm, a model, a system) rather than just use it - trigger on "understand deeply", "from scratch", "build to understand", or "karpathy mode".
+---
+
+Apply Andrej Karpathy's build-to-understand method:
+
+1. Strip the concept to its minimal form - what is the smallest version that still works?
+2. Build it from scratch in plain Python (no frameworks), under 100 lines, every line explained.
+3. Introduce one real-world complication at a time; show how the minimal version grows.
+4. At each step, ask the user to predict what breaks before revealing it.
+5. End with: "what the production version adds, and why you now understand it."
+
+Rules: no framework imports until step 5. No hand-waving - if a step can't be coded simply, decompose it further. Spelled-out math over notation.</div>
+        <p>The same pattern works for any master you study: an Ogilvy-style ad-critique skill, a Tufte-style chart-review skill, a Buffett-style annual-letter summarizer. Write the method once, apply it forever - and yes, this is exactly how you'd package YOUR OWN expertise for the team as you become the in-house KOL.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 2</span>
+      <h2>Turn YOUR SOP into a working skill <span class="tag demo">★ 15 min · everyone builds</span></h2>
+    </div>
+    <p class="lede">Bring a real procedure - the weekly report, the QA checklist, the client-email rules. By the end it's a tested skill.</p>
+
+    <div class="steps">
+      <div class="step"><p>Write your SOP as 5-10 rough bullets if it isn't written down already (3 quiet minutes - "how I actually do the Friday report").</p></div>
+      <div class="step"><p>Run the <strong>converter prompt</strong> (Part 2) with your SOP pasted in. Read the draft SKILL.md it returns - check the description names YOUR trigger phrases.</p></div>
+      <div class="step"><p>Answer the flags: the converter lists ambiguities it found in your SOP - resolving them now is free; resolving them after three bad reports is not.</p></div>
+      <div class="step"><p>Install it: Claude.ai → Settings → Capabilities → Skills → create/upload your skill (in Claude Code: save the folder under <code>.claude/skills/</code>). </p></div>
+      <div class="step"><p>Run the <strong>test protocol</strong>: one obvious task, one sideways-phrased task, one should-not-trigger task. Tighten the description until all three behave.</p></div>
+      <div class="step"><p>Victory lap: run your real task for this week with the skill live. Compare it with last week's manual version.</p></div>
+    </div>
+
+    <div class="callout tip">
+      <strong>Data tip</strong>
+      SOPs often contain client names and internal figures. Genericize the examples inside the skill ("Client A", rounded numbers) - the skill teaches the FORM, your live task supplies the real data.
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 2</span>
+      <h2>Install from the shelf and run it <span class="tag demo">★ 7 min · everyone installs</span></h2>
+    </div>
+    <p class="lede">Prove to yourself the ecosystem works: install one official skill and use it in anger.</p>
+
+    <div class="steps">
+      <div class="step"><p>Pick your poison: <strong>pptx</strong> if you make decks, <strong>xlsx</strong> if you live in spreadsheets, <strong>docx</strong> for documents.</p></div>
+      <div class="step"><p>Install it from the skills directory (Claude.ai → Settings → Capabilities → Skills → browse; engineers: <code>anthropics/skills</code> on GitHub).</p></div>
+      <div class="step"><p>Run a real job: "Create a 5-slide deck summarizing [this week's real topic] - our template style: title, 3 content slides, next steps." Watch it produce an actual .pptx.</p></div>
+      <div class="step"><p>Notice what you did NOT do: explain PowerPoint mechanics. The skill carried the how; you supplied the what. That division of labor is the whole session in one sentence.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ TRY IT / FOLLOW-UP ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">After the session</span>
+      <h2>This week <span class="tag exercise">◐ 30 min total</span></h2>
+    </div>
+    <ul>
+      <li><strong>Ship your skill to one teammate</strong> and have them run it cold. Their confusion is your description's bug list.</li>
+      <li><strong>Convert a second SOP</strong> - the second one takes a third of the time, and that's when the habit sticks.</li>
+      <li><strong>Team leads:</strong> list your team's top 5 SOPs in a doc, mark which are skill candidates (repeatable + rule-based), and assign owners. That list is your team's skill roadmap.</li>
+      <li><strong>Browse the shelf</strong> for 10 minutes: anthropics/skills and an awesome-claude-skills list. Install at most two - hoarding skills you don't use is the new hoarding browser tabs.</li>
+      <li><strong>Stuck?</strong> Ask Claude: "My skill isn't triggering when I say X - here's my SKILL.md, diagnose the description." Then #learn-claude, then next session's Q&amp;A.</li>
+    </ul>
+  </section>
+
+  <!-- ============ OFFICIAL COURSES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official courses covered</h2>
+    </div>
+    <p class="lede">This session teaches the complete working content of the official skills course from <a href="https://claude.com/resources/courses">claude.com/resources/courses</a>.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Introduction to agent skills</span><span class="note">30 min · all 6 lessons: what skills are, first skill, config &amp; multi-file, skills vs other features, sharing, troubleshooting</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 3 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>A skill is</b><span>A folder with SKILL.md: description = when it fires, body = how it works. No code needed.</span></div>
+      <div class="cheat-item"><b>Which tool</b><span>One-off → prompt · domain → project · procedure → skill · isolated big task → subagent.</span></div>
+      <div class="cheat-item"><b>Good candidate</b><span>Repeatable + rule-based + currently inconsistent. One page = skill; needs shadowing = still a job.</span></div>
+      <div class="cheat-item"><b>Not firing?</b><span>It's the description. Name the exact trigger phrases and what it does NOT cover.</span></div>
+      <div class="cheat-item"><b>Test protocol</b><span>Obvious task · sideways phrasing · should-NOT-trigger. All three must behave.</span></div>
+      <div class="cheat-item"><b>Shop first</b><span>docx/pptx/xlsx/pdf + skill-creator official; marketing pack for Session 4. Read before installing.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Session 3 of 6 · learn-claude-with-phoebe · built with Claude</span>
+    <span><a href="02-daily-automation.html">← Session 2</a> &nbsp;·&nbsp; <a href="../index.html">All sessions</a> &nbsp;·&nbsp; <a href="04-creative-studio.html">Next: Creative studio →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=3"></script>
+</body>
+</html>

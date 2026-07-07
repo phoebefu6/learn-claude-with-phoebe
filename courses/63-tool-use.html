@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep dive 6.3 · Tool use - learn claude with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=2">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-claude-with-phoebe</a> / Deep dive 6.3</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn Claude with Phoebe · Deep-dive track 6.3</div>
+    <h1>Tool <span class="accent">use</span></h1>
+    <p class="sub">Deep dive 6.1 gave you the API; 6.2 taught you to prompt and measure. Now you give Claude hands: you define functions, Claude decides when to call them, you execute and return the results. This is the mechanism every agent is built on - and by the end you will have written the loop yourself.</p>
+    <div class="chip-row">
+      <span class="chip level">🔴 Deep dive</span>
+      <span class="chip audience">DS &amp; AI</span>
+      <span class="chip time">45 min self-paced or live</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-5 · Setup</span>
+      <span class="a2" style="flex:6">5-35 · Core</span>
+      <span class="a3" style="flex:2">35-45 · Try it</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Why this page exists</h2>
+    </div>
+    <p class="lede">A model that can only emit text is an advisor. A model that can call your functions is a worker. Tool use is the one API feature that turns "Claude tells you the SQL" into "Claude runs the query, reads the result, and writes the summary". Every skill, every MCP server, every agent framework you will ever touch is this loop underneath.</p>
+    <div class="legend">
+      <span class="pill solid">Core - the loop everyone needs</span>
+      <span class="pill light">Advanced - read when you need it</span>
+      <span class="pill inkpill">Tool Use module of all 3 engineering courses</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with</strong>
+      A working tool loop you wrote yourself, a routing setup with multiple tools, and the forced-tool-call trick that makes structured extraction actually reliable in production.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: THE LOOP ============ -->
+  <section class="section" id="loop">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · the mechanism</span>
+      <h2>The tool loop <span class="tag concept">14 min core</span></h2>
+    </div>
+    <p class="lede">Three roles, strictly separated: you define tools, Claude decides, you execute. Claude never runs anything - it asks, you act, you report back.</p>
+
+    <details class="card" open>
+      <summary><span class="mode live">Core</span>What tool use actually is<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>You pass a list of function descriptions with your request. Claude reads the user's question, and if a tool would help, it stops generating text and instead emits a structured request: "call <code>get_weather</code> with <code>{"city": "Auckland"}</code>". Your code executes the real function and sends the result back as a new message. Claude reads it and either answers or asks for another tool call.</p>
+        <ul>
+          <li><strong>You define</strong> the tools: name, description, input schema. Claude only ever sees these descriptions - it has no idea what your code does beyond what you wrote.</li>
+          <li><strong>Claude decides</strong> whether to call a tool at all, which one, and with what arguments. This decision is the intelligence you are renting.</li>
+          <li><strong>You execute.</strong> The API never touches your database, your filesystem, or your network. Every side effect goes through code you wrote, which is exactly where you enforce permissions and limits.</li>
+        </ul>
+        <p>That request-execute-report cycle, repeated until Claude has what it needs, is the agent loop. Claude Code, Cowork, and every MCP integration are this loop with a bigger toolbox.</p>
+        <div class="callout tip">
+          <strong>Mental model</strong>
+          Claude is a sharp new analyst who can only communicate by chat. They can ask you to run things and read what you paste back, but their hands never touch the keyboard. Design your tools the way you would brief that analyst.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Defining a tool: name, description, JSON Schema<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A tool is a dict with three keys. The <code>input_schema</code> is standard JSON Schema - the same vocabulary you know from API specs.</p>
+        <div class="prompt-box good"><span class="label">★ A complete tool definition</span>tools = [
+    {
+        "name": "get_weather",
+        "description": (
+            "Get the current weather for a city. "
+            "Use when the user asks about weather, temperature, "
+            "rain, or outdoor conditions in a specific place. "
+            "Returns temperature in Celsius and a short conditions text. "
+            "Do NOT use for historical weather or forecasts."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string",
+                    "description": "City name, e.g. 'Auckland' or 'Osaka'",
+                }
+            },
+            "required": ["city"],
+        },
+    }
+]</div>
+        <p>The description carries almost all the weight. Claude uses it to decide WHEN to call the tool - which is the exact same lesson as skill descriptions in Session 3: vague description, tool never fires (or fires when it shouldn't). Say what it does, when to use it, what it returns, and what it is NOT for.</p>
+        <ul>
+          <li><strong>Name:</strong> verb_noun, snake_case, unambiguous. <code>query_orders</code> beats <code>helper2</code>.</li>
+          <li><strong>Schema descriptions matter too:</strong> per-property descriptions steer the arguments Claude fills in. Include an example value.</li>
+          <li><strong>Fewer, sharper tools</strong> beat many overlapping ones. If two tools could both plausibly handle a request, Claude has to guess - and so would a human reading your descriptions.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>The loop mechanics: stop_reason, tool_use, tool_result<span class="mini">6 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>When Claude wants a tool, the response comes back with <code>stop_reason == "tool_use"</code> and one or more content blocks of type <code>tool_use</code>, each carrying an <code>id</code>, the tool <code>name</code>, and the parsed <code>input</code>. You execute, then append TWO messages: the assistant turn exactly as received, and a user turn containing <code>tool_result</code> blocks that echo each <code>tool_use_id</code>. Then you call the API again. Here is the whole thing, runnable:</p>
+        <div class="prompt-box good"><span class="label">★ The complete tool loop (runnable)</span>import anthropic
+
+client = anthropic.Anthropic()
+
+def get_weather(city):
+    # toy implementation - swap in a real API call
+    return {"city": city, "temp_c": 14, "conditions": "light rain"}
+
+TOOL_FUNCTIONS = {"get_weather": get_weather}
+
+tools = [
+    {
+        "name": "get_weather",
+        "description": (
+            "Get the current weather for a city. Use when the user "
+            "asks about weather or temperature in a specific place."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {"city": {"type": "string"}},
+            "required": ["city"],
+        },
+    }
+]
+
+messages = [{"role": "user", "content": "Should I bike to work in Auckland today?"}]
+
+response = client.messages.create(
+    model="claude-sonnet-5",
+    max_tokens=1024,
+    tools=tools,
+    messages=messages,
+)
+
+while response.stop_reason == "tool_use":
+    tool_results = []
+    for block in response.content:
+        if block.type == "tool_use":
+            fn = TOOL_FUNCTIONS[block.name]
+            result = fn(**block.input)          # YOUR code runs here
+            tool_results.append(
+                {
+                    "type": "tool_result",
+                    "tool_use_id": block.id,
+                    "content": str(result),
+                }
+            )
+    messages.append({"role": "assistant", "content": response.content})
+    messages.append({"role": "user", "content": tool_results})
+    response = client.messages.create(
+        model="claude-sonnet-5",
+        max_tokens=1024,
+        tools=tools,
+        messages=messages,
+    )
+
+print(response.content[0].text)</div>
+        <p>Things that bite people the first time:</p>
+        <ul>
+          <li><strong>Echo the assistant message untouched.</strong> The <code>tool_use</code> blocks must be in the history or the <code>tool_result</code> has nothing to attach to - the API will reject the request.</li>
+          <li><strong>tool_result goes in a USER message.</strong> You are reporting back, so it is your turn. All results for one response go in one user message.</li>
+          <li><strong>Errors are results too.</strong> If your function throws, catch it and return the error text with <code>"is_error": True</code> on the tool_result block. Claude will read the error and usually retry sensibly or explain the failure.</li>
+          <li><strong>Cap the loop.</strong> A <code>for _ in range(10)</code> guard beats an infinite while loop the day a tool starts returning garbage.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: MULTIPLE TOOLS + STRUCTURED DATA ============ -->
+  <section class="section" id="multi">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · routing and extraction</span>
+      <h2>Multiple tools and structured data <span class="tag concept">8 min core</span></h2>
+    </div>
+    <p class="lede">One tool is a feature. Several tools plus Claude's judgment about which to call is a system.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Multi-turn with multiple tools: Claude routes<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Pass several tools and Claude picks per request - no if/else router needed on your side. A data-team trio:</p>
+        <div class="prompt-box good"><span class="label">★ Three tools, Claude picks</span>tools = [
+    {
+        "name": "query_database",
+        "description": (
+            "Run a read-only SQL query against the analytics warehouse. "
+            "Use for questions about orders, revenue, or user counts."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {"sql": {"type": "string"}},
+            "required": ["sql"],
+        },
+    },
+    {
+        "name": "get_dashboard_url",
+        "description": (
+            "Return the link to an existing dashboard by topic. Use when "
+            "a dashboard already answers the question - prefer this over "
+            "running a fresh query for standard metrics."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {"topic": {"type": "string"}},
+            "required": ["topic"],
+        },
+    },
+    {
+        "name": "file_ticket",
+        "description": (
+            "File a data-request ticket. Use ONLY when the question needs "
+            "data we do not have or a pipeline change."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {"summary": {"type": "string"}},
+            "required": ["summary"],
+        },
+    },
+]</div>
+        <ul>
+          <li><strong>The descriptions do the routing.</strong> "Prefer this over running a fresh query" is an instruction Claude follows. You are programming the router in English.</li>
+          <li><strong>Parallel calls:</strong> one response can contain SEVERAL <code>tool_use</code> blocks when the calls are independent (weather in two cities, three metrics at once). Your loop already handles this - it iterates over all blocks and returns all results in one user message. Execute them concurrently if the functions are slow.</li>
+          <li><strong>Multi-turn chains:</strong> Claude can call <code>query_database</code>, read the result, decide it needs a second query, and call again - that is just the while loop going around twice. You wrote an agent and it took no extra code.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>A four-person data team wrapped exactly this trio around their warehouse as a Slack bot. Stakeholder questions that used to become Jira tickets ("how many active users in Germany last month?") now get answered in 20 seconds, and only the genuinely-new requests reach the team. The entire bot is the loop from Part 1 plus these three definitions - about 120 lines.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Tools for structured data: the forced-call trick<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>In 6.1 you extracted JSON by prompting "reply with only JSON" and hoping. The robust version: define a tool whose input schema IS your desired output shape, then force Claude to call it with <code>tool_choice</code>. The tool never executes anything - you just harvest <code>block.input</code>, which the API guarantees matches your schema.</p>
+        <div class="prompt-box good"><span class="label">★ Extraction via forced tool call</span>import anthropic
+
+client = anthropic.Anthropic()
+
+extraction_tool = {
+    "name": "record_extraction",
+    "description": "Record the structured fields extracted from a support ticket.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "customer": {"type": "string"},
+            "product": {"type": "string"},
+            "severity": {"type": "string", "enum": ["low", "medium", "high"]},
+            "summary": {"type": "string", "description": "One sentence"},
+        },
+        "required": ["customer", "product", "severity", "summary"],
+    },
+}
+
+response = client.messages.create(
+    model="claude-sonnet-5",
+    max_tokens=1024,
+    tools=[extraction_tool],
+    tool_choice={"type": "tool", "name": "record_extraction"},
+    messages=[{"role": "user", "content": f"Extract fields from this ticket:\n\n{ticket_text}"}],
+)
+
+data = next(b.input for b in response.content if b.type == "tool_use")
+print(data["severity"], "-", data["summary"])</div>
+        <ul>
+          <li><strong>No markdown fences, no "here is the JSON:", no parse errors.</strong> The schema is enforced, enums included.</li>
+          <li><strong>tool_choice modes:</strong> <code>{"type": "auto"}</code> (default - Claude decides), <code>{"type": "any"}</code> (must call some tool), <code>{"type": "tool", "name": ...}</code> (must call this one). Forced extraction uses the last.</li>
+          <li>This is the "structured data with tools" and "flexible tool extraction" lesson from the Bedrock/Vertex courses - same trick, any platform.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: SERVER-SIDE + BATCH ============ -->
+  <section class="section" id="platform">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · what Anthropic runs for you</span>
+      <h2>Server-side tools and batch processing <span class="tag concept">8 min core</span></h2>
+    </div>
+    <p class="lede">Some tools you never have to implement - Anthropic executes them server-side. And when the job is high-volume and not urgent, there is a cheaper lane entirely.</p>
+
+    <details class="card">
+      <summary><span class="mode self">Advanced</span>Server-side tools: web search and the text editor<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Client tools (everything above) follow the loop: Claude asks, YOU execute. Server tools invert it: you enable them in the request and ANTHROPIC executes them mid-response - no loop on your side for the execution.</p>
+        <table class="clean">
+          <thead><tr><th>Tool</th><th>Who executes</th><th>What it gives you</th></tr></thead>
+          <tbody>
+            <tr><td>Your functions (client tools)</td><td>You, in your code</td><td>Anything: your DB, your APIs, your files. Full control, full responsibility.</td></tr>
+            <tr><td>Web search (server tool)</td><td>Anthropic</td><td>Live web results with citations, mid-response. You just enable it and set a max_uses cap.</td></tr>
+            <tr><td>Text editor (client tool, Anthropic-defined)</td><td>You</td><td>A standardized view/create/str_replace file-editing interface Claude is trained on. You implement the file operations; the schema and Claude's fluency with it come free.</td></tr>
+          </tbody>
+        </table>
+        <div class="prompt-box good"><span class="label">★ Enabling web search</span>response = client.messages.create(
+    model="claude-sonnet-5",
+    max_tokens=1024,
+    tools=[
+        {
+            "type": "web_search_20250305",
+            "name": "web_search",
+            "max_uses": 3,
+        }
+    ],
+    messages=[{"role": "user", "content": "What did Anthropic announce this week?"}],
+)</div>
+        <p>The text editor tool sits in between: Anthropic defines the schema (commands like <code>view</code>, <code>create</code>, <code>str_replace</code>) and Claude has been trained to use it well, but the file operations run in YOUR code - which is why it is safe. This is the exact mechanism Claude Code uses to edit your repo. Note the platform delta: web search is a direct-API feature; on Bedrock and Vertex you cover the same ground with your own search tool.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Advanced</span>Batch processing: the Message Batches API<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Everything so far was real-time: one request, seconds of latency, full price. The Message Batches API takes up to thousands of requests in one submission, processes them asynchronously (most finish well within an hour, guaranteed within 24), and costs 50% less per token. Tools, system prompts, forced extraction - everything above works inside a batch.</p>
+        <div class="prompt-box good"><span class="label">★ Nightly ticket scoring as a batch</span>import anthropic
+
+client = anthropic.Anthropic()
+
+batch = client.messages.batches.create(
+    requests=[
+        {
+            "custom_id": f"ticket-{t['id']}",
+            "params": {
+                "model": "claude-sonnet-5",
+                "max_tokens": 512,
+                "tools": [extraction_tool],
+                "tool_choice": {"type": "tool", "name": "record_extraction"},
+                "messages": [
+                    {"role": "user", "content": f"Extract fields:\n\n{t['text']}"}
+                ],
+            },
+        }
+        for t in tickets
+    ]
+)
+print(batch.id, batch.processing_status)
+
+# later (poll or cron): stream the results
+for result in client.messages.batches.results(batch.id):
+    if result.result.type == "succeeded":
+        blocks = result.result.message.content
+        data = next(b.input for b in blocks if b.type == "tool_use")
+        save(result.custom_id, data)</div>
+        <ul>
+          <li><strong>When batch beats real-time:</strong> nightly scoring, backfills, bulk classification, eval runs from 6.2 - anywhere nobody is watching a spinner. Half price for changing a cron schedule is the easiest cost win in this whole track.</li>
+          <li><strong>When it doesn't:</strong> anything interactive, and client-tool loops that need YOUR code between turns (each batch request must be self-contained - forced extraction is fine, a multi-turn query loop is not).</li>
+          <li><strong>custom_id is your join key</strong> - results can arrive in any order.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ TRY IT ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">35-45 · hands on</span>
+      <h2>Try it yourself <span class="tag exercise">◐ 3 exercises</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p><strong>1 · Calculator loop.</strong> Define a <code>calculate</code> tool (one string property: <code>expression</code>) whose implementation evaluates basic arithmetic safely. Wire it into the Part 1 loop and ask: "What is 17.5% of 2,340, minus 89?" Print every tool_use block so you can watch Claude decompose the question. Then break it on purpose: return an error string with <code>is_error</code> and see how Claude recovers.</p></div>
+      <div class="step"><p><strong>2 · Warehouse read-only query tool.</strong> Build <code>query_database</code> against a local SQLite or DuckDB file. In YOUR implementation, reject anything that is not a single SELECT (no INSERT/UPDATE/DELETE/DROP, no semicolon chaining) and only allow tables from an explicit allowlist. Note where the safety lives: in your executor, not in the prompt. Ask three analytics questions and check the SQL Claude wrote.</p></div>
+      <div class="step"><p><strong>3 · Forced extraction.</strong> Take 5 messy real texts (emails, ticket comments) and run the <code>record_extraction</code> pattern with an enum field and a required field that is sometimes missing from the text. Inspect what Claude does with missing data, then tighten the property descriptions until all 5 come back right. Bonus: resubmit all 5 as one Message Batch.</p></div>
+    </div>
+    <div class="callout tip">
+      <strong>Grade it like 6.2</strong>
+      Exercise 2 is an eval waiting to happen: save your three questions plus the correct answers, and you have a regression test for the day you swap models or rewrite the tool descriptions.
+    </div>
+  </section>
+
+  <!-- ============ OFFICIAL COURSES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official courses covered</h2>
+    </div>
+    <p class="lede">This page teaches the Tool Use module that all three 8-hour engineering courses share, plus the Bedrock/Vertex-specific tool lessons.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Tool Use module - Building with the Claude API</span><span class="note">functions, schemas, message blocks, tool results, multi-turn, multiple tools, text editor, web search</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Bedrock/Vertex variants incl. batch tool + flexible extraction</span><span class="note">the batch tool, structured data with tools, flexible tool extraction - same patterns, platform deltas noted</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Deep dive 6.3 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The loop</b><span>while stop_reason == "tool_use": execute each tool_use block, append assistant msg + user msg with tool_result blocks, call again.</span></div>
+      <div class="cheat-item"><b>Wiring rules</b><span>tool_result lives in a USER message, echoes tool_use_id, all results in one message. Echo the assistant turn untouched.</span></div>
+      <div class="cheat-item"><b>Descriptions route</b><span>Claude picks tools by reading descriptions - say what, when, returns, and NOT-for. Same lesson as skill descriptions.</span></div>
+      <div class="cheat-item"><b>Structured data</b><span>tool_choice={"type": "tool", "name": ...} + a schema-shaped tool = guaranteed-valid extraction. Harvest block.input.</span></div>
+      <div class="cheat-item"><b>Client vs server</b><span>Your functions: you execute (safety lives in your code). Web search: Anthropic executes. Text editor: their schema, your file ops.</span></div>
+      <div class="cheat-item"><b>Batch = half price</b><span>Message Batches API for nightly scoring, backfills, evals: async, within 24 h, 50% off. custom_id is the join key.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Deep dive 6.3 · learn-claude-with-phoebe · built with Claude</span>
+    <span><a href="62-prompting-evals.html">← Deep dive 6.2</a> &nbsp;·&nbsp; <a href="../index.html">All sessions</a> &nbsp;·&nbsp; <a href="64-rag.html">Next: RAG &amp; agentic search →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=3"></script>
+</body>
+</html>

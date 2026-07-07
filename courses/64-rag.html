@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep dive 6.4 · RAG &amp; agentic search - learn claude with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=2">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-claude-with-phoebe</a> / Deep dive 6.4</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn Claude with Phoebe · Deep-dive track 6.4</div>
+    <h1>RAG &amp; <span class="accent">agentic search</span></h1>
+    <p class="sub">Claude has a knowledge cutoff, has never seen your internal docs, and cannot fit your whole wiki in one request. Retrieval augmented generation fixes all three: find the relevant pieces, put them in context, answer grounded in them. Today you build the full pipeline - and learn the two upgrades that separate demo RAG from production RAG.</p>
+    <div class="chip-row">
+      <span class="chip level">🔴 Deep dive</span>
+      <span class="chip audience">DS &amp; AI</span>
+      <span class="chip time">45 min self-paced or live</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-5 · Setup</span>
+      <span class="a2" style="flex:6">5-35 · Core</span>
+      <span class="a3" style="flex:2">35-45 · Try it</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Why this page exists</h2>
+    </div>
+    <p class="lede">Every "chat with our docs" project is RAG. Most of them disappoint - not because the model is weak, but because retrieval quietly returns the wrong chunks and nobody measures it. This page builds the pipeline in the right order: chunk, index two ways, retrieve hybrid, answer with citations, then rerank and contextualize. Each step is a page of Python, and you will know exactly which knob to turn when quality is off.</p>
+    <div class="legend">
+      <span class="pill solid">Core - the pipeline everyone needs</span>
+      <span class="pill light">Advanced - production upgrades</span>
+      <span class="pill inkpill">RAG module of all 3 engineering courses</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with</strong>
+      A working hybrid retrieve-and-answer pipeline in about 40 lines, plus the reranking and contextual-retrieval upgrades and a way to measure whether retrieval or generation is your actual problem.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: WHY + CHUNKING ============ -->
+  <section class="section" id="foundations">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · foundations</span>
+      <h2>Why RAG, and how to chunk <span class="tag concept">7 min core</span></h2>
+    </div>
+    <p class="lede">Retrieval quality is decided before any query runs - at indexing time, by how you cut the documents.</p>
+
+    <details class="card" open>
+      <summary><span class="mode live">Core</span>Why RAG - and when NOT to bother<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Three problems, one mechanism:</p>
+        <ul>
+          <li><strong>Knowledge cutoff:</strong> the model was trained up to a date; your world moved on.</li>
+          <li><strong>Private data:</strong> your runbooks, tickets, and contracts were never in training data.</li>
+          <li><strong>Context limits:</strong> even a huge context window cannot hold your whole wiki, and stuffing it costs money and attention - relevant needles do better in a small, clean haystack.</li>
+        </ul>
+        <p>The mechanism: at question time, retrieve the top-k most relevant chunks from your corpus and paste them into the prompt with the question. Claude answers from what it was shown, grounded and citable.</p>
+        <div class="callout tip">
+          <strong>Don't over-engineer small corpora</strong>
+          If your entire knowledge base is one 30-page handbook, RAG is the wrong tool - just paste the document (6.5 covers PDFs and prompt caching, which makes repeat-pasting cheap). RAG earns its complexity when the corpus is too big for context, changes often, or must be searched per-question. Rule of thumb: under ~100k tokens of stable text, paste; above that, retrieve.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Chunking strategies: size vs structure, and overlap<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A chunk is the unit of retrieval: too small and it lacks the context to be understood, too big and one relevant sentence drags in a page of noise. Two families:</p>
+        <ul>
+          <li><strong>By size:</strong> cut every N characters or tokens (typically 500-1,000 tokens) with 10-20% overlap so a sentence straddling a boundary survives in at least one chunk. Dumb, robust, works on anything.</li>
+          <li><strong>By structure:</strong> split on headings, paragraphs, or sections, so each chunk is a semantically complete unit. Better retrieval when documents HAVE structure - and yours mostly do.</li>
+        </ul>
+        <table class="clean">
+          <thead><tr><th>Your corpus</th><th>Chunking that works</th><th>Watch out for</th></tr></thead>
+          <tbody>
+            <tr><td>Docs / wiki / runbooks</td><td>By heading (H2/H3 sections), fall back to size for monster sections</td><td>Keep the heading text IN the chunk - it is the best retrieval signal you have</td></tr>
+            <tr><td>Support tickets / emails</td><td>One ticket (or one thread) = one chunk; split only huge threads</td><td>Do not merge tickets - cross-ticket chunks retrieve garbage</td></tr>
+            <tr><td>Tables / CSVs</td><td>One row group or logical slice per chunk, headers repeated in every chunk</td><td>A table split mid-row without headers is unreadable to the model too</td></tr>
+          </tbody>
+        </table>
+        <p>Store metadata with every chunk - source document, section title, URL - as a dict like <code>{"text": ..., "source": ..., "section": ...}</code>. You will need it for citations in Part 2 and for contextual retrieval in Part 3.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: RETRIEVAL + THE FLOW ============ -->
+  <section class="section" id="retrieval">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · the pipeline</span>
+      <h2>Two kinds of search, one RAG flow <span class="tag concept">13 min core</span></h2>
+    </div>
+    <p class="lede">Semantic search finds meaning, lexical search finds exact terms. Production pipelines use both - then hand the winners to Claude.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Embeddings and semantic search<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>An embedding maps a text to a vector such that similar meanings land close together. Search = embed the query, embed the chunks (once, at index time), rank by cosine similarity. Anthropic does not ship an embeddings endpoint - it recommends external providers, and Voyage AI is the usual pick (any embedding provider slots in the same way).</p>
+        <div class="prompt-box good"><span class="label">★ Embed and retrieve (minimal)</span>import numpy as np
+import voyageai
+
+vo = voyageai.Client()  # uses VOYAGE_API_KEY
+
+texts = [c["text"] for c in chunks]
+doc_emb = np.array(
+    vo.embed(texts, model="voyage-3", input_type="document").embeddings
+)
+
+def semantic_search(question, k=3):
+    q = np.array(
+        vo.embed([question], model="voyage-3", input_type="query").embeddings[0]
+    )
+    sims = doc_emb @ q / (np.linalg.norm(doc_emb, axis=1) * np.linalg.norm(q))
+    return [chunks[i] for i in sims.argsort()[::-1][:k]]</div>
+        <ul>
+          <li><strong>This IS a vector store</strong> for corpora up to tens of thousands of chunks - a numpy matrix and a dot product. Reach for a real vector database (pgvector, Qdrant, Chroma) when you need persistence, filters, or millions of vectors, not before.</li>
+          <li><strong>input_type matters:</strong> Voyage embeds queries and documents slightly differently for better matching - pass it.</li>
+          <li><strong>Embed once, cache forever:</strong> chunks only need re-embedding when they change. Store vectors next to the chunks.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>BM25: keyword search still wins on exact terms<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Ask "what does error E-4102 mean?" and semantic search shrugs - <code>E-4102</code> has no meaning to embed. BM25, the classic lexical algorithm behind decades of search engines, nails it: it rewards exact token matches, weighted by rarity. Product codes, error IDs, people's names, SKUs, legal clause numbers - lexical territory, all of it.</p>
+        <div class="prompt-box good"><span class="label">★ BM25 in four lines</span>from rank_bm25 import BM25Okapi
+
+tokenized = [c["text"].lower().split() for c in chunks]
+bm25 = BM25Okapi(tokenized)
+
+def lexical_scores(question):
+    return bm25.get_scores(question.lower().split())</div>
+        <p><strong>Hybrid search</strong> runs both indexes and merges: normalize each score list, take a weighted sum (start 50/50), rank by the combined score. That is the "multi-index pipeline" from the official module - two indexes over the same chunks, one merged ranking. Semantic catches paraphrases ("staff offboarding" finds "employee exit process"), lexical catches identifiers, and each covers the other's blind spot.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>The full RAG flow, end to end<span class="mini">5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Question in, cited answer out. Everything above, assembled - this is the skeleton to steal:</p>
+        <div class="prompt-box good"><span class="label">★ The ~40-line RAG pipeline</span>import anthropic
+import numpy as np
+import voyageai
+from rank_bm25 import BM25Okapi
+
+client = anthropic.Anthropic()
+vo = voyageai.Client()
+
+# ---- index once ----
+chunks = chunk_documents(load_docs())   # [{"text": ..., "source": ...}, ...]
+texts = [c["text"] for c in chunks]
+doc_emb = np.array(
+    vo.embed(texts, model="voyage-3", input_type="document").embeddings
+)
+bm25 = BM25Okapi([t.lower().split() for t in texts])
+
+# ---- retrieve (hybrid) ----
+def retrieve(question, k=5):
+    q = np.array(
+        vo.embed([question], model="voyage-3", input_type="query").embeddings[0]
+    )
+    sem = doc_emb @ q / (np.linalg.norm(doc_emb, axis=1) * np.linalg.norm(q))
+    lex = bm25.get_scores(question.lower().split())
+    sem = (sem - sem.min()) / (sem.max() - sem.min() + 1e-9)
+    lex = (lex - lex.min()) / (lex.max() - lex.min() + 1e-9)
+    combined = 0.5 * sem + 0.5 * lex
+    return [chunks[i] for i in combined.argsort()[::-1][:k]]
+
+# ---- answer with citations ----
+def answer(question):
+    hits = retrieve(question)
+    context = "\n\n".join(
+        f'&lt;chunk source="{c["source"]}"&gt;\n{c["text"]}\n&lt;/chunk&gt;'
+        for c in hits
+    )
+    msg = client.messages.create(
+        model="claude-sonnet-5",
+        max_tokens=1024,
+        system=(
+            "Answer using ONLY the provided chunks. Cite the source of every "
+            "claim in brackets, like [handbook.md]. If the chunks do not "
+            "contain the answer, say you could not find it - do not guess."
+        ),
+        messages=[
+            {"role": "user", "content": f"{context}\n\nQuestion: {question}"}
+        ],
+    )
+    return msg.content[0].text
+
+print(answer("What is our laptop refresh policy?"))</div>
+        <ul>
+          <li><strong>XML-style tags around chunks</strong> (6.2's lesson applied): Claude reliably distinguishes retrieved material from the question, and the source attribute enables citations.</li>
+          <li><strong>The "say you could not find it" line is load-bearing.</strong> Without it, Claude answers from training data when retrieval misses - the classic RAG hallucination, and it looks exactly like a correct answer.</li>
+          <li><strong>Agentic search</strong> is this flow with the loop from 6.3: expose <code>retrieve</code> as a tool and Claude decides when to search, reads the results, and searches again with a reformulated query if they are weak. Ten extra lines, noticeably better on vague questions.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: PRODUCTION UPGRADES ============ -->
+  <section class="section" id="upgrades">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · from demo to production</span>
+      <h2>Reranking, contextual retrieval, and measuring it <span class="tag concept">10 min core</span></h2>
+    </div>
+    <p class="lede">The Bedrock and Vertex courses add two techniques here for a reason: they are the highest-leverage fixes when plain hybrid RAG plateaus.</p>
+
+    <details class="card">
+      <summary><span class="mode self">Advanced</span>Reranking: retrieve wide, then choose carefully<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Fast retrieval is approximate - the right chunk is usually in the top 50 but not always in the top 5. So retrieve wide and cheap, then let a slower, smarter model re-score the candidates against the question and keep the best few. A dedicated reranker (Voyage <code>rerank-2</code>, Cohere Rerank) is fastest; Claude itself works fine as the judge:</p>
+        <div class="prompt-box good"><span class="label">★ Rerank 50 down to 5 with Claude as judge</span>def rerank(question, candidates, keep=5):
+    scored = []
+    for c in candidates:                      # candidates = retrieve(question, k=50)
+        msg = client.messages.create(
+            model="claude-haiku-4-5",         # small + cheap is plenty here
+            max_tokens=4,
+            system=(
+                "Rate 0-10 how useful this chunk is for answering the "
+                "question. Reply with the number only."
+            ),
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"Question: {question}\n\nChunk:\n{c['text']}",
+                }
+            ],
+        )
+        scored.append((float(msg.content[0].text.strip()), c))
+    scored.sort(key=lambda pair: -pair[0])
+    return [c for _, c in scored[:keep]]</div>
+        <p>Run the candidate scoring concurrently (or as a 6.3-style batch for offline jobs) - it is 50 independent calls. When latency matters, the dedicated reranker does the same job in one call: <code>vo.rerank(question, documents, model="rerank-2", top_k=5)</code>.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Advanced</span>Contextual retrieval: fix chunks before they are embedded<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The quiet failure of chunking: a chunk saying "the fee increases to 3.5% after the first year" embeds fine - but for WHICH product, WHICH contract? The surrounding document knew; the chunk forgot. Anthropic's published fix, contextual retrieval, asks Claude to write a 1-2 sentence situating context for each chunk and prepends it BEFORE embedding and BM25 indexing. Their measurements: substantially fewer retrieval failures (roughly a one-third to one-half reduction, more when combined with reranking).</p>
+        <div class="prompt-box good"><span class="label">★ Contextualize each chunk at index time</span>def contextualize(doc_text, chunk_text):
+    msg = client.messages.create(
+        model="claude-haiku-4-5",
+        max_tokens=150,
+        messages=[
+            {
+                "role": "user",
+                "content": (
+                    f"&lt;document&gt;\n{doc_text}\n&lt;/document&gt;\n\n"
+                    "Here is a chunk from that document:\n"
+                    f"&lt;chunk&gt;\n{chunk_text}\n&lt;/chunk&gt;\n\n"
+                    "Write 1-2 sentences situating this chunk within the "
+                    "document, to improve search retrieval of the chunk. "
+                    "Reply with the context only."
+                ),
+            }
+        ],
+    )
+    return msg.content[0].text + "\n\n" + chunk_text
+
+chunks = [
+    {**c, "text": contextualize(doc_text_for(c), c["text"])} for c in raw_chunks
+]  # then embed + BM25-index the contextualized text as usual</div>
+        <p>It costs one small-model call per chunk, once, at index time - and prompt caching (6.5) makes it cheap, since every chunk of the same document reuses the cached <code>doc_text</code>. Index-time spend for query-time quality is almost always a good trade.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Advanced</span>Evaluating RAG: retrieval and generation are separate exams<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>"The answers are bad" has two different diagnoses, and 6.2's eval discipline applies to each separately:</p>
+        <ul>
+          <li><strong>Retrieval metrics:</strong> for each test question, did the chunk containing the answer surface in the top k? Build 20-30 question-to-gold-chunk pairs and compute recall@k. No API calls needed, runs in seconds - this is where most failures live, and where chunking, hybrid weights, reranking, and contextual retrieval all show up as measurable deltas.</li>
+          <li><strong>Answer metrics:</strong> GIVEN the right chunks in context, is the answer correct, cited, and faithful? Grade with the model-based grader from 6.2. Failures here mean prompt work, not retrieval work.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>A team's docs-bot gave wrong answers on 30% of pilot questions and everyone blamed the model. A 25-question retrieval eval took an afternoon and showed recall@5 was 52% - the model never saw the right text. Structure-aware chunking took it to 70%, contextual retrieval to 88%, and answer accuracy followed almost one-for-one. Nobody touched the answering prompt. Measure retrieval first; it is usually the culprit and always the cheaper fix.</p>
+        </div>
+        <div class="callout tip">
+          <strong>One knob at a time</strong>
+          Change chunking OR hybrid weights OR reranking, rerun the retrieval eval, log the delta. RAG has enough moving parts that untracked tweaking is indistinguishable from superstition.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ TRY IT ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">35-45 · hands on</span>
+      <h2>Try it yourself <span class="tag exercise">◐ 3 exercises</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p><strong>1 · Build the pipeline on real docs.</strong> Take 10-20 real documents (your team wiki export, or any public docs), chunk by headings, and stand up the 40-line hybrid pipeline from Part 2. Ask 5 questions you know the answers to. For each, print the retrieved chunks BEFORE the answer - get in the habit of reading what Claude was actually shown.</p></div>
+      <div class="step"><p><strong>2 · Break semantic search, fix it with hybrid.</strong> Add 3 questions with exact identifiers in them (an error code, a person's name, a product SKU). Run pure semantic (weight 1.0/0.0), pure lexical (0.0/1.0), then 50/50 hybrid, and compare which chunks surface at each setting. Write down where each mode failed - that intuition is the whole lesson.</p></div>
+      <div class="step"><p><strong>3 · Measure, then upgrade.</strong> Build a 15-question retrieval eval (question, gold chunk id) and compute recall@5 for your pipeline. Then add ONE upgrade - reranking (50 to 5) or contextual retrieval - and rerun. Report the delta like you would to a stakeholder: "recall@5 went from X to Y for $Z of index-time tokens."</p></div>
+    </div>
+  </section>
+
+  <!-- ============ OFFICIAL COURSES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official courses covered</h2>
+    </div>
+    <p class="lede">This page teaches the RAG and Agentic Search module that all three 8-hour engineering courses share, plus the retrieval upgrades from the Bedrock and Vertex editions.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">RAG and Agentic Search module - all 3 engineering courses</span><span class="note">chunking, embeddings, semantic search, BM25, multi-index / hybrid pipeline, full RAG flow</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Reranking + contextual retrieval - Bedrock/Vertex extras</span><span class="note">reranking results, contextual retrieval technique, and the retrieval-vs-answer eval split</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Deep dive 6.4 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>RAG or paste?</b><span>Small stable corpus (under ~100k tokens): paste the doc, cache the prompt. Big, changing, or per-question: retrieve.</span></div>
+      <div class="cheat-item"><b>Chunking</b><span>Split by structure (headings, tickets) first, by size (500-1,000 tokens, 10-20% overlap) as fallback. Keep headings and metadata in the chunk.</span></div>
+      <div class="cheat-item"><b>Hybrid search</b><span>Embeddings (Voyage or similar) for meaning + BM25 for exact codes/names. Normalize, weight 50/50, merge. Each covers the other's blind spot.</span></div>
+      <div class="cheat-item"><b>The flow</b><span>Question, retrieve top-k hybrid, wrap chunks in tags with sources, answer with citations and a "say if not found" rule.</span></div>
+      <div class="cheat-item"><b>Upgrades</b><span>Retrieve 50 then rerank to 5; prepend Claude-written chunk context before indexing (contextual retrieval). Both move recall the most.</span></div>
+      <div class="cheat-item"><b>Eval the halves</b><span>Recall@k on gold chunks measures retrieval; 6.2-style graded answers measure generation. Diagnose separately - retrieval is usually the culprit.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Deep dive 6.4 · learn-claude-with-phoebe · built with Claude</span>
+    <span><a href="63-tool-use.html">← Deep dive 6.3</a> &nbsp;·&nbsp; <a href="../index.html">All sessions</a> &nbsp;·&nbsp; <a href="65-features.html">Next: Claude features →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=3"></script>
+</body>
+</html>

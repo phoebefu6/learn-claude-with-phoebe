@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep dive 6.7 · Agents &amp; workflows - learn claude with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=2">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-claude-with-phoebe</a> / Deep dive 6.7</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn Claude with Phoebe · Deep-dive track 6.7</div>
+    <h1>Agents &amp; <span class="accent">workflows</span></h1>
+    <p class="sub">You know the API, tools, RAG and MCP. This page is about composition: how single LLM calls become systems. The core lesson is restraint - most production "agents" are actually workflows, and knowing which one you're building saves you weeks of debugging.</p>
+    <div class="chip-row">
+      <span class="chip level">🔴 Deep dive</span>
+      <span class="chip audience">DS &amp; AI</span>
+      <span class="chip time">45 min self-paced or live</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-5 · Setup</span>
+      <span class="a2" style="flex:6">5-35 · Core</span>
+      <span class="a3" style="flex:2">35-45 · Try it</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Why this page exists</h2>
+    </div>
+    <p class="lede">Anthropic's "Building effective agents" guidance boils down to one rule: use the simplest pattern that works, and only add autonomy when the task genuinely needs it. This page walks the pattern ladder in order of increasing complexity - chaining, routing, parallelization, orchestrator-workers, evaluator-optimizer - and only THEN gets to agents proper, plus the two Anthropic apps that put it all together: Claude Code and computer use.</p>
+    <div class="legend">
+      <span class="pill solid">Core - the patterns everyone needs</span>
+      <span class="pill light">Advanced - read when you're building one</span>
+      <span class="pill inkpill">Covers the Agents &amp; Workflows + Anthropic Apps modules</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with</strong>
+      A decision rule for workflow vs agent, working python sketches for the five workflow patterns, the guardrail checklist for agents, and hands-on ideas for Claude Code as your daily agent case study.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: THE DISTINCTION ============ -->
+  <section class="section" id="distinction">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · the one distinction that matters</span>
+      <h2>Workflows vs agents <span class="tag concept">10 min</span></h2>
+    </div>
+    <p class="lede">Everything in this module hangs off one question: who owns the control flow - your code, or the model?</p>
+
+    <details class="card" open>
+      <summary><span class="mode live">Core</span>THE distinction: who owns the loop<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Workflow:</strong> a predefined code path with LLM steps inside it. YOU wrote the sequence, the branches, the retries. The model fills in the smart parts; your code decides what happens next. Deterministic shape, predictable cost, testable step by step.</li>
+          <li><strong>Agent:</strong> the model owns the loop. It sees tool results, decides the next action itself, and keeps going until it judges the task done. Flexible, powerful, and harder to bound - cost, latency and failure modes all become open-ended.</li>
+        </ul>
+        <table class="clean">
+          <thead><tr><th></th><th>Workflow</th><th>Agent</th></tr></thead>
+          <tbody>
+            <tr><td>Control flow</td><td>Your code (if/else, loops you wrote)</td><td>The model, reacting to tool results</td></tr>
+            <tr><td>Cost &amp; latency</td><td>Known upfront - N calls, roughly fixed</td><td>Open-ended - depends on the model's choices</td></tr>
+            <tr><td>Debugging</td><td>Inspect each step like normal code</td><td>Read transcripts, reason about behavior</td></tr>
+            <tr><td>Best for</td><td>Tasks you can decompose in advance</td><td>Tasks where the path is unknowable upfront</td></tr>
+            <tr><td>Production reality</td><td>Most systems that work are these</td><td>Earned, not default - start simpler</td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>The rule</strong>
+          Use the simplest thing that works. A single well-prompted call beats a chain; a chain beats a router; a router beats an agent - IF it solves the task. Complexity is a cost you pay, not a feature you ship. Most production systems that people call "agents" are workflows, and that's a compliment.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Chaining: fixed sequence, each step eats the last output<span class="mini">6 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The simplest composition: break a task into a fixed sequence of LLM calls, each consuming the previous output. Classic shape: draft, critique, revise. Between steps you can add a gate - a cheap code check that decides whether the next (expensive) step is even needed.</p>
+        <div class="prompt-box good"><span class="label">★ Chain: draft, critique, revise (with a gate)</span>from anthropic import Anthropic
+
+client = Anthropic()
+MODEL = "claude-sonnet-4-5"  # check docs for the current model
+
+def ask(prompt: str) -&gt; str:
+    msg = client.messages.create(
+        model=MODEL,
+        max_tokens=1024,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return msg.content[0].text
+
+report = open("incident.md").read()
+
+# Step 1: draft
+draft = ask(f"Summarize this incident report in 3 paragraphs "
+            f"for an exec audience:\n\n{report}")
+
+# Step 2: critique against explicit rules
+critique = ask(
+    "Critique this summary. Check: no jargon, timeline correct, "
+    "one clear next step. Reply PASS if all hold, else list fixes.\n\n"
+    f"Summary:\n{draft}\n\nSource:\n{report}"
+)
+
+# Gate: only pay for step 3 when the critique demands it
+if critique.strip().upper().startswith("PASS"):
+    final = draft
+else:
+    final = ask(f"Revise the summary to fix these issues:\n{critique}"
+                f"\n\nSummary:\n{draft}\n\nSource:\n{report}")
+
+print(final)</div>
+        <p>When do gates between steps pay? When steps are expensive and failures are detectable: a length check, a regex for required sections, a schema validation, or (as here) a cheap critique call. The gate turns "hope the chain worked" into "prove each step worked" - the same instinct as the evals page (6.2).</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Routing: classify first, then dispatch to a specialist<span class="mini">5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>When inputs fall into distinct categories, don't build one prompt that handles everything - classify the input first, then send it to a specialized prompt (and a right-sized model). Easy tickets go to a cheap fast model with a short prompt; hard ones go to the capable model with the full playbook.</p>
+        <div class="prompt-box good"><span class="label">★ Router: cheap classifier, specialist handlers</span>ROUTES = {
+    "refund":  {"model": "claude-haiku-4-5",
+                "system": "You handle refund requests. Policy: ..."},
+    "bug":     {"model": "claude-sonnet-4-5",
+                "system": "You triage bug reports. Ask for repro steps..."},
+    "account": {"model": "claude-haiku-4-5",
+                "system": "You handle account and login issues. ..."},
+    "other":   {"model": "claude-sonnet-4-5",
+                "system": "You handle unusual requests. Escalate if ..."},
+}
+
+def classify(ticket: str) -&gt; str:
+    msg = client.messages.create(
+        model="claude-haiku-4-5",  # cheap model does the sorting
+        max_tokens=10,
+        system="Classify the ticket. Reply with exactly one word: "
+               "refund, bug, account, or other.",
+        messages=[{"role": "user", "content": ticket}],
+    )
+    label = msg.content[0].text.strip().lower()
+    return label if label in ROUTES else "other"
+
+def handle(ticket: str) -&gt; str:
+    r = ROUTES[classify(ticket)]
+    msg = client.messages.create(
+        model=r["model"], max_tokens=1024,
+        system=r["system"],
+        messages=[{"role": "user", "content": ticket}],
+    )
+    return msg.content[0].text</div>
+        <p>Two wins: each specialist prompt stays short and sharp (no "if it's a refund... but if it's a bug..." spaghetti), and you stop paying frontier-model prices for password resets. The classifier is itself a great eval target - a labeled set of 50 tickets tells you its accuracy in minutes.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Parallelization: sectioning and voting<span class="mini">5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Two distinct flavors share the same machinery:</p>
+        <ul>
+          <li><strong>Sectioning:</strong> split independent work, run it concurrently, aggregate. Review 10 documents at once; check a draft for tone, accuracy and legal exposure in three parallel calls.</li>
+          <li><strong>Voting:</strong> run the SAME task N times, then take the majority answer (or have a judge model pick). Buys reliability on judgment calls where any single call is noisy.</li>
+        </ul>
+        <div class="prompt-box good"><span class="label">★ Voting classifier with asyncio</span>import asyncio
+from collections import Counter
+from anthropic import AsyncAnthropic
+
+aclient = AsyncAnthropic()
+MODEL = "claude-sonnet-4-5"  # check docs for the current model
+
+async def judge_once(text: str) -&gt; str:
+    msg = await aclient.messages.create(
+        model=MODEL, max_tokens=5,
+        system="Does this comment violate our community policy? "
+               "Reply exactly YES or NO.",
+        messages=[{"role": "user", "content": text}],
+    )
+    return msg.content[0].text.strip().upper()
+
+async def judge_by_vote(text: str, n: int = 3) -&gt; str:
+    votes = await asyncio.gather(*[judge_once(text) for _ in range(n)])
+    winner, count = Counter(votes).most_common(1)[0]
+    return winner  # majority of n
+
+verdict = asyncio.run(judge_by_vote("borderline comment here"))
+print(verdict)</div>
+        <p>Sectioning is the same gather() with different prompts per task, plus one final aggregation call. Costs scale linearly with N, so vote where mistakes are expensive (moderation, compliance flags) and skip it where they're cheap.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Advanced</span>Orchestrator-workers and evaluator-optimizer<span class="mini">4 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The last two workflow patterns add dynamism while your code still owns the outer structure:</p>
+        <ul>
+          <li><strong>Orchestrator-workers:</strong> when you can't predict the subtasks upfront, let a lead model decompose the task at runtime ("this codebase change touches these 4 files, here's a work order for each"), fan the work orders out to worker calls, then synthesize. Unlike sectioning, the SPLIT itself is model-decided - but your code still runs the fan-out and the merge.</li>
+          <li><strong>Evaluator-optimizer:</strong> a generate-evaluate-refine loop. One call produces, a second grades against explicit criteria, and the producer retries with the feedback until the grader passes or a retry budget runs out. This is your 6.2 evals discipline turned into a runtime component - the grader IS a model-based eval.</li>
+        </ul>
+        <div class="prompt-box good"><span class="label">★ Evaluator-optimizer skeleton</span>def generate(task: str, feedback: str = "") -&gt; str:
+    prompt = task if not feedback else f"{task}\n\nFix these issues:\n{feedback}"
+    return ask(prompt)
+
+def evaluate(task: str, attempt: str) -&gt; str:
+    return ask(
+        "Grade this attempt against the task. Criteria: correct, "
+        "complete, matches the requested format. "
+        "Reply PASS or a bullet list of concrete fixes.\n\n"
+        f"Task:\n{task}\n\nAttempt:\n{attempt}"
+    )
+
+def refine_until_pass(task: str, max_rounds: int = 3) -&gt; str:
+    feedback = ""
+    for _ in range(max_rounds):
+        attempt = generate(task, feedback)
+        verdict = evaluate(task, attempt)
+        if verdict.strip().upper().startswith("PASS"):
+            return attempt
+        feedback = verdict
+    return attempt  # best effort after budget</div>
+        <div class="callout tip">
+          <strong>Grader quality is the ceiling</strong>
+          An evaluator-optimizer loop can never be better than its grader. Write the grading criteria as concretely as an eval rubric (6.2), test the grader on known-good and known-bad examples first, and always cap the rounds - a loop that can't fail is a loop that can't stop.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: AGENTS PROPER ============ -->
+  <section class="section" id="agents">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · when the model owns the loop</span>
+      <h2>Agents proper <span class="tag concept">8 min</span></h2>
+    </div>
+    <p class="lede">An agent is a model in a loop with tools and environment feedback. The engineering is not in the loop - it's in choosing the right tasks and bounding the blast radius.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>The loop, good agent tasks, and guardrails<span class="mini">8 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The whole agent loop fits in a dozen lines: call the model with tools, execute whatever tool it asks for, feed the result back, repeat until it stops asking - or until you cut it off.</p>
+        <div class="prompt-box good"><span class="label">★ The agent loop, minimal form</span>MAX_STEPS = 15  # step budget: agents need an off switch
+
+messages = [{"role": "user", "content": task}]
+for step in range(MAX_STEPS):
+    resp = client.messages.create(
+        model=MODEL, max_tokens=4096,
+        tools=TOOLS,  # the allowlist IS the guardrail
+        messages=messages,
+    )
+    messages.append({"role": "assistant", "content": resp.content})
+    if resp.stop_reason != "tool_use":
+        break  # model says it's done
+    results = [run_tool(b) for b in resp.content if b.type == "tool_use"]
+    messages.append({"role": "user", "content": results})</div>
+        <p>The key lesson from the official module is <strong>environment inspection</strong>: a good agent doesn't assume - it looks. It lists the directory before editing, runs the test before claiming the fix, reads the error instead of guessing. Tool results are the agent's senses; design tools so their outputs are informative enough to steer the next step.</p>
+        <p><strong>Qualities of tasks agents are good at:</strong></p>
+        <ul>
+          <li><strong>Verifiable progress:</strong> there's a signal that says "closer" or "done" - a test suite, a compiler, a schema check. Without it the agent can't tell success from failure and neither can you.</li>
+          <li><strong>Recoverable errors:</strong> a wrong step can be observed and undone. Editing a file in a git repo: recoverable. Sending an email: not.</li>
+          <li><strong>Bounded blast radius:</strong> the worst plausible action is affordable. A sandbox, a branch, a staging environment - never the production database on day one.</li>
+        </ul>
+        <p><strong>Guardrails, in order of importance:</strong> tool allowlists (the agent literally cannot do what it has no tool for), step budgets (every loop gets a max), and human gates (irreversible actions - deploy, send, delete - pause for approval). Design the guardrails before the prompt, not after the incident.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>A data team gave an agent three tools: read-only SQL, a scratch-schema write, and a Slack draft (never send). It investigates data-quality alerts overnight: queries the offending table, reproduces the anomaly in scratch, and drafts the findings for a human to post in the morning. Verifiable (the anomaly reproduces or it doesn't), recoverable (scratch schema), bounded (drafts only). That task profile is why it works unattended - not the prompt.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: ANTHROPIC APPS ============ -->
+  <section class="section" id="apps">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · covers the "Anthropic apps" module</span>
+      <h2>Claude Code and computer use <span class="tag concept">8 min</span></h2>
+    </div>
+    <p class="lede">You don't have to build an agent to study one. Claude Code is a production agent you already run daily - and computer use is the same loop pointed at a screen.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Claude Code as the case study<span class="mini">5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Map Claude Code onto everything above: it's an agent loop (the model decides which file to read next), with environment inspection (it greps before editing, runs tests after), tool allowlists (your permission settings), step budgets and human gates (approval prompts on risky commands). Three practices from the official module:</p>
+        <ul>
+          <li><strong>Parallelizing Claude Code:</strong> run multiple instances on independent tasks at once - one per git worktree so they can't step on each other's files. One instance fixes a bug on a branch while another writes docs on a second worktree. This is the sectioning pattern, applied to your own workday.</li>
+          <li><strong>Automated debugging:</strong> point Claude Code at a failing test and let the loop run: run test, read failure, form hypothesis, edit, re-run. The failing test is the "verifiable progress" signal in its purest form - which is exactly why this is the canonical agent demo.</li>
+          <li><strong>Enhancing with MCP:</strong> every MCP server you add (6.6) is a new sense or limb - a database server means it can inspect real data while debugging, a browser server means it can check the rendered page. The agent loop is fixed; the toolset is where you invest.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Advanced</span>Computer use: Claude operating a screen<span class="mini">3 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><strong>How it works:</strong> the same agent loop, with the environment swapped for a desktop. Claude receives a screenshot, decides an action (click at coordinates, type text, press keys, scroll), your harness executes it, and a fresh screenshot comes back as the tool result. Look, act, look again - environment inspection at 100% literalness.</p>
+        <ul>
+          <li><strong>Good for:</strong> legacy UI automation (that internal tool with no API), end-to-end testing of real interfaces ("complete checkout as a new user and report anything confusing"), and one-off migrations through GUI-only admin panels.</li>
+          <li><strong>Why tight sandboxing is non-negotiable:</strong> a screen-driving agent can click ANYTHING visible - real send buttons, real delete confirmations, whatever a malicious page displays (prompt injection now arrives via screenshot). Run it in a dedicated VM or container with a throwaway account, no credentials that matter, network limited to what the task needs, and a human gate before anything irreversible. Slower and costlier than an API path too - so if an API exists, use 6.3 tool use instead.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ TRY IT ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">35-45 · hands on</span>
+      <h2>Try it yourself <span class="tag exercise">◐ 3 exercises</span></h2>
+    </div>
+    <ul>
+      <li><strong>1 · Route-then-chain ticket handler.</strong> Take the router sketch, add three fake tickets (a refund, a bug, something weird), and chain a second step after the specialist: a critique call that checks the reply names a concrete next action. Gate the revision on the critique.</li>
+      <li><strong>2 · Voting classifier.</strong> Run the asyncio voting sketch on 5 borderline texts with n=3. Then re-run with n=1 five times each and compare: how often does the single call flip its answer while the vote stays stable? That delta is what you're buying.</li>
+      <li><strong>3 · Watch the debug loop.</strong> In a repo with tests, deliberately break one function. Tell Claude Code only: "test_x is failing, fix it." Watch the loop - inspect, hypothesize, edit, re-run - and note where it inspected the environment instead of guessing. That transcript is the best agent tutorial you'll read this week.</li>
+    </ul>
+  </section>
+
+  <!-- ============ OFFICIAL COURSES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official courses covered</h2>
+    </div>
+    <p class="lede">This page covers the agents and apps modules shared by the three 8-hour engineering courses at <a href="https://claude.com/resources/courses">claude.com/resources/courses</a>.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Agents &amp; Workflows module - all 3 courses</span><span class="note">parallelization, chaining, routing, agents vs workflows, qualities of agents</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Anthropic Apps: Claude Code + computer use - Bedrock/Vertex</span><span class="note">parallelizing Claude Code, automated debugging, MCP enhancements, computer use</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Introduction to subagents - applied</span><span class="note">taught live in Session 6; here the same ideas appear as orchestrator-workers and parallel Claude Code</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Deep dive 6.7 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The distinction</b><span>Workflow = your code owns the flow, LLM fills steps. Agent = model owns the loop. Use the simplest thing that works.</span></div>
+      <div class="cheat-item"><b>Chaining</b><span>Fixed sequence, each step eats the last output. Add cheap gates between expensive steps.</span></div>
+      <div class="cheat-item"><b>Routing</b><span>Classify first with a cheap model, dispatch to specialist prompts and right-sized models.</span></div>
+      <div class="cheat-item"><b>Parallelization</b><span>Sectioning = split, gather, aggregate. Voting = same task N times, majority wins. asyncio.gather does both.</span></div>
+      <div class="cheat-item"><b>Agent tasks</b><span>Verifiable progress + recoverable errors + bounded blast radius. Guardrails: tool allowlist, step budget, human gates.</span></div>
+      <div class="cheat-item"><b>Case study</b><span>Claude Code IS the agent loop: worktrees for parallelism, failing tests for verifiable progress, MCP for new senses.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Deep dive 6.7 · learn-claude-with-phoebe · built with Claude</span>
+    <span><a href="66-mcp-deep-dive.html">← Deep dive 6.6</a> &nbsp;·&nbsp; <a href="../index.html">All sessions</a> &nbsp;·&nbsp; <a href="68-bedrock-vertex.html">Next: Bedrock &amp; Vertex →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=3"></script>
+</body>
+</html>

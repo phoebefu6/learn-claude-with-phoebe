@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session 5 · Data work with Claude Code - learn claude with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=2">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-claude-with-phoebe</a> / Session 5 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn Claude with Phoebe · Session 5 of 6</div>
+    <h1>Data work with <span class="accent">Claude Code</span></h1>
+    <p class="sub">The terminal agent for the DS &amp; AI team: clean messy data with a plan you approve, generate a living data catalog, write offline-safe Python for AWS WorkSpaces, and stand up a working data product prototype.</p>
+    <div class="chip-row">
+      <span class="chip level">🟠 Hard</span>
+      <span class="chip audience">DS &amp; AI</span>
+      <span class="chip audience">Analysts welcome</span>
+      <span class="chip time">45 min live + self-study</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:3">3-18 · Concepts</span>
+      <span class="a3" style="flex:5">18-40 · Terminal time</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Why this session exists</h2>
+    </div>
+    <p class="lede">Chat Claude answers questions about your data. Claude Code WORKS on it: reads the files, writes and runs the scripts, checks outputs, commits results - in your terminal, inside your repo, under permission rules you control. Prerequisites: comfortable with a terminal and basic git.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill amber">★ Build-along demo</span>
+      <span class="pill inkpill">2 official courses covered</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      Claude Code installed with a CLAUDE.md, a messy CSV cleaned + profiled + catalogued via the explore-plan-code loop, and the offline-Python constraints template for AWS WorkSpaces with no internet.
+    </div>
+  </section>
+
+  <section class="section" id="what-it-is">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers "claude code 101"</span>
+      <h2>What Claude Code is and how it works <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">An agent in your terminal: Claude plus tools (read/write files, run commands, search, git) in a loop, pointed at your working directory, gated by permissions you control.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Claude Code architecture: you converse with the agent loop, which uses tools under a permission gate">
+        <style>
+          .ccT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .ccS { font: 400 12.5px Inter, sans-serif; fill: #FFFFFF; opacity: .87; }
+          .ccI { font: 600 13px Inter, sans-serif; fill: #1B1B2F; }
+          .ccX { font: 400 12.5px Inter, sans-serif; fill: #6B6B80; }
+          .ccA { stroke: #C9C9D6; stroke-width: 2; fill: none; marker-end: url(#ccAh); }
+        </style>
+        <defs>
+          <marker id="ccAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#C9C9D6" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <rect x="20" y="90" width="170" height="70" rx="12" fill="#1B1B2F"/>
+        <text class="ccT" x="46" y="120">You, in the</text>
+        <text class="ccT" x="46" y="140">terminal</text>
+        <line class="ccA" x1="198" y1="125" x2="278" y2="125"/>
+        <rect x="285" y="55" width="230" height="140" rx="12" fill="#4F46E5"/>
+        <text class="ccT" x="325" y="85">The agent loop</text>
+        <text class="ccS" x="305" y="112">think → pick a tool →</text>
+        <text class="ccS" x="305" y="131">act → read result →</text>
+        <text class="ccS" x="305" y="150">repeat until done,</text>
+        <text class="ccS" x="305" y="169">reporting as it goes</text>
+        <line class="ccA" x1="523" y1="125" x2="603" y2="125"/>
+        <rect x="610" y="35" width="250" height="180" rx="12" fill="#EEF2FF" stroke="#C9C9D6"/>
+        <text class="ccI" x="630" y="63">Tools, behind YOUR permission gate</text>
+        <text class="ccX" x="630" y="90">📄 read / edit files in the project</text>
+        <text class="ccX" x="630" y="113">▶ run commands (pytest, python, sql)</text>
+        <text class="ccX" x="630" y="136">🔎 search the codebase</text>
+        <text class="ccX" x="630" y="159">🌿 git: diff, commit, PR</text>
+        <text class="ccX" x="630" y="182">🔌 MCP servers (Session 6)</text>
+        <text class="ccX" x="630" y="205">Risky actions ask first - you set the rules</text>
+        <text class="ccI" x="20" y="245">CLAUDE.md = the project's standing brief: stack, conventions, commands, guardrails. Read automatically every session.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - Claude Code: an agent loop with tools, gated by your permissions</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Setup in three commands + your first prompt<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <div class="prompt-box good"><span class="label">★ Install and launch</span>npm install -g @anthropic-ai/claude-code
+
+cd ~/work/my-data-project
+claude
+
+# first prompt - just talk:
+&gt; look around this project and tell me what it does, what's messy, and what you'd tackle first</div>
+        <p>Talk to it like a capable new teammate, let it explore before you ask for changes, and treat permission prompts as a feature: saying "no" teaches it your boundaries.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>CLAUDE.md - the file that makes it YOUR tool<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A markdown file at the project root, read automatically at session start - the repo's standing brief:</p>
+        <div class="prompt-box good"><span class="label">★ CLAUDE.md starter for a data repo</span># Project: [name]
+
+## Stack
+Python 3.11, pandas + polars, duckdb for local SQL, pytest. Env: `conda activate proj`.
+
+## Commands
+- tests: `pytest -q` · lint: `ruff check .`
+- data/raw is NEVER edited; outputs go to data/processed
+
+## Conventions
+- every analysis reproducible: seeds set, no hardcoded paths
+- notebooks are scratch; kept work moves to src/ as documented scripts
+- all cleaning steps logged to data/processed/CHANGELOG.md
+
+## Guardrails
+- warehouse and data/raw are read-only
+- PII columns (email, phone, address): flag, never print samples</div>
+        <p>Run <code>/init</code> in any existing repo and Claude drafts the CLAUDE.md for you - then you correct it (the usual loop).</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The working method: explore → plan → code → commit<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Explore:</strong> "read the loading and cleaning code, summarize how X flows" - cheap reconnaissance first.</li>
+          <li><strong>Plan:</strong> ask for a plan and APPROVE it before code changes (plan mode). For data work this is non-negotiable: you're approving what happens to the data.</li>
+          <li><strong>Code:</strong> it writes, runs, hits errors, fixes - the loop you'd do by hand, at machine speed, visible.</li>
+          <li><strong>Commit:</strong> reviewed diff, clean message. Ask it to review its own diff first: "anything risky in this change?"</li>
+          <li><strong>Context management:</strong> long sessions drift (Session 1's working-memory lesson). Use <code>/clear</code> between unrelated tasks; keep CLAUDE.md lean so every session starts sharp.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Power features: custom commands, hooks, GitHub, SDK<span class="mini">3 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Custom slash commands:</strong> save a repeated prompt as <code>.claude/commands/profile-data.md</code> → run <code>/profile-data</code>. Your team's SOPs as commands (Session 3's idea, terminal edition).</li>
+          <li><strong>Hooks:</strong> shell commands that fire automatically on events - auto-run <code>ruff</code> after every edit, block writes to <code>data/raw/</code>, notify on session end. Deterministic guardrails around the agent. Gotcha: hooks run with YOUR permissions - keep them read-only where possible.</li>
+          <li><strong>GitHub integration:</strong> Claude reviews PRs, fixes issues from comments, drafts release notes - <code>gh</code> CLI plus the GitHub app.</li>
+          <li><strong>Skills &amp; subagents in Code:</strong> your Session 3 skills work here (<code>.claude/skills/</code>); subagents are Session 6.</li>
+          <li><strong>The SDK:</strong> the same agent, scriptable from Python/TS - build your own data tools on top. That's the bridge to Session 6's platform story.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <section class="section" id="data-workflows">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · the four data workflows</span>
+      <h2>Cleaning, catalog, offline scripts, prototypes <span class="tag concept">9 min live</span></h2>
+    </div>
+    <p class="lede">The four jobs this team asked for, each as a repeatable pattern with its prompt.</p>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Workflow 1 · Data cleaning with an approved plan<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <div class="prompt-box good"><span class="label">★ The cleaning brief (Demo 1 runs this)</span>Here's data/raw/sales_export.csv - it's messy. Work in explore-plan-code order:
+
+1. EXPLORE: profile it first - shape, dtypes, nulls, duplicates, outliers, encoding issues, suspicious values. Report before touching anything.
+2. PLAN: propose the cleaning steps as a numbered list with the WHY per step and what could go wrong. Wait for my approval.
+3. CODE: implement as src/clean_sales.py - reproducible (seeded, no hardcoded paths), logging each step's row counts to data/processed/CHANGELOG.md. Never modify data/raw.
+4. VERIFY: rerun the profile on the cleaned output, show before/after, and write 3 assertions to pytest so regressions get caught.</div>
+        <p>The pattern generalizes: profile → approved plan → logged script → verified output. The CHANGELOG plus assertions are what make it governance-grade instead of notebook archaeology.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Workflow 2 · A data catalog that writes itself<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <div class="prompt-box good"><span class="label">★ The catalog generator</span>Build a lightweight data catalog for this project as docs/catalog/:
+
+For every dataset in data/processed (and the warehouse tables listed in CLAUDE.md):
+- one markdown page: purpose, owner (from git blame if unclear, flag it), refresh cadence, schema table (column, type, description, % null, example - MASK anything that looks like PII), lineage (which script produces it, which raw sources feed it), known quality issues.
+- an index page grouping by domain, with a one-line description each.
+
+Infer descriptions from column names + the code that creates them; mark every inference with (inferred) so humans know what to verify. Regenerate idempotently - I'll re-run this weekly.</div>
+        <p>Not a DataHub replacement - a living, in-repo catalog that costs one command to refresh. For most teams it beats the enterprise tool nobody updates. When you outgrow it, the markdown migrates cleanly.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Workflow 3 · Offline Python for AWS WorkSpaces<span class="mini">3 min · the house specialty</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Our reality: analysis code gets copy-pasted into AWS WorkSpaces with <strong>no internet and no pip</strong>. Scripts that import freely die on arrival. The fix is a constraints preamble that makes Claude write for that runtime every time - keep it as a skill or slash command:</p>
+        <div class="prompt-box good"><span class="label">★ The offline constraints template (Demo 2 runs this)</span>Write this as a SINGLE self-contained Python script for a locked-down environment:
+
+HARD CONSTRAINTS - the runtime has:
+- No internet. No pip. Nothing beyond: Python 3.10 standard library + pandas + numpy + openpyxl [ADJUST to your WorkSpace's verified list]
+- No environment variables, no config files - all parameters in an UPPERCASE constants block at the top
+- Input/output paths as constants, with clear FILL THIS IN comments
+
+REQUIREMENTS:
+- one file, runnable as: python script.py
+- graceful failure: every file read wrapped with a clear error message naming the missing path
+- progress prints per major step (the user can't attach a debugger)
+- a --dry-run flag that validates inputs without writing
+- header docstring: purpose, inputs, outputs, and the exact verified-library assumptions
+
+Before writing, list which parts of my request are IMPOSSIBLE under these constraints and propose stdlib workarounds.
+
+Task: [describe the job]</div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>The killer detail is the last line: asked to reconcile two Excel exports, Claude flagged "no requests, so the FX-rate lookup must become a manual constants table" BEFORE writing code - the exact failure that used to burn an afternoon inside the WorkSpace where debugging is misery.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Workflow 4 · Quick data product prototypes<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <div class="prompt-box good"><span class="label">★ The prototype brief</span>Build a Streamlit prototype: app.py over data/processed/sales_clean.csv.
+
+Views: KPI header (revenue, orders, AOV - this period vs last), trend chart with date-range picker, breakdown table by [dimension] with search, and a "data health" footer (row count, last refresh, null warnings - pull from the catalog).
+Style: minimal, our indigo accent, no chart junk. Cache the load. README with run instructions.
+It's a stakeholder demo, not production: favor obvious code over clever code.</div>
+        <p>Fifteen minutes to a running dashboard changes stakeholder conversations: they react to something real, you learn what they actually need before the proper build. Same honesty as Session 4's prototypes: demo-grade, and labeled as such.</p>
+      </div>
+    </details>
+  </section>
+
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 2</span>
+      <h2>Messy CSV → clean + profiled + catalogued <span class="tag demo">★ 14 min · everyone in terminal</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Setup (pre-session homework was: npm install + <code>claude</code> login working). Grab the practice repo: <code>git clone [internal-repo]/claude-data-lab</code> - it has a deliberately messy <code>sales_export.csv</code>.</p></div>
+      <div class="step"><p>Run <code>/init</code>, read the generated CLAUDE.md, add the two guardrails (raw read-only, PII masking) from Part 1.</p></div>
+      <div class="step"><p>Run the <strong>cleaning brief</strong> (Workflow 1). Read the profile it reports - what did it catch that you'd have missed?</p></div>
+      <div class="step"><p>THE key moment: it proposes the plan and stops. Reject one step out loud ("don't impute region - drop and log instead") - feel the control point.</p></div>
+      <div class="step"><p>Approve, watch the loop run: script written, executed, CHANGELOG updated, assertions green.</p></div>
+      <div class="step"><p>Run the <strong>catalog generator</strong> (Workflow 2) on the result. Open docs/catalog/ - your dataset now has documentation newer than most production tables.</p></div>
+    </div>
+    <div class="callout tip">
+      <strong>Data tip</strong>
+      The practice repo uses synthetic data. On real data, your CLAUDE.md guardrails (PII masking, read-only warehouse) are doing real work - write them before the first real session, not after.
+    </div>
+  </section>
+
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 2</span>
+      <h2>An offline-safe script, constraints-first <span class="tag demo">★ 6 min · everyone builds</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Pick a real job you'd normally do inside the WorkSpace (reconcile two exports, monthly aggregation, format validation).</p></div>
+      <div class="step"><p>Run the <strong>offline constraints template</strong> with your job in the Task line. Read the "impossible parts" list first - that's the template earning its keep.</p></div>
+      <div class="step"><p>Test locally with <code>--dry-run</code>, then for real on sample files. One file, no imports beyond the verified list - confirm with a glance at the header.</p></div>
+      <div class="step"><p>Save the template as <code>/offline-script</code> (custom command) so the whole team writes WorkSpace-safe code by default.</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">After the session</span>
+      <h2>This week <span class="tag exercise">◐ 60 min total</span></h2>
+    </div>
+    <ul>
+      <li><strong>Point Claude Code at a real repo:</strong> <code>/init</code>, correct the CLAUDE.md, run one explore-plan-code task end to end.</li>
+      <li><strong>Catalog one real dataset domain</strong> and send the index page to the team - watch how fast "what does this column mean" questions die.</li>
+      <li><strong>Convert your most-repeated WorkSpace job</strong> with the offline template; keep the output as the team's reference script.</li>
+      <li><strong>Prototype one dashboard</strong> a stakeholder has been asking about. Demo it in their next meeting, gather corrections, THEN scope the real build.</li>
+      <li><strong>Take the two official courses</strong> if you want the certificates - this page covered their working content; the videos add live-coding texture.</li>
+    </ul>
+  </section>
+
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official courses covered</h2>
+    </div>
+    <p class="lede">From <a href="https://claude.com/resources/courses">claude.com/resources/courses</a>:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Claude Code 101</span><span class="note">1 hr · what it is, how it works, install, first prompt, explore-plan-code-commit, context mgmt, code review, CLAUDE.md + subagents/skills/MCP/hooks pointers</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Claude Code in Action</span><span class="note">1 hr · setup, adding context, making changes, controlling context, custom commands, MCP servers, GitHub integration, hooks (defining/implementing/gotchas/useful), SDK</span></div>
+    </div>
+  </section>
+
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 5 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The method</b><span>Explore → plan (APPROVE IT) → code → commit. Plans are your control point on data.</span></div>
+      <div class="cheat-item"><b>CLAUDE.md</b><span>Stack, commands, conventions, guardrails. /init drafts it; you correct it. Keep it lean.</span></div>
+      <div class="cheat-item"><b>Cleaning pattern</b><span>Profile → approved plan → logged script → before/after verify + pytest assertions.</span></div>
+      <div class="cheat-item"><b>Catalog pattern</b><span>Markdown per dataset: schema, lineage, owner, (inferred) flags. Regenerate weekly, idempotent.</span></div>
+      <div class="cheat-item"><b>Offline scripts</b><span>Constraints FIRST: verified libs only, constants block, dry-run, graceful failures, "impossible parts" check.</span></div>
+      <div class="cheat-item"><b>Context hygiene</b><span>/clear between tasks · guardrails in CLAUDE.md · permission prompts are a feature.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Session 5 of 6 · learn-claude-with-phoebe · built with Claude</span>
+    <span><a href="04-creative-studio.html">← Session 4</a> &nbsp;·&nbsp; <a href="../index.html">All sessions</a> &nbsp;·&nbsp; <a href="06-power-user.html">Next: Power user →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=3"></script>
+</body>
+</html>

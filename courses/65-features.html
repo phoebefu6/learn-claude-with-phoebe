@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep dive 6.5 · Features of Claude - learn claude with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=2">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-claude-with-phoebe</a> / Deep dive 6.5</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn Claude with Phoebe · Deep-dive track 6.5</div>
+    <h1>Features of <span class="accent">Claude</span></h1>
+    <p class="sub">Six platform features that separate a demo from a production system: extended thinking when the problem is hard, vision and native PDFs when the input isn't text, citations when the answer must be auditable, prompt caching when the bill must be sane, and a managed code sandbox when the answer needs pandas.</p>
+    <div class="chip-row">
+      <span class="chip level">🔴 Deep dive</span>
+      <span class="chip audience">DS &amp; AI</span>
+      <span class="chip time">45 min self-paced or live</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-5 · Setup</span>
+      <span class="a2" style="flex:6">5-35 · Core</span>
+      <span class="a3" style="flex:2">35-45 · Try it</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Why this page exists</h2>
+    </div>
+    <p class="lede">Deep dives 6.1-6.4 taught you to call the API, engineer prompts, wire tools, and build RAG. This page covers the feature layer that the official "Features of Claude" module walks through: the request-level switches that change what Claude can see, how hard it thinks, how answers are grounded, and what a month of production traffic costs. Every card is runnable Python against the current API.</p>
+    <div class="legend">
+      <span class="pill solid">Core - the module spine</span>
+      <span class="pill light">Advanced - read when you need it</span>
+      <span class="pill amber">★ Runnable code</span>
+      <span class="pill inkpill">Covers "Features of Claude" from all 3 engineering courses</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with</strong>
+      Working code for each feature, the decision rules for when each one pays, and the two prompt-caching rules that decide whether your token bill drops 80% or not at all.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: REASONING AND INPUTS ============ -->
+  <section class="section" id="reasoning-inputs">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · thinking, images, PDFs</span>
+      <h2>Buying reasoning, feeding non-text inputs <span class="tag concept">15 min</span></h2>
+    </div>
+    <p class="lede">Three features that change WHAT Claude works with: a reasoning budget for hard problems, image blocks for anything visual, and document blocks for real PDFs.</p>
+
+    <details class="card" open>
+      <summary><span class="mode live">Core</span>Extended thinking: paying for reasoning where it matters<span class="mini">5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Extended thinking gives Claude a scratchpad before it answers. You set a token budget; Claude reasons inside it, then writes the final answer. You pay for the thinking tokens, so the whole game is knowing when it's worth it.</p>
+        <div class="prompt-box good"><span class="label">★ Extended thinking, minimal working example</span>import anthropic
+
+client = anthropic.Anthropic()
+
+resp = client.messages.create(
+    model="claude-sonnet-4-5",
+    max_tokens=16000,
+    thinking={"type": "enabled", "budget_tokens": 8000},
+    messages=[{
+        "role": "user",
+        "content": "We have 3 warehouses, 14 SKUs, and the demand table below. "
+                   "Plan a rebalancing that minimises transfer cost. Show your reasoning."
+    }],
+)
+
+for block in resp.content:
+    if block.type == "thinking":
+        print("--- thinking ---")
+        print(block.thinking)
+    elif block.type == "text":
+        print("--- answer ---")
+        print(block.text)</div>
+        <ul>
+          <li><strong>When it pays:</strong> multi-step math, constrained planning, tricky data analysis, debugging with several interacting causes. Anything where a human would want scratch paper.</li>
+          <li><strong>When it's wasted tokens:</strong> lookups, reformatting, summarisation, classification. The model answers those in one pass anyway; the budget just sits there as spend risk.</li>
+          <li><strong>Reading the response:</strong> thinking arrives as separate <code>thinking</code> blocks before the <code>text</code> block. Log them in dev (they are gold for debugging prompts), hide them from end users. Note <code>budget_tokens</code> must be less than <code>max_tokens</code>.</li>
+          <li><strong>Tuning:</strong> start around 4k-8k for hard analytical questions. If the thinking block ends abruptly mid-reasoning, the budget was too small; if it's short and the budget huge, dial it down.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Budget as a dial, not a switch</strong>
+          Run your eval set (deep dive 6.2) at budgets 0 / 2k / 8k and plot accuracy against cost. Most workloads have an obvious knee in that curve - that knee is your production setting.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Vision: images as content blocks<span class="mini">5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Images are just another content block in the messages you already know. Two sources: base64 for local files, URL for anything already hosted.</p>
+        <div class="prompt-box good"><span class="label">★ Chart reading from a local screenshot</span>import anthropic, base64
+
+client = anthropic.Anthropic()
+
+with open("q2_revenue_chart.png", "rb") as f:
+    img_b64 = base64.standard_b64encode(f.read()).decode("utf-8")
+
+resp = client.messages.create(
+    model="claude-sonnet-4-5",
+    max_tokens=2048,
+    messages=[{
+        "role": "user",
+        "content": [
+            {"type": "image",
+             "source": {"type": "base64",
+                        "media_type": "image/png",
+                        "data": img_b64}},
+            {"type": "text",
+             "text": "Extract every series in this chart as a markdown table, "
+                     "then flag any month where the trend reverses."},
+        ],
+    }],
+)
+print(resp.content[0].text)
+
+# Hosted image: swap the source for
+# {"type": "image", "source": {"type": "url", "url": "https://..."}}</div>
+        <ul>
+          <li><strong>Chart reading:</strong> dashboards, plots from papers, that PNG a stakeholder pasted into Slack. Claude reads axes, legends, and trends - ask for a table, not a description, and you get data back.</li>
+          <li><strong>Screenshot QA:</strong> "does this UI match the spec?" with the screenshot and the spec in the same message. Cheap visual regression review.</li>
+          <li><strong>Document photos:</strong> phone photos of receipts, whiteboards, forms. For born-digital PDFs, use the document block in the next card instead - it keeps layout.</li>
+          <li><strong>Practical limits:</strong> up to 100 images per request; resize huge images to roughly 1568px on the long edge before encoding, since bigger only burns tokens.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>PDF support: document blocks beat text extraction<span class="mini">5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>You could run a PDF through an extraction library and paste the text. Native PDF support sends the file itself as a <code>document</code> block, and Claude sees each page as text AND image together.</p>
+        <div class="prompt-box good"><span class="label">★ Native PDF question-answering</span>import anthropic, base64
+
+client = anthropic.Anthropic()
+
+with open("vendor_contract.pdf", "rb") as f:
+    pdf_b64 = base64.standard_b64encode(f.read()).decode("utf-8")
+
+resp = client.messages.create(
+    model="claude-sonnet-4-5",
+    max_tokens=2048,
+    messages=[{
+        "role": "user",
+        "content": [
+            {"type": "document",
+             "source": {"type": "base64",
+                        "media_type": "application/pdf",
+                        "data": pdf_b64}},
+            {"type": "text",
+             "text": "List every payment obligation with its due date and the "
+                     "clause number it comes from."},
+        ],
+    }],
+)
+print(resp.content[0].text)</div>
+        <ul>
+          <li><strong>When native wins:</strong> layout that carries meaning (two-column reports, forms), tables that extraction mangles, scanned pages where there is no text layer at all, and anything with charts or stamps inside.</li>
+          <li><strong>When extraction is fine:</strong> clean single-column born-digital text you'll reuse across many calls - extracted text is cheaper per call and easier to cache.</li>
+          <li><strong>Cost model:</strong> each PDF page costs its text tokens plus an image's worth of tokens, so a 100-page contract is a real spend. Cache it (Part 2) if you'll ask more than one question.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: GROUNDING AND COST ============ -->
+  <section class="section" id="grounding-cost">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · citations and caching</span>
+      <h2>Auditable answers, sane bills <span class="tag concept">12 min</span></h2>
+    </div>
+    <p class="lede">Citations make answers point at exact source passages. Caching makes the tenth question against the same document nearly free. Together they are the compliance-and-cost story for document workloads.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Citations: answers that point at passages<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Enable citations on a document block and every claim in the answer arrives with the exact source span attached - page numbers, character ranges, quoted text. This is the format compliance teams actually accept, because "the model said so" becomes "clause 4.2, page 7 says so".</p>
+        <div class="prompt-box good"><span class="label">★ Citation-grounded answers over a policy doc</span>import anthropic
+
+client = anthropic.Anthropic()
+
+policy_text = open("expense_policy.txt").read()
+
+resp = client.messages.create(
+    model="claude-sonnet-4-5",
+    max_tokens=2048,
+    messages=[{
+        "role": "user",
+        "content": [
+            {"type": "document",
+             "source": {"type": "text",
+                        "media_type": "text/plain",
+                        "data": policy_text},
+             "title": "Expense policy v3.2",
+             "citations": {"enabled": True}},
+            {"type": "text",
+             "text": "Can I expense a client dinner over $150? Cite the policy."},
+        ],
+    }],
+)
+
+for block in resp.content:
+    if block.type == "text":
+        print(block.text)
+        for c in (block.citations or []):
+            print(f'  source: "{c.cited_text[:80]}..."')</div>
+        <ul>
+          <li><strong>Works on</strong> plain-text documents, PDFs (citations carry page numbers), and pre-chunked custom content. Also on search results returned by your own tools.</li>
+          <li><strong>Why it beats "please quote your sources" in the prompt:</strong> cited spans are structured fields extracted from the document, not generated text, so they can't be hallucinated quotes. Render them as footnotes or links in your UI.</li>
+          <li><strong>The fit:</strong> policy Q&amp;A, contract review, regulatory summaries, anything a human will be held accountable for repeating.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>A data team shipped a "policy bot" twice. Version 1 answered from a RAG index with no citations; legal refused to let staff rely on it. Version 2 sent the policy as a citations-enabled document block and rendered every claim with its clause reference; legal signed off in a week. Same model, same accuracy - the citation format was the approval.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Prompt caching part 1: the mechanics<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Every call re-sends your whole prompt. If 45k of those tokens are the same system prompt and the same big document every time, you are paying full input price to re-process identical bytes. A <code>cache_control</code> breakpoint tells the API: everything up to here is stable, keep the processed prefix warm.</p>
+        <div class="prompt-box good"><span class="label">★ Caching a large stable prefix</span>import anthropic
+
+client = anthropic.Anthropic()
+
+big_doc = open("50_page_handbook.txt").read()   # large, stable
+
+def ask(question: str):
+    return client.messages.create(
+        model="claude-sonnet-4-5",
+        max_tokens=1024,
+        system=[
+            {"type": "text",
+             "text": "You are the internal handbook assistant. Answer only "
+                     "from the handbook below.\n\n" + big_doc,
+             "cache_control": {"type": "ephemeral"}},   # breakpoint here
+        ],
+        messages=[{"role": "user", "content": question}],  # variable part
+    )
+
+r1 = ask("What is the remote work policy?")
+r2 = ask("How many review cycles per year?")
+print(r1.usage.cache_creation_input_tokens)  # big on the first call
+print(r2.usage.cache_read_input_tokens)      # big on the second: cache hit</div>
+        <ul>
+          <li><strong>Where to put breakpoints:</strong> after the largest stable prefix - system prompt, tool definitions, big reference documents. Up to 4 breakpoints per request for layered prefixes.</li>
+          <li><strong>TTL:</strong> the cache lives about 5 minutes and every hit refreshes it, so steady traffic keeps it warm indefinitely. A 1-hour TTL option exists for spiky workloads.</li>
+          <li><strong>The economics:</strong> cache writes cost a bit more than normal input, cache reads cost a small fraction of it. Check <code>usage.cache_read_input_tokens</code> in every response - that field is your proof the cache is actually hitting.</li>
+        </ul>
+        <table class="clean">
+          <thead><tr><th>Token type</th><th>Price vs normal input</th><th>Where you see it in usage</th></tr></thead>
+          <tbody>
+            <tr><td>Normal input</td><td>1.0x baseline</td><td>input_tokens</td></tr>
+            <tr><td>Cache write (first call)</td><td>~1.25x</td><td>cache_creation_input_tokens</td></tr>
+            <tr><td>Cache read (every hit)</td><td>~0.1x</td><td>cache_read_input_tokens</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Prompt caching part 2: the rules that make or break it<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Caching fails silently: you never get an error, you just quietly pay full price. Three rules decide whether you hit.</p>
+        <ul>
+          <li><strong>Rule 1 - minimum length.</strong> A prefix below the minimum cacheable size (1024 tokens on most models, 2048 on the fastest ones) is never cached, no matter the breakpoint. Don't bother caching a two-line system prompt.</li>
+          <li><strong>Rule 2 - byte-identical prefix.</strong> The cache key is the exact bytes of everything before the breakpoint. One changed character - reordered JSON keys, a trailing space, a different tool list - and it's a miss. Serialize your prefix deterministically.</li>
+          <li><strong>Rule 3 - order matters.</strong> Stable content first, variable content last. The moment something variable appears, everything after it is uncacheable. Structure requests as: tools, then system + big docs (breakpoint), then per-user context, then the question.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>The classic mistake: a team put <code>Current time: 2026-07-07 09:14:03</code> at the TOP of their system prompt. Every request had a different first line, so every request was a cache miss on the entire 40k-token prefix. Their "cached" bill was identical to the uncached one for three weeks before anyone read the usage fields. Moving the timestamp into the user message fixed it in one line.</p>
+        </div>
+        <div class="callout tip">
+          <strong>Verify, don't assume</strong>
+          Log <code>cache_read_input_tokens / (input_tokens + cache_read_input_tokens)</code> as your cache hit ratio. If it isn't above 80% on a document workload, one of the three rules is being violated - almost always rule 2.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: CODE EXECUTION ============ -->
+  <section class="section" id="code-exec">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · the managed sandbox</span>
+      <h2>Code execution and the Files API <span class="tag concept">8 min</span></h2>
+    </div>
+    <p class="lede">Sometimes the right answer to "analyse this CSV" is not prose - it's Claude writing and running pandas. The code execution tool gives Claude a managed Python sandbox; the Files API gets your data into it.</p>
+
+    <details class="card">
+      <summary><span class="mode self">Advanced</span>Upload a CSV, let Claude run pandas on it<span class="mini">5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Two pieces: upload the file once via the Files API, then reference it in a message with the code execution tool enabled. Claude writes Python, runs it in the sandbox, reads the output, and iterates - the same loop a data scientist runs in a notebook.</p>
+        <div class="prompt-box good"><span class="label">★ CSV analysis in the managed sandbox</span>import anthropic
+
+client = anthropic.Anthropic()
+
+# 1. Upload the data once via the Files API
+uploaded = client.beta.files.upload(
+    file=("sales_2026.csv", open("sales_2026.csv", "rb"), "text/csv"),
+)
+
+# 2. Ask for analysis with the code execution tool enabled
+resp = client.beta.messages.create(
+    model="claude-sonnet-4-5",
+    max_tokens=4096,
+    betas=["code-execution-2025-05-22", "files-api-2025-04-14"],
+    tools=[{"type": "code_execution_20250522", "name": "code_execution"}],
+    messages=[{
+        "role": "user",
+        "content": [
+            {"type": "text",
+             "text": "Profile this file: shape, dtypes, null counts, and the "
+                     "3 strongest correlations with monthly_revenue. "
+                     "Then flag outlier rows."},
+            {"type": "container_upload", "file_id": uploaded.id},
+        ],
+    }],
+)
+
+for block in resp.content:
+    if block.type == "text":
+        print(block.text)</div>
+        <ul>
+          <li><strong>What the sandbox has:</strong> Python with the standard data stack (pandas, numpy, matplotlib and friends), a filesystem for your uploaded files, no network access. Claude sees stdout, stderr, and generated files, and can retry when its own code errors.</li>
+          <li><strong>Files created in the sandbox</strong> (cleaned CSVs, plots) come back as file references you can download via the Files API - so "clean this file and give it back" is a one-message pipeline.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Advanced</span>Managed sandbox vs DIY tool: which one when<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Managed wins when</strong> the work is exploratory analysis on uploaded data: you skip building an executor, sandboxing it, capturing output, and handling retries. That's real security engineering you don't have to own.</li>
+          <li><strong>DIY (your own code tool from deep dive 6.3) wins when</strong> the code must touch YOUR infrastructure: the warehouse, internal packages, live APIs, network calls. The managed sandbox is deliberately isolated - no network is a feature there, a blocker here.</li>
+          <li><strong>The hybrid</strong> most data teams land on: managed sandbox for ad-hoc file analysis, a narrow read-only warehouse tool for governed data access. Which is exactly where the MCP page (6.6) picks up.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ TRY IT ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Try it yourself</span>
+      <h2>Three exercises <span class="tag exercise">◐ 35-45 min</span></h2>
+    </div>
+    <ul>
+      <li><strong>1 · Cache economics, measured.</strong> Take a 50-page document (or any 30k+ token text). Ask it 5 different questions through one function with a <code>cache_control</code> breakpoint. Print <code>cache_creation_input_tokens</code> and <code>cache_read_input_tokens</code> for each call and compute what the 5 questions cost with and without caching. Then break it on purpose: add a timestamp above the breakpoint and watch every hit disappear.</li>
+      <li><strong>2 · Citation-grounded policy Q&amp;A.</strong> Send a real policy PDF as a citations-enabled document block. Ask 3 questions a colleague actually asked this month. For each answer, print the cited text next to the claim and check it by hand - does the cited passage really support the sentence?</li>
+      <li><strong>3 · Chart screenshot to data table.</strong> Screenshot a chart from any dashboard you use. Send it as an image block and prompt for a markdown table of every series, plus one anomaly the chart shows. Compare the extracted numbers against the source data and note where vision reading breaks down (dense legends, stacked areas).</li>
+    </ul>
+  </section>
+
+  <!-- ============ OFFICIAL COURSES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official courses covered</h2>
+    </div>
+    <p class="lede">This page teaches the "Features of Claude" module that all three 8-hour engineering courses share, plus the code execution and Files API lectures specific to the API course.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Features of Claude module - all 3 courses</span><span class="note">extended thinking, images, PDF support, citations, prompt caching mechanics and rules</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Code execution &amp; Files API - Building with the Claude API</span><span class="note">managed sandbox, file upload, analysis loop, managed vs DIY decision</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Deep dive 6.5 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Extended thinking</b><span>thinking={"type":"enabled","budget_tokens":N}. Buy it for math, planning, tricky analysis; skip it for lookups and reformatting.</span></div>
+      <div class="cheat-item"><b>Images</b><span>{"type":"image","source":{...}} content blocks, base64 or URL. Ask for a table, not a description.</span></div>
+      <div class="cheat-item"><b>PDFs</b><span>Send as document blocks when layout, tables, or scans matter; extract to text when it's clean prose you'll cache.</span></div>
+      <div class="cheat-item"><b>Citations</b><span>"citations":{"enabled":true} on document blocks. Structured source spans, not generated quotes - the compliance format.</span></div>
+      <div class="cheat-item"><b>Caching</b><span>cache_control {"type":"ephemeral"} after the big stable prefix. Byte-identical, min length, stable-first order. Reads ~0.1x input price, ~5 min TTL refreshed on hit.</span></div>
+      <div class="cheat-item"><b>Code execution</b><span>Files API upload + code_execution tool = managed pandas sandbox. Managed for uploads, DIY tools for your own infrastructure.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Deep dive 6.5 · learn-claude-with-phoebe · built with Claude</span>
+    <span><a href="64-rag.html">← Deep dive 6.4</a> &nbsp;·&nbsp; <a href="../index.html">All sessions</a> &nbsp;·&nbsp; <a href="66-mcp-deep-dive.html">Next: MCP deep dive →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=3"></script>
+</body>
+</html>

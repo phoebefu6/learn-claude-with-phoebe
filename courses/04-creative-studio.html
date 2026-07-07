@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session 4 · Creative studio: branding, marketing, design - learn claude with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=2">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-claude-with-phoebe</a> / Session 4 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn Claude with Phoebe · Session 4 of 6</div>
+    <h1>Creative studio: <span class="accent">branding, marketing, design</span></h1>
+    <p class="sub">Lock your brand voice into a system, turn one asset into a week of content, run design critique loops that actually improve things, and prototype a working landing page - no engineers, no new tools, inside our Teams plan.</p>
+    <div class="chip-row">
+      <span class="chip level">🟡 Medium</span>
+      <span class="chip audience">Marketing &amp; branding</span>
+      <span class="chip audience">C-level</span>
+      <span class="chip audience">Anyone who ships content</span>
+      <span class="chip time">45 min live + self-study</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:3">3-18 · Concepts</span>
+      <span class="a3" style="flex:5">18-40 · Build your own</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Why this session exists</h2>
+    </div>
+    <p class="lede">Marketing's bottleneck was never ideas - it's production and consistency. Every caption re-litigates the brand voice, every landing page waits for an engineer, every design review is opinion versus opinion. Today we install systems for all three: a brand voice that travels, a content engine that multiplies, and a critique loop with actual standards.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill amber">★ Build-along demo</span>
+      <span class="pill inkpill">Applies Claude 101 + skills from Session 3</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      A Brand HQ project with YOUR extracted voice guide, a working landing-page prototype you built and iterated live, and a case-study interview kit that turns project wins into sales assets.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: BRAND VOICE ============ -->
+  <section class="section" id="brand">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · brand as a system</span>
+      <h2>Lock the voice once, use it everywhere <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">"Sounds like us" should be infrastructure, not a review comment. The move: extract the voice from your BEST past work, write it down as rules, install it as a project (Session 2) or skill (Session 3).</p>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Extract your voice from evidence, not adjectives<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Most brand-voice docs say "confident, human, bold" - which describes every brand on Earth. The fix is archaeological: feed Claude your 5 best-performing pieces and make it reverse-engineer the ACTUAL patterns.</p>
+        <div class="prompt-box good"><span class="label">★ The voice extractor</span>Here are 5 pieces of our best content - the ones that felt most "us" and performed best.
+[paste them]
+
+Reverse-engineer our brand voice as a working guide:
+1. Sentence mechanics: typical length, rhythm, how we open, how we close.
+2. Vocabulary: 10 words/phrases we clearly love; 10 we never use (infer the banned list).
+3. Tone moves: how we handle claims (bold? hedged?), humor (type and dose), the reader ("you"? "we"? distance?).
+4. Three before/after examples: a generic sentence rewritten in our voice.
+5. The one-paragraph "voice in a nutshell" a freelancer could follow.
+
+Be specific enough that two different writers using this guide would produce interchangeable drafts. Flag any inconsistencies you noticed between the 5 pieces.</div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>A B2B team ran this on their five best LinkedIn posts and discovered their real voice was "short declaratives, one number per post, no exclamation marks, gentle self-deprecation in the last line" - none of which was in their official brand book. The extracted guide went into Brand HQ; the next month of posts was written 3x faster and no one could tell which were AI-first drafts.</p>
+        </div>
+        <p>Install the output in your <strong>Brand HQ project</strong> (from Session 2) as knowledge + instructions - or as a <code>brand-voice</code> skill (Session 3) so it fires in ANY chat. Voice + banned words + best examples: that trio is the system.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>What Claude can and can't do for visuals - the honest map<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <table class="clean">
+          <thead><tr><th>Claude does brilliantly</th><th>Claude does NOT do</th></tr></thead>
+          <tbody>
+            <tr><td>Copy, concepts, scripts, briefs, naming</td><td>Generate photographic images (pair with your approved image tool)</td></tr>
+            <tr><td>Critique designs from screenshots (it sees images)</td><td>Edit image files pixel-by-pixel</td></tr>
+            <tr><td>Working web pages, interactive mockups, diagrams as artifacts</td><td>Native .fig files - it prototypes, your designer refines</td></tr>
+            <tr><td>Decks and docs via the pptx/docx skills</td><td>Replace brand judgment - Discernment stays yours</td></tr>
+          </tbody>
+        </table>
+        <p>The workflow that wins: Claude writes the image BRIEF and the prompt for your image tool, critiques the results against brand, and assembles everything into the deliverable. It's the creative director's assistant, not the camera.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: CONTENT ENGINE ============ -->
+  <section class="section" id="content">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · the content engine</span>
+      <h2>One asset in, a week of content out <span class="tag concept">4 min live</span></h2>
+    </div>
+    <p class="lede">The atomization pattern: produce one substantial "core asset", then let Claude cut it into every format your channels need - each in the right native shape, all in the locked voice.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Content atomization: one core asset becomes five channel-native formats">
+        <style>
+          .atT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .atS { font: 400 12px Inter, sans-serif; fill: #FFFFFF; opacity: .85; }
+          .atI { font: 600 13px Inter, sans-serif; fill: #1B1B2F; }
+          .atX { font: 400 12.5px Inter, sans-serif; fill: #6B6B80; }
+          .atA { stroke: #C9C9D6; stroke-width: 2; fill: none; marker-end: url(#atAh); }
+        </style>
+        <defs>
+          <marker id="atAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#C9C9D6" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <rect x="30" y="100" width="230" height="90" rx="14" fill="#4F46E5"/>
+        <text class="atT" x="55" y="135">The core asset</text>
+        <text class="atS" x="55" y="158">case study · webinar · report</text>
+        <text class="atS" x="55" y="176">the thing with real substance</text>
+        <line class="atA" x1="268" y1="118" x2="360" y2="60"/>
+        <line class="atA" x1="268" y1="132" x2="360" y2="115"/>
+        <line class="atA" x1="268" y1="145" x2="360" y2="170"/>
+        <line class="atA" x1="268" y1="158" x2="360" y2="225"/>
+        <line class="atA" x1="268" y1="172" x2="360" y2="278"/>
+        <rect x="368" y="40" width="200" height="38" rx="10" fill="#312E81"/>
+        <text class="atT" x="388" y="65" style="font-size:13px">LinkedIn post + carousel</text>
+        <rect x="368" y="95" width="200" height="38" rx="10" fill="#4F46E5"/>
+        <text class="atT" x="388" y="120" style="font-size:13px">Email nurture sequence</text>
+        <rect x="368" y="150" width="200" height="38" rx="10" fill="#6366F1"/>
+        <text class="atT" x="388" y="175" style="font-size:13px">Sales one-pager</text>
+        <rect x="368" y="205" width="200" height="38" rx="10" fill="#818CF8"/>
+        <text class="atT" x="388" y="230" style="font-size:13px">Video script + captions</text>
+        <rect x="368" y="258" width="200" height="38" rx="10" fill="#1B1B2F"/>
+        <text class="atT" x="388" y="283" style="font-size:13px">Exec talking points</text>
+        <text class="atI" x="610" y="70">Each format is NATIVE:</text>
+        <text class="atX" x="610" y="94">a carousel isn't a chopped-up</text>
+        <text class="atX" x="610" y="112">blog post - it's re-argued for</text>
+        <text class="atX" x="610" y="130">the scroll. The engine prompt</text>
+        <text class="atX" x="610" y="148">(below) enforces that.</text>
+        <text class="atI" x="610" y="190">Voice comes from Brand HQ -</text>
+        <text class="atX" x="610" y="214">every cut inherits the locked</text>
+        <text class="atX" x="610" y="232">voice guide automatically.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the atomization engine: one core asset, five native formats</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The atomization prompt + campaign variants<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <div class="prompt-box good"><span class="label">★ The atomizer (run inside Brand HQ)</span>Here is our new core asset: [paste case study / report / webinar transcript]
+
+Cut it into 5 channel-native pieces, each in our brand voice (use the voice guide in project knowledge):
+1. LinkedIn post (150 words max, our hook style) + a 6-frame carousel outline
+2. A 3-email nurture sequence (subject lines + 80-word bodies, one idea each)
+3. A sales one-pager: problem, approach, results with numbers, one client quote
+4. A 60-second video script with caption text
+5. Five exec talking points for leadership to use verbatim
+
+Rules: each piece must stand alone; re-argue for the format, don't summarize; keep every number exactly as sourced; flag any claim that needs verification before publishing.</div>
+        <p><strong>Variants for testing:</strong> "Give me 5 hooks for piece 1: one curiosity, one contrarian, one number-led, one story, one question. Rank them for OUR audience and say why." You choose with judgment; it supplies the spread. (A/B discipline, minus the blank page.)</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Case studies that sell - the interview kit<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The strongest core asset is a case study, and the hard part is extraction, not writing. Run this interview on the project owner (or paste the project docs) - it covers the official "write case studies" playbook:</p>
+        <div class="prompt-box good"><span class="label">★ Case-study interview kit</span>I want to write a client case study. Interview me one question at a time (max 8 questions) to extract:
+- The client's situation and the stakes (what happened if nothing changed?)
+- The trigger moment they decided to act
+- What we actually did, in plain language, step by step
+- Numbers: before/after metrics, timeline, effort saved (push me for specifics)
+- One direct quote-worthy sentiment from the client
+- What surprised us - the detail that makes it credible
+
+Then draft the case study: headline with the result in it, 400-600 words,
+structure: situation → approach → results (numbers first) → client quote → one-line takeaway.
+Flag every number and claim I need to verify with the client before publishing.</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: DESIGN LOOP ============ -->
+  <section class="section" id="design">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · the design improvement loop</span>
+      <h2>Critique with standards, not vibes <span class="tag concept">4 min live</span></h2>
+    </div>
+    <p class="lede">Claude reads images. Screenshot anything - a slide, a banner, a landing page - and run a structured critique against named principles instead of "make it pop".</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The structured critique prompt<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <div class="prompt-box good"><span class="label">★ The design critique (attach a screenshot)</span>Critique this design as a senior art director. Structure:
+
+1. FIRST IMPRESSION - what does a viewer get in 3 seconds? Is that what we want?
+2. HIERARCHY - what's fighting for attention? What's the ONE thing, and does everything else support it?
+3. Score against: contrast, alignment, whitespace, type consistency, color discipline (one accent doing one job), accessibility (text sizes, contrast ratios).
+4. BRAND FIT - check against our voice/visual rules [in project knowledge].
+5. The 3 highest-impact fixes, ranked by effort-to-impact - specific enough that I could brief a designer in one line each.
+
+Do NOT redesign it wholesale. Do NOT soften: if the hierarchy is broken, say so.</div>
+        <p>Then the loop from Session 1 applies: fix, re-screenshot, re-critique. Two laps is usually the difference between "fine" and "ship it".</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>A team ran their event banner through the critique: "three type sizes competing, CTA has the least contrast on the page, logo doing nothing at that size." Fifteen minutes in their design tool later, signups from the banner doubled. The critique wasn't genius - it was consistency: the same named standards, applied every time, with no meeting.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 4: PROTOTYPES ============ -->
+  <section class="section" id="prototype">
+    <div class="section-kicker">
+      <span class="klabel">Part 4 · website prototypes without engineers</span>
+      <h2>From brief to clickable page in one session <span class="tag concept">3 min live</span></h2>
+    </div>
+    <p class="lede">Artifacts (Session 1) turn Claude's output into working web pages beside the chat - real HTML, real interactivity, sharable by link. For marketing, that means the landing-page conversation changes from "wait for eng" to "react to a working draft".</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>What prototypes are FOR (and not for)<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>For:</strong> testing a message and layout on a real-feeling page, stakeholder sign-off ("this, but the hero says X"), campaign microsites for review, interactive mockups (calculators, quizzes) to spec the real build.</li>
+          <li><strong>The iteration loop is the value:</strong> "hero too corporate - warmer", "move proof above the fold", "add a 3-tier pricing table" - each takes seconds, live, in front of stakeholders. Ten iterations in a meeting beats two per sprint.</li>
+          <li><strong>Handoff:</strong> when approved, the artifact IS the spec - engineers get working HTML plus your iteration history instead of a wireframe PDF. (Publishing it properly - hosting, domain, analytics - is still an engineering/IT step; Session 5 crowd can ship it to GitHub Pages in minutes.)</li>
+          <li><strong>Not for:</strong> production sites with forms collecting real customer data - prototypes prove the design, production needs the proper pipeline.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 3</span>
+      <h2>Build Brand HQ + extract your voice <span class="tag demo">★ 8 min · everyone builds</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Create (or open) your <strong>Brand HQ</strong> project. Gather your 5 best pieces of content - posts, emails, pages that felt most "us".</p></div>
+      <div class="step"><p>Run the <strong>voice extractor</strong> (Part 1) on them. Read what comes back - expect at least one pattern you never noticed you had.</p></div>
+      <div class="step"><p>Correct one thing it got wrong (Discernment lap), then save the final guide into the project's knowledge + instructions: "All drafting in this project follows the voice guide."</p></div>
+      <div class="step"><p>Prove it: "Draft a LinkedIn post announcing [something real] in our voice." Compare against your gut. Tighten the guide if it missed.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 3</span>
+      <h2>Landing page, live, iterated by the room <span class="tag demo">★ 9 min · follow along + shout edits</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>In Brand HQ, run the brief: <strong>"Create a landing page artifact for [a real upcoming campaign]: hero with our value prop, 3 proof points, one testimonial block, pricing teaser, single CTA. Our voice. Modern, clean, mobile-friendly."</strong></p></div>
+      <div class="step"><p>The room drives iteration - collect three reactions and apply them live: "warmer hero", "CTA above the fold", "add the logos strip". Watch each land in seconds.</p></div>
+      <div class="step"><p>Interactive upgrade: "Add an ROI mini-calculator: [inputs] → [simple formula] → result line." Now it's a page a static mockup could never be.</p></div>
+      <div class="step"><p>Share the artifact link with the room. That link is the stakeholder review, the spec, and the handoff - one object.</p></div>
+    </div>
+    <div class="callout tip">
+      <strong>Data tip</strong>
+      Use public or placeholder numbers in prototypes - a shared artifact travels further than you plan. Real pricing goes in at production time, through the proper pipeline.
+    </div>
+  </section>
+
+  <!-- ============ DEMO 3 ============ -->
+  <section class="section" id="demo-3">
+    <div class="section-kicker">
+      <span class="klabel">Demo 3 of 3</span>
+      <h2>Critique a real asset from this quarter <span class="tag demo">★ 5 min · everyone runs one</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Everyone screenshots one real asset they shipped recently - a slide, a banner, an email header.</p></div>
+      <div class="step"><p>Run the <strong>structured critique</strong> (Part 3) on it. Two quiet minutes.</p></div>
+      <div class="step"><p>Round-robin: each person shares their single highest-impact fix. Notice how consistent the standards are across totally different assets - that consistency is what you just installed.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ TRY IT / FOLLOW-UP ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">After the session</span>
+      <h2>This week <span class="tag exercise">◐ 45 min total</span></h2>
+    </div>
+    <ul>
+      <li><strong>Finish Brand HQ:</strong> add the banned-words list and your 3 gold-standard examples. Share the project with the team - one voice, everyone.</li>
+      <li><strong>Run the atomizer</strong> on your best existing case study or report. Publish at least two of the five cuts.</li>
+      <li><strong>Turn the critique into a skill</strong> (Session 3 method): <code>design-critique</code> with YOUR brand rules baked in - now the standard applies itself.</li>
+      <li><strong>Interview one project owner</strong> with the case-study kit. Verified draft to the client for approval by Friday.</li>
+      <li><strong>Iterate the landing page</strong> to done, then hand the artifact link to engineering - ask them how much spec-writing you just skipped.</li>
+    </ul>
+  </section>
+
+  <!-- ============ OFFICIAL COURSES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">Session 4 is the application session: it operationalizes <a href="https://claude.com/resources/courses">Claude 101's</a> Projects + Artifacts for creative work (taught in Session 1, applied here), plus the official "write case studies" use-case guide.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Claude 101 - Projects &amp; Artifacts, applied</span><span class="note">Brand HQ system + landing-page prototyping workflow</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">"Write case studies" use-case guide</span><span class="note">the interview kit + structure in Part 2</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">marketing-skills community pack</span><span class="note">installed via Session 3's shelf - copywriting/ads/email skills slot into this workflow</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 4 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Voice system</b><span>Extract from 5 best pieces → rules + banned words + examples → Brand HQ project. Evidence, not adjectives.</span></div>
+      <div class="cheat-item"><b>Atomize</b><span>One core asset → 5 native formats. Re-argue per format, never summarize. Numbers stay exact.</span></div>
+      <div class="cheat-item"><b>Critique order</b><span>3-second impression → hierarchy → contrast/alignment/whitespace/type/color → brand fit → 3 ranked fixes.</span></div>
+      <div class="cheat-item"><b>Prototype loop</b><span>Brief → artifact → room reacts → iterate in seconds → share link = spec + sign-off.</span></div>
+      <div class="cheat-item"><b>Case study spine</b><span>Situation → approach → results (numbers first) → quote → takeaway. Interview, then draft.</span></div>
+      <div class="cheat-item"><b>Honest limits</b><span>Claude writes briefs and critiques images; it doesn't generate photos. Pair with your image tool.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Session 4 of 6 · learn-claude-with-phoebe · built with Claude</span>
+    <span><a href="03-sop-to-skill.html">← Session 3</a> &nbsp;·&nbsp; <a href="../index.html">All sessions</a> &nbsp;·&nbsp; <a href="05-data-with-claude-code.html">Next: Data work with Claude Code →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=3"></script>
+</body>
+</html>

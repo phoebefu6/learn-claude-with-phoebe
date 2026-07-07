@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session 6 · Power user: subagents, MCP, and the platform - learn claude with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=2">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-claude-with-phoebe</a> / Session 6 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn Claude with Phoebe · Session 6 of 6</div>
+    <h1>Power user: <span class="accent">subagents, MCP, and the platform</span></h1>
+    <p class="sub">The ceiling comes off: delegate work to isolated subagents, plug Claude into any system with MCP, and understand the developer platform that turns personal automation into team infrastructure. Plus the deep-dive track: eight self-paced pages covering the full engineering curriculum.</p>
+    <div class="chip-row">
+      <span class="chip level">🔴 Hardest</span>
+      <span class="chip audience">DS &amp; AI advanced</span>
+      <span class="chip audience">C-level: first 10 min</span>
+      <span class="chip time">45 min live + deep-dive track</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:3">3-20 · Concepts</span>
+      <span class="a3" style="flex:5">20-40 · Terminal time</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Why this session exists</h2>
+    </div>
+    <p class="lede">Everything so far ran inside one Claude conversation. Real systems need more: parallel work without context collisions (subagents), connections to YOUR databases and tools (MCP), and programmatic building blocks (the API and platform). This session is the map plus the first hands-on mile; the deep-dive track below is the full engineering curriculum, one 45-minute page at a time.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill amber">★ Build-along demo</span>
+      <span class="pill inkpill">3 courses live + 4 via deep dives</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      A custom subagent reviewing work in parallel on your machine, one MCP server connected and queried, your first API call running - and the deep-dive roadmap that replaces 24 hours of engineering lectures.
+    </div>
+  </section>
+
+  <section class="section" id="platform">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers "claude platform 101"</span>
+      <h2>The platform map: from chat to production <span class="tag concept">7 min live</span></h2>
+    </div>
+    <p class="lede">One mental model explains every Claude product: an agent loop with tools, bounded by a context window. Chat hides it, Claude Code exposes it, the API hands you the parts.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The agent loop: model thinks, calls tools, reads results, repeats - bounded by the context window">
+        <style>
+          .alT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .alI { font: 700 15px Inter, sans-serif; fill: #4F46E5; }
+          .alX { font: 400 12.5px Inter, sans-serif; fill: #6B6B80; }
+          .alA { stroke: #C9C9D6; stroke-width: 2.5; fill: none; marker-end: url(#alAh); }
+        </style>
+        <defs>
+          <marker id="alAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#C9C9D6" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <rect x="60" y="30" width="760" height="200" rx="14" fill="none" stroke="#E9E9F2" stroke-width="2" stroke-dasharray="8 6"/>
+        <text class="alX" x="80" y="56">the context window - everything the model can "see": instructions, history, tool results. Finite. Managed deliberately.</text>
+        <rect x="120" y="90" width="180" height="55" rx="10" fill="#4F46E5"/>
+        <text class="alT" x="152" y="123">Model thinks</text>
+        <rect x="390" y="90" width="180" height="55" rx="10" fill="#312E81"/>
+        <text class="alT" x="424" y="123">Calls a tool</text>
+        <rect x="640" y="90" width="180" height="55" rx="10" fill="#6366F1"/>
+        <text class="alT" x="668" y="123">Reads result</text>
+        <line class="alA" x1="308" y1="117" x2="382" y2="117"/>
+        <line class="alA" x1="578" y1="117" x2="632" y2="117"/>
+        <path class="alA" d="M 730 153 Q 730 200 470 200 Q 210 200 210 153"/>
+        <text class="alI" x="400" y="192">repeat until done</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the agent loop, the one diagram behind every Claude product</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Platform 101 in one card<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Your first API call</strong> is ~10 lines (Demo 3). Everything else - models, tools, thinking - is parameters on that call.</li>
+          <li><strong>Choosing models:</strong> the capable one for hard reasoning, the fast one for volume; price and latency scale accordingly. Rule: prototype on the best, optimize down once quality is proven.</li>
+          <li><strong>Tool use</strong> = you describe functions, Claude decides when to call them, you execute and return results - the agent loop with YOUR tools. (Deep dive 6.3)</li>
+          <li><strong>Extended thinking:</strong> a budget for the model to reason before answering - buy accuracy on hard problems with tokens. (6.5)</li>
+          <li><strong>Built-in tools, skills, MCP:</strong> web search, code execution and files come managed; your Session 3 skills and MCP servers plug into the same loop.</li>
+          <li><strong>Context management:</strong> the window is finite; production systems curate what's in it every turn - that discipline is half of platform engineering. (6.1, 6.5)</li>
+          <li><strong>Managed agents:</strong> the newest layer - define an agent (instructions + tools) and run it as a service without owning the loop yourself.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>For the executives in the room:</strong> this is the layer where "Maria's clever workflow" becomes "a company capability". The chief-of-staff briefing from Session 2, rebuilt on the platform, stops depending on Maria's laptop - it becomes a governed service with logs, access control, and an owner. That's the strategic point of everything on this page.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <section class="section" id="subagents">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers "introduction to subagents"</span>
+      <h2>Subagents: delegation with clean context <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">Session 1's working-memory lesson, weaponized: long sessions drift because everything shares one context window. Subagents give each task its OWN window - they work in isolation and return only the summary.</p>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>What they are, when to use them, how to build one<span class="mini">5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>What:</strong> a named assistant with its own system prompt, tool permissions, and context window. Your main session delegates ("review this diff"), the subagent works separately, only its conclusion returns - your context stays clean.</li>
+          <li><strong>Create:</strong> the <code>/agents</code> command in Claude Code scaffolds one interactively; it lives as a markdown file in <code>.claude/agents/</code> - committed to the repo, shared like a skill.</li>
+          <li><strong>Design rules:</strong> one job per agent (a reviewer that also fixes is neither) · write the description like a skill trigger (when to invoke it) · give it the MINIMUM tools (a read-only reviewer cannot delete data - that's governance by construction) · tell it what to return (a verdict format, not a transcript).</li>
+          <li><strong>Use well:</strong> delegate self-contained work with a summarizable result: reviews, research sweeps, test triage, doc generation. Don't delegate work needing YOUR conversation's context - it doesn't have it.</li>
+          <li><strong>Pitfall #1:</strong> vague agents ("helper") that do everything badly. Pitfall #2: forgetting the subagent can't see your chat - brief it like an email to a colleague, complete and standalone.</li>
+        </ul>
+        <div class="prompt-box good"><span class="label">★ A data-QA reviewer subagent (.claude/agents/data-qa.md)</span>---
+name: data-qa
+description: Reviews data-transformation code and outputs for correctness. Use after any change to cleaning or pipeline scripts, or when asked to "QA this".
+tools: Read, Grep, Bash(pytest*)
+---
+
+You are a meticulous data-QA reviewer. For the change you're given:
+1. Check: joins that can fan out, silent NaN handling, timezone traps, hardcoded paths, seed-less randomness, PII in logs.
+2. Run the test suite; report failures verbatim.
+3. Return EXACTLY: VERDICT (pass / pass-with-warnings / fail), top 3 issues with file:line, and one-line fix per issue. No praise, no restating the diff.</div>
+      </div>
+    </details>
+  </section>
+
+  <section class="section" id="mcp">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · covers "introduction to MCP" (overview)</span>
+      <h2>MCP: the port that connects Claude to everything <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">Model Context Protocol is the open standard behind every connector you've used since Session 2. One protocol, three primitives - learn it once, plug in anything.</p>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>The three primitives + why this matters to us<span class="mini">5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Tools</strong> - actions the server exposes ("query_warehouse", "create_ticket"). Claude calls them in the agent loop.</li>
+          <li><strong>Resources</strong> - data the server offers (a schema, a config, a report) that the client can load into context.</li>
+          <li><strong>Prompts</strong> - reusable prompt templates the server ships ("analyze this table properly").</li>
+          <li><strong>Client/server:</strong> Claude (Code, app, or your API program) is the client; the server wraps your system. Anthropic and vendors ship servers for hundreds of tools; a custom one for YOUR internal API is an afternoon of Python (deep dive 6.6).</li>
+          <li><strong>The connective insight:</strong> the Gmail connector (Session 2), Claude Code's tool integrations (Session 5), and your future warehouse hookup are ALL this one protocol. Approve once, reuse everywhere - which is also why sys-admin governance lives at the MCP layer.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>The first MCP server most data teams add: their warehouse (read-only credentials). From then on, "which tables feed the exec dashboard, and when did revenue_daily last refresh?" is a chat message - in Claude Code, in the app, everywhere the server is connected. Second one: the ticket system, so "file the data-quality issues you just found" closes the loop.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 3</span>
+      <h2>Build the data-QA subagent and delegate to it <span class="tag demo">★ 8 min · everyone in terminal</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>In the claude-data-lab repo from Session 5, run <code>/agents</code> → create → paste the data-qa definition (Part 2), or write your own reviewer for your stack.</p></div>
+      <div class="step"><p>Make a deliberately sloppy change to the cleaning script (add a join without dedupe). Then: "Use the data-qa agent to review my uncommitted changes."</p></div>
+      <div class="step"><p>Watch the handoff: your session stays clean while the subagent works; only the verdict returns. Check it caught the fan-out.</p></div>
+      <div class="step"><p>Note the governance angle: the reviewer has read + pytest only. It CANNOT modify anything - by construction, not by promise.</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 3</span>
+      <h2>Connect an MCP server and use it <span class="tag demo">★ 7 min · everyone connects</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Add a safe, useful server to Claude Code - the filesystem server on a data folder: <code>claude mcp add datafiles -- npx -y @modelcontextprotocol/server-filesystem ~/work/claude-data-lab/data</code></p></div>
+      <div class="step"><p>Restart <code>claude</code>, then ask: "Using the datafiles server, list what's in data/processed and summarize the newest file." Watch the tool calls appear - that's MCP in the loop.</p></div>
+      <div class="step"><p>Inspect what you just trusted: <code>claude mcp list</code>, then review what tools the server exposes. The habit of auditing a server before granting it is THE security habit of this layer.</p></div>
+      <div class="step"><p>Map your next one: which internal system would pay off most as a server? (Warehouse read-only is the usual answer - take it to the deep dives.)</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="demo-3">
+    <div class="section-kicker">
+      <span class="klabel">Demo 3 of 3</span>
+      <h2>Your first API call <span class="tag demo">★ 5 min · everyone runs it</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Grab the team's dev API key from the password manager (or console.anthropic.com if you're key-holder). <code>pip install anthropic</code>, export <code>ANTHROPIC_API_KEY</code>.</p></div>
+      <div class="step"><p>Run the ten-liner:</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ first_call.py</span>import anthropic
+
+client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY
+
+msg = client.messages.create(
+    model="claude-sonnet-5",
+    max_tokens=500,
+    system="You are a terse data engineer.",
+    messages=[{"role": "user",
+               "content": "Three ways our nightly ETL could silently drop rows. One line each."}],
+)
+print(msg.content[0].text)</div>
+    <div class="steps">
+      <div class="step"><p>Change the model name, run again, compare. Congratulations: every parameter you'll ever tune is now visible in one file - and the whole deep-dive track builds on these ten lines.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ DEEP-DIVE TRACK ============ -->
+  <section class="section" id="deep-dives">
+    <div class="section-kicker">
+      <span class="klabel">The engineering deep-dive track</span>
+      <h2>Eight pages replacing 24 hours of lectures <span class="tag exercise">◐ self-paced or optional sessions</span></h2>
+    </div>
+    <p class="lede">The three 8-hour platform courses (Building with the Claude API, Claude with Amazon Bedrock, Claude with Vertex AI) share ~85% of their curriculum. The track teaches that shared core once, properly, plus the platform deltas - each page is also runnable as an optional 45-minute DS&amp;AI session. Recommended order below; 6.1 → 6.3 → 6.7 is the minimum path to building real agents.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">6.1</span><span class="name"><a href="61-claude-api.html">The Claude API</a></span><span class="note">requests, multi-turn, system prompts, streaming, structured output</span></div>
+      <div class="covered-row"><span class="status pill solid">6.2</span><span class="name"><a href="62-prompting-evals.html">Prompt engineering &amp; evals</a></span><span class="note">XML structure, examples, eval workflow, model- &amp; code-graded tests</span></div>
+      <div class="covered-row"><span class="status pill solid">6.3</span><span class="name"><a href="63-tool-use.html">Tool use</a></span><span class="note">schemas, the tool loop, multiple tools, batch, web search, text editor</span></div>
+      <div class="covered-row"><span class="status pill solid">6.4</span><span class="name"><a href="64-rag.html">RAG &amp; agentic search</a></span><span class="note">chunking, embeddings, BM25, multi-index, reranking, contextual retrieval</span></div>
+      <div class="covered-row"><span class="status pill solid">6.5</span><span class="name"><a href="65-features.html">Features of Claude</a></span><span class="note">extended thinking, vision, PDFs, citations, prompt caching, Files API</span></div>
+      <div class="covered-row"><span class="status pill solid">6.6</span><span class="name"><a href="66-mcp-deep-dive.html">MCP deep dive</a></span><span class="note">build servers &amp; clients; sampling, notifications, roots, transports</span></div>
+      <div class="covered-row"><span class="status pill solid">6.7</span><span class="name"><a href="67-agents-workflows.html">Agents &amp; workflows</a></span><span class="note">chaining, routing, parallelization, agents vs workflows, computer use</span></div>
+      <div class="covered-row"><span class="status pill solid">6.8</span><span class="name"><a href="68-bedrock-vertex.html">Bedrock &amp; Vertex onboarding</a></span><span class="note">running Claude inside our AWS estate (and GCP), auth, model IDs, deltas</span></div>
+    </div>
+  </section>
+
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">After the session</span>
+      <h2>This week, and where the series lands <span class="tag exercise">◐</span></h2>
+    </div>
+    <ul>
+      <li><strong>Ship one subagent</strong> your team actually needs (reviewer, researcher, test-triager) into a real repo.</li>
+      <li><strong>Propose your first real MCP server</strong> (warehouse read-only) to the sys admin - the Session 2 request template extends naturally.</li>
+      <li><strong>Start the deep-dive track:</strong> 6.1 this week; 6.3 and 6.7 unlock agent-building.</li>
+      <li><strong>The series close:</strong> Session 1 taught you to talk to Claude; 2-4 automated your day and your team's creative work; 5-6 gave you hands and infrastructure. What remains is what was never Claude's job: choosing what's worth building. See you in #learn-claude.</li>
+    </ul>
+  </section>
+
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official courses covered</h2>
+    </div>
+    <p class="lede">From <a href="https://claude.com/resources/courses">claude.com/resources/courses</a> - this session live, plus four more via the deep-dive track:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Claude Platform 101</span><span class="note">1 hr · Part 1 + Demo 3: API call, models, agent loop, tool use, thinking, built-ins, context, managed agents</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Introduction to subagents</span><span class="note">20 min · Part 2 + Demo 1: all 4 lessons</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Introduction to Model Context Protocol</span><span class="note">1 hr · Part 3 + Demo 2 at overview level; full build in deep dive 6.6</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">MCP: Advanced Topics · Building with the Claude API · Claude with Bedrock · Claude with Vertex AI</span><span class="note">→ deep-dive track 6.1-6.8, ≥80% each</span></div>
+    </div>
+  </section>
+
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 6 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The one model</b><span>Agent loop (think → tool → result → repeat) inside a finite context window. Every product is this.</span></div>
+      <div class="cheat-item"><b>Subagent rules</b><span>One job · skill-like trigger description · minimum tools · fixed return format · brief it standalone.</span></div>
+      <div class="cheat-item"><b>MCP primitives</b><span>Tools (actions) · resources (data) · prompts (templates). Connectors ARE MCP - govern at this layer.</span></div>
+      <div class="cheat-item"><b>First API call</b><span>client.messages.create(model, max_tokens, system, messages). Ten lines; everything else is parameters.</span></div>
+      <div class="cheat-item"><b>Model choice</b><span>Prototype on the most capable, optimize down after quality is proven - never the reverse.</span></div>
+      <div class="cheat-item"><b>Deep-dive minimum path</b><span>6.1 API → 6.3 tool use → 6.7 agents &amp; workflows. Then 6.8 for our AWS estate.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Session 6 of 6 · learn-claude-with-phoebe · built with Claude</span>
+    <span><a href="05-data-with-claude-code.html">← Session 5</a> &nbsp;·&nbsp; <a href="../index.html">All sessions</a> &nbsp;·&nbsp; <a href="61-claude-api.html">Deep dive 6.1 →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=3"></script>
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep dive 6.1 · The Claude API - learn claude with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=2">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-claude-with-phoebe</a> / Deep dive 6.1</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn Claude with Phoebe · Deep-dive track 6.1</div>
+    <h1>The Claude <span class="accent">API</span></h1>
+    <p class="sub">Everything before this page happened inside an app someone else built. Today you call Claude from your own Python: one function, a messages list, and a response object. By the end you can hold a conversation, stream tokens, and get validated JSON back - the foundation every later deep dive builds on.</p>
+    <div class="chip-row">
+      <span class="chip level">🔴 Deep dive</span>
+      <span class="chip audience">DS &amp; AI</span>
+      <span class="chip time">45 min self-paced or live</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-5 · Setup</span>
+      <span class="a2" style="flex:6">5-35 · Core</span>
+      <span class="a3" style="flex:2">35-45 · Try it</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Why this page exists</h2>
+    </div>
+    <p class="lede">The chat window is a product wrapped around an API. Once you call the API directly, Claude becomes a component: something you can put inside a pipeline, a notebook, a cron job, or a data quality check. This page covers the "Accessing Claude with the API" module that all three official engineering courses share, plus the API fundamentals from Claude Platform 101.</p>
+    <div class="legend">
+      <span class="pill solid">Core - do these in order</span>
+      <span class="pill light">Advanced - read once, return when needed</span>
+      <span class="pill inkpill">Shared module of all 3 engineering courses</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      A working API setup, a multi-turn chat loop you wrote yourself, a streaming call, and a JSON extractor with validation and retries - the four moves that cover 90% of real API work.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: FIRST CONTACT ============ -->
+  <section class="section" id="first-contact">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · first contact</span>
+      <h2>One call, fully understood <span class="tag concept">12 min</span></h2>
+    </div>
+    <p class="lede">The whole API is one method: <code>client.messages.create()</code>. Learn its parameters properly once and every advanced feature is just another argument.</p>
+
+    <details class="card" open>
+      <summary><span class="mode live">Core</span>Setup and your first request<span class="mini">5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Three steps: install the SDK, set your key as an environment variable (never hardcode it - keys in notebooks end up in git), make the call.</p>
+        <div class="prompt-box good"><span class="label">★ Terminal - one-time setup</span>pip install anthropic
+export ANTHROPIC_API_KEY="sk-ant-..."   # get one at console.anthropic.com</div>
+        <div class="prompt-box good"><span class="label">★ Python - your first request</span>import anthropic
+
+client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from the environment
+
+response = client.messages.create(
+    model="claude-sonnet-5",
+    max_tokens=1024,
+    messages=[
+        {"role": "user", "content": "Explain what a data catalog is in 3 sentences."}
+    ],
+)
+
+print(response.content[0].text)</div>
+        <p>Read the response object once, carefully: <code>response.content</code> is a LIST of blocks (later, tool calls appear here too), so the text lives at <code>response.content[0].text</code>. <code>response.usage</code> tells you input and output token counts - that is your bill. <code>response.stop_reason</code> tells you why generation ended; <code>"max_tokens"</code> there means you cut Claude off mid-answer.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Anatomy of a request: model, max_tokens, temperature<span class="mini">7 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Three parameters do most of the work. Get the mental model right for each:</p>
+        <table class="clean">
+          <thead><tr><th>Parameter</th><th>What it controls</th><th>How to set it</th></tr></thead>
+          <tbody>
+            <tr><td><code>model</code></td><td>Capability vs speed vs cost</td><td>Capable tier (Opus, Sonnet) for reasoning and hard extraction; fast tier (Haiku) for classification, routing, high-volume simple tasks</td></tr>
+            <tr><td><code>max_tokens</code></td><td>Hard ceiling on OUTPUT length</td><td>A budget, not a target - Claude stops naturally before it. Set generously (1024-4096); a truncated answer is worse than a few unused tokens</td></tr>
+            <tr><td><code>temperature</code></td><td>Sampling randomness, 0 to 1</td><td>0 for extraction, classification, anything you will parse (near-deterministic); around 1 for brainstorming and creative variety. Default is 1</td></tr>
+          </tbody>
+        </table>
+        <div class="prompt-box good"><span class="label">★ Extraction settings vs creative settings</span># Parsing the output? Pin it down:
+extraction = client.messages.create(
+    model="claude-sonnet-5",
+    max_tokens=1024,
+    temperature=0,
+    messages=[{"role": "user", "content": "List the column names in this DDL: ..."}],
+)
+
+# Want variety? Open it up:
+brainstorm = client.messages.create(
+    model="claude-sonnet-5",
+    max_tokens=2048,
+    temperature=1,
+    messages=[{"role": "user", "content": "Give me 10 names for a data quality dashboard."}],
+)</div>
+        <div class="callout tip">
+          <strong>The model rule: prototype on best, then optimize</strong>
+          Always build with the most capable model first. If the task fails there, it is a prompt problem. Once it works, try the fast tier - if quality holds, you just cut cost and latency. Doing it in the other order means debugging a prompt and a model at the same time.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: CONVERSATIONS ============ -->
+  <section class="section" id="conversations">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · conversations</span>
+      <h2>Multi-turn and system prompts <span class="tag concept">10 min</span></h2>
+    </div>
+    <p class="lede">The API has no memory. Every call is a blank slate - "conversation" is something YOU maintain by resending history. This surprises everyone once.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Multi-turn: the messages list IS the conversation<span class="mini">6 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The <code>messages</code> parameter is not "the new message" - it is the WHOLE conversation so far, alternating <code>user</code> and <code>assistant</code> roles. To continue a chat, you append Claude's reply to your list and send everything again next call. The server stores nothing between calls.</p>
+        <div class="prompt-box good"><span class="label">★ A complete chat loop with history</span>import anthropic
+
+client = anthropic.Anthropic()
+history = []
+
+while True:
+    user_input = input("You: ")
+    if user_input.lower() in ("quit", "exit"):
+        break
+
+    history.append({"role": "user", "content": user_input})
+
+    response = client.messages.create(
+        model="claude-sonnet-5",
+        max_tokens=1024,
+        messages=history,          # the ENTIRE conversation, every call
+    )
+
+    reply = response.content[0].text
+    history.append({"role": "assistant", "content": reply})  # remember the answer too
+    print("Claude:", reply)</div>
+        <p>Two rules the API enforces: roles must alternate (user, assistant, user, ...), and the last message is normally from <code>user</code>. Forget to append the assistant turn and Claude "forgets" its own previous answer - the #1 beginner bug.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>A team built a support-ticket summarizer that "kept losing context" after the second question. The bug: they sent only the newest user message each call. One line - appending the assistant reply to history - fixed it. Cost implication too: since you resend history, long conversations grow in input tokens every turn. Production apps truncate or summarize old turns; 6.5 covers prompt caching, which makes resent history nearly free.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>System prompts: the standing instructions<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The <code>system</code> parameter is a separate top-level argument, not a message. It sets who Claude is for the whole conversation: role, rules, output format. The messages list then carries the actual work items.</p>
+        <div class="prompt-box good"><span class="label">★ System vs user - the division of labor</span>response = client.messages.create(
+    model="claude-sonnet-5",
+    max_tokens=1024,
+    system=(
+        "You are a senior data engineer reviewing SQL for a retail warehouse. "
+        "Always answer with: 1) verdict (OK / needs work), 2) issues as a numbered "
+        "list, 3) the corrected query. Flag full-table scans and missing WHERE "
+        "clauses on partitioned tables. Be terse."
+    ),
+    messages=[
+        {"role": "user", "content": "SELECT * FROM orders JOIN customers ON true"}
+    ],
+)
+print(response.content[0].text)</div>
+        <p>Rule of thumb: if it should be true for EVERY turn (persona, rules, format, tone), it belongs in <code>system</code>. If it is this particular task's data or question, it belongs in a <code>user</code> message. Mixing them - stuffing documents into system, or repeating rules in every user turn - works, but degrades both steering and cost.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: PRODUCTION PATTERNS ============ -->
+  <section class="section" id="production">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · production patterns</span>
+      <h2>Streaming, JSON, and failure <span class="tag concept">13 min</span></h2>
+    </div>
+    <p class="lede">Three patterns separate a demo from a tool people use: tokens that appear as they generate, output your code can parse, and calls that survive a bad network day.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Streaming: tokens as they arrive<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A long answer can take 20+ seconds to finish. Without streaming your user stares at nothing; with it, text flows immediately - same total time, completely different experience. The SDK makes it a context manager:</p>
+        <div class="prompt-box good"><span class="label">★ Streaming to the console</span>import anthropic
+
+client = anthropic.Anthropic()
+
+with client.messages.stream(
+    model="claude-sonnet-5",
+    max_tokens=2048,
+    messages=[
+        {"role": "user", "content": "Explain the medallion architecture, layer by layer."}
+    ],
+) as stream:
+    for text in stream.text_stream:
+        print(text, end="", flush=True)
+
+print()  # final newline
+final = stream.get_final_message()   # the assembled Message object, if you need usage etc.</div>
+        <p>Use streaming for anything a human watches (chat UIs, CLI tools, Streamlit apps). Skip it for batch pipelines - there, nobody is watching and the plain call is simpler code.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Core</span>Structured output: the JSON prefill trick<span class="mini">5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Ask for JSON and Claude often adds a friendly preamble ("Here is the JSON you requested:") that breaks <code>json.loads</code>. The fix is prefilling: you supply the START of the assistant's answer as the last message, and Claude continues from it. Start it with <code>{</code> and there is nowhere for a preamble to go.</p>
+        <div class="prompt-box good"><span class="label">★ Extractor with prefill, validation, and retry</span>import json
+import anthropic
+
+client = anthropic.Anthropic()
+
+def extract(email_text: str, retries: int = 2) -> dict:
+    for attempt in range(retries + 1):
+        response = client.messages.create(
+            model="claude-sonnet-5",
+            max_tokens=1024,
+            temperature=0,
+            system=(
+                'Extract fields from the email. Respond with ONLY this JSON: '
+                '{"sender_name": str, "company": str, "request": str, "urgency": "low"|"medium"|"high"}'
+            ),
+            messages=[
+                {"role": "user", "content": email_text},
+                {"role": "assistant", "content": "{"},   # the prefill
+            ],
+        )
+        raw = "{" + response.content[0].text             # glue the prefill back on
+        try:
+            return json.loads(raw)                        # validate before trusting
+        except json.JSONDecodeError:
+            continue                                      # rare at temperature 0; retry
+    raise ValueError("No valid JSON after retries")
+
+print(extract("hi its mia from acme, our friday dashboard is broken AGAIN, need it before the board mtg!!"))</div>
+        <p>The pattern in one line: describe the exact schema in <code>system</code>, prefill <code>{</code>, glue it back on, <code>json.loads</code> before you trust anything. In 6.3 you will see tool use, which gives schema-enforced JSON - but this trick needs zero extra machinery and covers most extraction jobs.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Advanced</span>Error handling and rate limits<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Two failures you WILL meet: <code>429 rate_limit_error</code> when you send requests faster than your tier allows, and occasional 5xx or timeouts like any remote service. Both are retryable; the standard answer is exponential backoff.</p>
+        <div class="prompt-box good"><span class="label">★ Backoff wrapper</span>import time
+import anthropic
+
+client = anthropic.Anthropic(timeout=60.0)   # do not wait forever on a hung connection
+
+def call_with_retry(messages, max_retries=5):
+    for attempt in range(max_retries):
+        try:
+            return client.messages.create(
+                model="claude-sonnet-5",
+                max_tokens=1024,
+                messages=messages,
+            )
+        except anthropic.RateLimitError:
+            wait = 2 ** attempt                 # 1, 2, 4, 8, 16 seconds
+            print(f"429 - backing off {wait}s")
+            time.sleep(wait)
+        except anthropic.APIStatusError as err:
+            if err.status_code >= 500:          # server side: worth retrying
+                time.sleep(2 ** attempt)
+            else:                               # 400s: your request is wrong, retrying won't help
+                raise
+    raise RuntimeError("Retries exhausted")</div>
+        <p>Notes for real pipelines: the SDK already retries some errors by itself (tune with <code>max_retries=</code> on the client); rate limits are per model and measured in requests AND tokens per minute, so batch jobs should throttle on tokens; and a 400 means fix your request, not retry it. For huge offline jobs, the Batch API (half price, results within 24h) is usually the right tool - it comes up in 6.3.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ TRY IT ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Try it yourself</span>
+      <h2>Three builds <span class="tag exercise">◐ 10 min in session, finish after</span></h2>
+    </div>
+    <ul>
+      <li><strong>1 · CLI chat with memory.</strong> Take the chat loop from Part 2 and run it. Then break it on purpose: comment out the line that appends the assistant reply, ask a follow-up question, and watch Claude lose the thread. Put the line back. Now you understand multi-turn forever.</li>
+      <li><strong>2 · The messy-email extractor.</strong> Use the prefill extractor from Part 3 on three real (anonymized) emails from your inbox - one clear, one rambling, one that is missing a field. Decide how your schema should represent "missing" (null? empty string?) and encode that in the system prompt.</li>
+      <li><strong>3 · Stream a long answer.</strong> Ask for a 1000-word explanation of something from your actual domain with the streaming pattern, watching it render live. Then run the same request without streaming and feel the difference - that feeling is why every chat product streams.</li>
+    </ul>
+    <div class="callout tip">
+      <strong>Stuck?</strong>
+      Paste your exact code and the full traceback into Claude and ask it to diagnose. Debugging API calls with the API is not cheating - it is the workflow.
+    </div>
+  </section>
+
+  <!-- ============ OFFICIAL COURSES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official courses covered</h2>
+    </div>
+    <p class="lede">This page teaches the shared "Accessing Claude with the API" module from the three official 8-hour engineering courses at <a href="https://claude.com/resources/courses">claude.com/resources/courses</a>, plus the API fundamentals from Claude Platform 101.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Building with the Claude API - Accessing Claude module</span><span class="note">requests, multi-turn, system prompts, temperature, streaming, structured data</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Claude with Bedrock / Vertex - same module</span><span class="note">identical content; platform setup differences covered in 6.8</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Claude Platform 101 - API fundamentals</span><span class="note">console, keys, model tiers, request anatomy</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Deep dive 6.1 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The one call</b><span>client.messages.create(model, max_tokens, messages) → response.content[0].text. Everything else is arguments.</span></div>
+      <div class="cheat-item"><b>Model rule</b><span>Prototype on the most capable model, then step down to the fast tier and check quality holds.</span></div>
+      <div class="cheat-item"><b>Multi-turn</b><span>No server memory. messages = the whole history, resent every call - append the assistant reply too.</span></div>
+      <div class="cheat-item"><b>System vs user</b><span>True every turn (role, rules, format) → system. This task's data and question → user message.</span></div>
+      <div class="cheat-item"><b>Streaming</b><span>with client.messages.stream(...) as stream: for text in stream.text_stream. Use whenever a human watches.</span></div>
+      <div class="cheat-item"><b>JSON prefill</b><span>Prefill assistant with "{", glue it back on, json.loads before trusting, retry on parse failure.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Deep dive 6.1 · learn-claude-with-phoebe · built with Claude</span>
+    <span><a href="06-power-user.html">← Session 6</a> &nbsp;·&nbsp; <a href="../index.html">All sessions</a> &nbsp;·&nbsp; <a href="62-prompting-evals.html">Next: 6.2 Prompting &amp; evals →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=3"></script>
+</body>
+</html>
