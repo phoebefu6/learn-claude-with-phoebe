@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session 2 · Your AI chief of staff: daily automation - learn claude with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=2">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-claude-with-phoebe</a> / Session 2 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn Claude with Phoebe · Session 2 of 6</div>
+    <h1>Your AI chief of staff: <span class="accent">daily automation</span></h1>
+    <p class="sub">Morning briefings from your real calendar, critical email alerts that interrupt only when they should, one-sentence meeting booking in Slack, and a knowledge base that never forgets - all on our Claude Teams plan, and you build the core yourself today.</p>
+    <div class="chip-row">
+      <span class="chip level">🟢 Easy</span>
+      <span class="chip audience">Senior management</span>
+      <span class="chip audience">C-level</span>
+      <span class="chip audience">EAs &amp; chiefs of staff</span>
+      <span class="chip time">45 min live + self-study</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:3">3-18 · Concepts</span>
+      <span class="a3" style="flex:5">18-40 · Build your own</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Why this session exists</h2>
+    </div>
+    <p class="lede">Your mornings start with 40 unread emails, a packed calendar, and no time to figure out which three things actually matter. This session builds you an executive chief of staff on the tools we already pay for: Slack stays your front door, Claude Teams is the brain, and Google Workspace is where your data already lives. No third-party middleware, no new vendors.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill amber">★ Build-along demo</span>
+      <span class="pill inkpill">3 official courses covered</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      Your own "Chief of Staff" Claude Project running a real morning briefing on YOUR calendar and inbox, a scheduled 8am auto-briefing, and a one-page plan (plus a ready-to-send request to IT) for the Slack and alert automations. Bring your laptop - the middle 22 minutes are you building.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: THE PATTERN ============ -->
+  <section class="section" id="pattern">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · the chief-of-staff pattern</span>
+      <h2>One brain, two doors, six jobs <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">Everything today follows one architecture: you talk to Claude through Slack or the Claude app, Claude reads your Workspace through governed connectors, and only summaries come back out. Six jobs, one pattern.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Architecture: Slack and Claude apps talk to Claude Teams, which reads Google Workspace through connectors">
+        <style>
+          .arH { font: 700 16px Inter, sans-serif; fill: #FFFFFF; }
+          .arHd { font: 700 16px Inter, sans-serif; fill: #4F46E5; }
+          .arX { font: 400 12.5px Inter, sans-serif; fill: #6B6B80; }
+          .arT { font: 600 13px Inter, sans-serif; fill: #1B1B2F; }
+          .arA { stroke: #C9C9D6; stroke-width: 2; fill: none; marker-end: url(#arAh); }
+        </style>
+        <defs>
+          <marker id="arAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#C9C9D6" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <rect x="20" y="60" width="200" height="130" rx="14" fill="#EEF2FF" stroke="#C9C9D6"/>
+        <text class="arHd" x="52" y="88">Your front doors</text>
+        <text class="arT" x="40" y="118">💬 Slack (@Claude / DM)</text>
+        <text class="arT" x="40" y="144">🖥️ Claude app + web</text>
+        <text class="arT" x="40" y="170">📱 Claude mobile</text>
+        <line class="arA" x1="228" y1="125" x2="318" y2="125"/>
+        <rect x="325" y="45" width="220" height="160" rx="14" fill="#4F46E5"/>
+        <text class="arH" x="380" y="76">Claude Teams</text>
+        <text class="arH" x="345" y="106" style="font-size:13px; font-weight:400; opacity:.9">Chief of Staff Project</text>
+        <text class="arH" x="345" y="130" style="font-size:13px; font-weight:400; opacity:.9">Your instructions + VIP list</text>
+        <text class="arH" x="345" y="154" style="font-size:13px; font-weight:400; opacity:.9">Scheduled 8am briefing</text>
+        <text class="arH" x="345" y="178" style="font-size:13px; font-weight:400; opacity:.9">Claude Tag in Slack</text>
+        <line class="arA" x1="553" y1="125" x2="643" y2="125"/>
+        <rect x="650" y="60" width="210" height="130" rx="14" fill="#1B1B2F"/>
+        <text class="arH" x="678" y="90">Google Workspace</text>
+        <text class="arH" x="670" y="120" style="font-size:13px; font-weight:400; opacity:.85">📧 Gmail · 📅 Calendar</text>
+        <text class="arH" x="670" y="146" style="font-size:13px; font-weight:400; opacity:.85">📁 Drive · 🚪 Rooms</text>
+        <text class="arH" x="670" y="172" style="font-size:13px; font-weight:400; opacity:.85">via approved connectors</text>
+        <text class="arX" x="20" y="235">Data flows right to left as summaries only: Claude reads what YOU can read, and Slack sees the digest, never raw mailboxes.</text>
+        <rect x="20" y="255" width="14" height="14" rx="3" fill="#F59E0B"/>
+        <text class="arT" x="44" y="267">Replaces the Gemini + Apps Script "Gem" pattern - same jobs, fewer moving parts, no API keys for the core.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the chief-of-staff architecture on our stack</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>The six jobs your chief of staff does<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <table class="clean">
+          <thead><tr><th>Job</th><th>You say / it happens</th><th>Built in</th></tr></thead>
+          <tbody>
+            <tr><td>1 · Morning briefing + to-do</td><td>"Morning briefing" → today's meetings, conflicts, email triage, 3-5 item to-do</td><td>Demo 1 + 2</td></tr>
+            <tr><td>2 · Critical email alerts</td><td>Emails scored 1-5; only 4-5 (Chairman, budgets, deadlines) surface</td><td>Demo 1 · Tier 3 for push</td></tr>
+            <tr><td>3 · Document search + knowledge base</td><td>"Find the latest file on X" → doc found, 3-5 takeaways summarized</td><td>Demo 1</td></tr>
+            <tr><td>4 · Text-to-calendar</td><td>"Book coffee with HR tomorrow 2pm" in Slack → event appears, bot confirms</td><td>Tier 2</td></tr>
+            <tr><td>5 · Room &amp; attendee coordination</td><td>"Is Room A free tomorrow afternoon?" → 2-3 slots where rooms AND people are free</td><td>Tier 2/3</td></tr>
+            <tr><td>6 · Auto briefing at 8am</td><td>The briefing is waiting before you open your laptop</td><td>Demo 2</td></tr>
+          </tbody>
+        </table>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>A managing director's Tuesday, after setup:</strong> 8:00 - the briefing is already in Slack: 6 meetings, one conflict flagged, two critical emails (a board member on budget, a contract deadline), a 4-item to-do. 8:05 - she DMs "@Claude move my 3pm to Thursday and book Room B" - done. 10:40 - an alert interrupts: the auditor needs a response by noon. Everything else waited for lunch. That is the chief-of-staff experience - roughly 30 minutes of triage handed back, every day.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Security first - the slide for your own boss<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Lead with this before anyone asks. The whole system runs on tools we already license, inside our corporate perimeter:</p>
+        <ul>
+          <li><strong>No training on our data.</strong> Claude Teams and Enterprise data is never used to train models - contractual, not a setting.</li>
+          <li><strong>Permission inheritance.</strong> Connectors act as YOU: Claude can only see the emails, events and files your own account can see. A briefing never leaks someone else's inbox.</li>
+          <li><strong>Slack sees summaries only.</strong> The raw mailbox is read inside the Claude-to-Workspace connection; what lands in Slack is the processed digest.</li>
+          <li><strong>No third-party middleware.</strong> No Zapier, no Make.com - direct, admin-governed integrations. Our sys admin can see, approve, and revoke every connector.</li>
+          <li><strong>Human in the loop stays.</strong> The chief of staff drafts, flags, and proposes; sending, deciding, and signing stay with you (that is Diligence from Session 1).</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Say it in one line</strong>
+          "It runs on our existing Claude Teams and Google Workspace licenses, reads only what I can already read, never trains on our data, and Slack only ever sees the summary."
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>What needs sys-admin approval - and the ready-to-send request<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Three approvals unlock everything in this session. Copy the request below, adjust, send. (The full template also lives in the repo under <code>materials/templates/</code>.)</p>
+        <table class="clean">
+          <thead><tr><th>Approval</th><th>Unlocks</th><th>Effort for IT</th></tr></thead>
+          <tbody>
+            <tr><td>Google Workspace connectors (Gmail, Calendar, Drive)</td><td>Briefings, triage, doc search - the core</td><td>Enable in Claude admin console, one time</td></tr>
+            <tr><td>Claude app for Slack (Claude Tag)</td><td>@Claude in channels, DMs, one-sentence booking</td><td>Install from Slack Marketplace + workspace approval</td></tr>
+            <tr><td>Claude API key (optional, Tier 3 only)</td><td>The push automations: 5-minute email watcher, room engine</td><td>Create a scoped key, store in Apps Script properties</td></tr>
+          </tbody>
+        </table>
+        <div class="prompt-box good"><span class="label">★ Send to your sys admin</span>Subject: Enable Claude connectors for the exec team - 3 items
+
+Hi [admin name],
+
+Following the Claude onboarding session, [N] of us on the senior team want to run the "chief of staff" workflow (morning briefing, email triage, document search) on our existing Claude Teams plan. Three requests:
+
+1. Enable the Google Workspace connectors (Gmail, Calendar, Drive) for our Claude Teams workspace - they respect existing user permissions and are covered by the Teams no-training guarantee.
+2. Install the Claude app for Slack from the Slack Marketplace and approve it for our workspace, so we can DM @Claude and use it in a private #cos-alerts channel.
+3. (Optional, for the automation phase) Create one Claude API key for the automation service account, to be stored in Google Apps Script's Properties Service - used only for scheduled email scoring and room booking.
+
+Security posture: no third-party middleware, connectors inherit user permissions, Teams data is excluded from model training. Happy to walk through it - it took 45 minutes to learn, it'll take you less.
+
+Thanks,
+[name]</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: THREE TIERS ============ -->
+  <section class="section" id="tiers">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · how it's built</span>
+      <h2>Three tiers, from ten minutes to full autopilot <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">You don't need everything on day one. Tier 1 you build yourself in the next 22 minutes. Tier 2 is one admin install away. Tier 3 is a one-time, ~90-minute job for one IT champion - and every executive benefits from the same engine.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 265" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Three build tiers: personal project today, Slack and schedules this week, automation engine this month">
+        <style>
+          .tiT { font: 700 16px Inter, sans-serif; fill: #FFFFFF; }
+          .tiS { font: 400 12.5px Inter, sans-serif; fill: #FFFFFF; opacity: .88; }
+          .tiC { font: 600 13px Inter, sans-serif; fill: #1B1B2F; }
+          .tiX { font: 400 13px Inter, sans-serif; fill: #6B6B80; }
+        </style>
+        <rect x="30" y="140" width="250" height="80" rx="12" fill="#818CF8"/>
+        <text class="tiT" x="50" y="170">Tier 1 · today, yourself</text>
+        <text class="tiS" x="50" y="192">Chief of Staff project + connectors:</text>
+        <text class="tiS" x="50" y="209">briefing, triage, doc search on demand</text>
+        <rect x="315" y="90" width="250" height="130" rx="12" fill="#4F46E5"/>
+        <text class="tiT" x="335" y="120">Tier 2 · this week, admin</text>
+        <text class="tiS" x="335" y="142">Claude in Slack (@Claude, DMs),</text>
+        <text class="tiS" x="335" y="159">scheduled 8am auto-briefing,</text>
+        <text class="tiS" x="335" y="176">one-sentence meeting booking</text>
+        <rect x="600" y="40" width="250" height="180" rx="12" fill="#312E81"/>
+        <text class="tiT" x="620" y="70">Tier 3 · IT champion, once</text>
+        <text class="tiS" x="620" y="92">Apps Script + Claude API engine:</text>
+        <text class="tiS" x="620" y="109">5-min email watcher → #cos-alerts,</text>
+        <text class="tiS" x="620" y="126">room + attendee FreeBusy booking,</text>
+        <text class="tiS" x="620" y="143">push briefings to the channel,</text>
+        <text class="tiS" x="620" y="160">same code reused per executive</text>
+        <text class="tiC" x="30" y="250">No code · 10 minutes</text>
+        <text class="tiC" x="315" y="250">No code · 1 admin install</text>
+        <text class="tiC" x="600" y="250">~200 lines · one time, everyone benefits</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the three build tiers</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Tier 1 - the Chief of Staff project<span class="mini">2 min · then Demo 1</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A Claude Project (Session 1's "knowledge that compounds") with two things inside: <strong>connectors switched on</strong> (Gmail, Calendar, Drive) and <strong>standing instructions</strong> that turn generic Claude into YOUR chief of staff - who your VIPs are, what counts as critical, how you like your briefing. Once saved, every conversation in the project starts already knowing the rules. You build this yourself in Demo 1 with the exact instruction prompt below.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>The instruction block is where the magic personalizes: a CFO lists the audit committee and "anything with the word covenant" as auto-critical; a CMO lists agency partners and campaign-budget threads. Same template, different VIP list - that one paragraph is the difference between a generic assistant and YOUR chief of staff.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Tier 2 - Claude in Slack + the 8am schedule<span class="mini">3 min · then Demos 2-3</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><strong>Slack stays your chat tool</strong> - Claude moves in. With the Claude app for Slack (Claude Tag, rolling out to Teams and Enterprise plans since June 2026) installed by your admin:</p>
+        <ul>
+          <li><strong>DM @Claude</strong> like a colleague: "Book a 30-min sync with the DS team tomorrow at 2pm", "Any urgent emails?", "Find the Q3 roadmap".</li>
+          <li><strong>Tag @Claude in a channel</strong> - one shared Claude per channel that the whole team sees and can redirect mid-task. Perfect for a private <strong>#cos-alerts</strong> channel with you and your EA.</li>
+          <li><strong>Admin-controlled:</strong> channel-level access controls; Claude in Slack respects the same workspace governance as everything else.</li>
+        </ul>
+        <p><strong>The 8am auto-briefing</strong> needs no code either: Claude's scheduled tasks run your briefing prompt on a timer - every weekday morning, the digest is waiting before you open your laptop. You configure yours in Demo 2.</p>
+        <h4>End-to-end config (what your admin does once)</h4>
+        <div class="steps">
+          <div class="step"><p>Slack Marketplace → search "Claude" → Add to Slack → approve for the workspace (workspace admin).</p></div>
+          <div class="step"><p>Connect the Claude workspace when prompted, so Slack conversations use our Teams plan (and its no-training guarantee).</p></div>
+          <div class="step"><p>Create the private channel <strong>#cos-alerts</strong> → invite yourself, your EA, and <code>/invite @Claude</code>.</p></div>
+          <div class="step"><p>Test: DM @Claude "hello" - then try "What's on my calendar tomorrow?" once connectors are approved.</p></div>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Tier 3 - the push-automation engine (for your IT champion)<span class="mini">3 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Two jobs genuinely need a scheduled engine rather than a chat: the <strong>5-minute email watcher</strong> (score every new email 1-5 with Claude, push only 4-5 to #cos-alerts) and <strong>room + attendee FreeBusy booking</strong> across resource calendars. The original chief-of-staff pattern used Google Apps Script + the Gemini API - we keep the exact same architecture and swap in the Claude API. One file, ~200 lines, no servers.</p>
+        <div class="prompt-box good"><span class="label">The one function that changes</span>// Apps Script: Claude replaces Gemini - everything else stays identical
+const ANTHROPIC_API_KEY = PropertiesService.getScriptProperties().getProperty('ANTHROPIC_API_KEY');
+
+function askClaude(prompt) {
+  const resp = UrlFetchApp.fetch('https://api.anthropic.com/v1/messages', {
+    method: 'post',
+    contentType: 'application/json',
+    headers: {
+      'x-api-key': ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01'
+    },
+    payload: JSON.stringify({
+      model: 'claude-sonnet-5',
+      max_tokens: 1024,
+      messages: [{ role: 'user', content: prompt }]
+    }),
+    muteHttpExceptions: true
+  });
+  const json = JSON.parse(resp.getContentText());
+  return (json.content && json.content[0]) ? json.content[0].text : 'Could not process that request.';
+}</div>
+        <ul>
+          <li><strong>Email watcher:</strong> Apps Script timer (every 5 min) reads unread Gmail → <code>askClaude</code> scores 1-5 with your VIP rubric → score ≥4 posts to the #cos-alerts webhook → thread labeled processed. Low-priority mail stays silent.</li>
+          <li><strong>Room engine:</strong> parses "find a room for a 1-hour meeting with john@ Thursday morning" → FreeBusy query across room calendars AND attendees → returns 2-3 slots where everyone and a room are free.</li>
+          <li><strong>Secrets hygiene:</strong> API key and Slack webhook live in Apps Script's Properties Service - never hard-coded, never in Slack messages.</li>
+          <li><strong>The complete adapted script</strong> (config, Slack webhook helper, email watcher, room engine, daily briefing trigger, deploy steps) is in the repo: <code>materials/templates/apps-script-claude-cos.md</code>. Setup is ~90 minutes once; each additional executive is a config entry.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Build order that works</strong>
+          Run Tiers 1-2 for two weeks first. Most executives find the scheduled briefing + on-demand triage covers 80% of the value - then Tier 3 is a deliberate upgrade, not day-one complexity.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: THE USE CASES ============ -->
+  <section class="section" id="use-cases">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · the six jobs, properly</span>
+      <h2>Prompts and patterns for each job <span class="tag concept">4 min live</span></h2>
+    </div>
+    <p class="lede">Every job from the architecture, with the working prompt. In the session we do jobs 1-3 live inside your new project; the rest are configured in Tier 2/3.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Job 1 · The morning briefing and to-do list<span class="mini">1.5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The crown jewel. One word - "Morning briefing" - and your chief of staff scans today's calendar, triages 24 hours of email against your VIP rubric, and hands you a 3-5 item to-do list. The intelligence lives in the project instructions (Demo 1); the schedule makes it automatic (Demo 2).</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>What good looks like: "3 back-to-backs 9-11 with no prep gap - I moved your reading time. Conflict: the vendor call overlaps the leadership sync. Critical: board member Y asked for the revised budget by EOD (email 2h ago). To-do: 1) approve budget note, 2) 5-min prep for the 2pm negotiation - talking points attached, 3) sign the contract renewal before Thursday."</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Job 2 · Critical email alerts - the 1-5 triage funnel<span class="mini">1.5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <figure class="zoomable">
+          <svg viewBox="0 0 880 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Email triage funnel: all email scored 1 to 5, only scores 4 and 5 interrupt you">
+            <style>
+              .fuT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+              .fuI { font: 600 13px Inter, sans-serif; fill: #1B1B2F; }
+              .fuX { font: 400 13px Inter, sans-serif; fill: #6B6B80; }
+            </style>
+            <rect x="40" y="30" width="800" height="38" rx="10" fill="#C9C9D6"/>
+            <text class="fuT" x="330" y="55">every incoming email (100%)</text>
+            <rect x="150" y="90" width="580" height="38" rx="10" fill="#818CF8"/>
+            <text class="fuT" x="285" y="115">scored 1-5 by Claude against YOUR rubric</text>
+            <rect x="310" y="150" width="260" height="38" rx="10" fill="#4F46E5"/>
+            <text class="fuT" x="345" y="175">score 4-5 → alert (~5%)</text>
+            <text class="fuI" x="40" y="218">5 = crisis (Chairman/Board, legal, financial) · 4 = high (MD/HoD, budgets, deadlines)</text>
+            <text class="fuX" x="40" y="240">3 = normal, waits for your check · 2 = FYI · 1 = noise. Nothing below 4 interrupts you. You calibrate the rubric weekly.</text>
+          </svg>
+          <figcaption>🔍 Click to zoom - the triage funnel: only the top of the funnel interrupts</figcaption>
+        </figure>
+        <div class="prompt-box good"><span class="label">★ On-demand check (works after Demo 1)</span>Check my priority emails from the last 12 hours.
+Score each 1-5 using my rubric (5=Crisis, 4=High, 3=Normal, 2=FYI, 1=Noise).
+Show ONLY score 4-5, each as: Sender - Subject - why it's critical - the action I must take.
+If nothing scores 4+, just say so - do not promote a 3.</div>
+        <p>The push version (alerts arriving in #cos-alerts within 5 minutes, unprompted) is the Tier 3 watcher - same rubric, on a timer.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Job 3 · Document search and the team knowledge base<span class="mini">1 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Two complementary moves:</p>
+        <ul>
+          <li><strong>Search what exists:</strong> with the Drive connector, "Find the latest file on [project] and summarize the 3-5 core takeaways" replaces ten minutes of Drive archaeology - and it only finds files you already have access to.</li>
+          <li><strong>Curate what matters:</strong> upload the 5-10 documents you're tired of re-explaining (strategy note, org chart, glossary, key policies) into the project itself. Now every briefing and draft is grounded in the same canon - that is your team knowledge base, and on Teams you can share the whole project.</li>
+        </ul>
+        <div class="prompt-box good"><span class="label">★ Try in Demo 1</span>Find the latest file on [a real project name] in my Drive.
+Give me: the file (linked), when it was last updated, and the 3-5 takeaways an executive needs. If several candidates exist, pick the most recent and list the others in one line.</div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Jobs 4-5 · Text-to-calendar and room coordination<span class="mini">1.5 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><strong>Text-to-calendar:</strong> with the Calendar connector, booking is one sentence to @Claude in Slack or in your project: "Book a 30-min sync with [name] tomorrow at 2pm." Claude extracts title, time, attendees, confirms with you, creates the event. The chief-of-staff instructions make it always confirm before creating - Diligence by design.</p>
+        <p><strong>Rooms and attendees:</strong> "Is Room A free tomorrow afternoon?" or "Find a slot Thursday morning where John, Sarah and a meeting room are all free." Simple checks work through the Calendar connector; the exhaustive cross-referencing version (every room × every attendee × 30-minute grid) is the Tier 3 FreeBusy engine, which returns "Option 1: 09:30-10:30 in Room A or Room C - all attendees free."</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>The showstopper moment from the original playbook stays the showstopper here: an MD types one sentence in Slack, the confirmation appears in the thread, and the event is on the calendar before the meeting about meetings would have even been scheduled.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Job 6 + file management · Claude Cowork, your AI that works IN your files<span class="mini">2.5 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Everything so far reads and summarizes. <strong>Claude Cowork</strong> (in the Claude desktop app) goes further: you point it at a folder and it works - renames and organizes files, drafts documents in place, processes a stack of PDFs, builds the deck skeleton. It runs a visible <strong>task loop</strong>:</p>
+        <figure class="zoomable">
+          <svg viewBox="0 0 880 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cowork task loop: brief, plan, work, review">
+            <style>
+              .cwT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+              .cwI { font: 700 15px Inter, sans-serif; fill: #4F46E5; }
+              .cwX { font: 400 12.5px Inter, sans-serif; fill: #6B6B80; }
+              .cwA { stroke: #C9C9D6; stroke-width: 2; fill: none; marker-end: url(#cwAh); }
+            </style>
+            <defs>
+              <marker id="cwAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6" fill="none" stroke="#C9C9D6" stroke-width="1.5"/>
+              </marker>
+            </defs>
+            <rect x="40" y="40" width="170" height="50" rx="10" fill="#4F46E5"/>
+            <text class="cwT" x="85" y="71">1 Brief it</text>
+            <rect x="250" y="40" width="170" height="50" rx="10" fill="#EEF2FF" stroke="#C9C9D6"/>
+            <text class="cwI" x="285" y="71">2 It plans</text>
+            <rect x="460" y="40" width="170" height="50" rx="10" fill="#6366F1"/>
+            <text class="cwT" x="500" y="71">3 It works</text>
+            <rect x="670" y="40" width="170" height="50" rx="10" fill="#312E81"/>
+            <text class="cwT" x="700" y="71">4 You review</text>
+            <line class="cwA" x1="218" y1="65" x2="242" y2="65"/>
+            <line class="cwA" x1="428" y1="65" x2="452" y2="65"/>
+            <line class="cwA" x1="638" y1="65" x2="662" y2="65"/>
+            <text class="cwX" x="40" y="120">"Organize this folder of 80</text>
+            <text class="cwX" x="40" y="137">contracts by vendor and year"</text>
+            <text class="cwX" x="250" y="120">shows you the plan</text>
+            <text class="cwX" x="250" y="137">before touching a file</text>
+            <text class="cwX" x="460" y="120">renames, moves, drafts -</text>
+            <text class="cwX" x="460" y="137">visibly, step by step</text>
+            <text class="cwX" x="670" y="120">approve, correct,</text>
+            <text class="cwX" x="670" y="137">or roll back</text>
+          </svg>
+          <figcaption>🔍 Click to zoom - the Cowork task loop: it plans before it touches anything</figcaption>
+        </figure>
+        <ul>
+          <li><strong>Standing context:</strong> global instructions + projects work here too - Cowork picks up the same chief-of-staff rules.</li>
+          <li><strong>Skills and plugins:</strong> teach Cowork your recurring file jobs ("month-end board pack assembly") once, reuse forever - that is Session 3's entire topic.</li>
+          <li><strong>Claude in Chrome and Microsoft 365:</strong> the same assistant inside the browser and Office surfaces, so "where you work" stops mattering.</li>
+          <li><strong>Safety practices:</strong> start with a copy of the folder, review the plan before approving, validate third-party skills before installing - the same Diligence habits, applied to files.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 3</span>
+      <h2>Build YOUR chief of staff <span class="tag demo">★ 12 min · everyone builds</span></h2>
+    </div>
+    <p class="lede">By the end of this demo, a real morning briefing runs on your real calendar and inbox. Laptops open.</p>
+
+    <div class="steps">
+      <div class="step"><p>In Claude, create a new Project. Name it <strong>Chief of Staff</strong>.</p></div>
+      <div class="step"><p>Open Settings → Connectors → enable <strong>Gmail, Google Calendar, Google Drive</strong> and authorize with your corporate account. (If the toggles are missing, the admin approval hasn't landed - pair up with a neighbor who has it, and send the Part 1 request after the session.)</p></div>
+      <div class="step"><p>Paste the instruction prompt below into the project's instructions, then <strong>personalize the VIP list</strong> - replace the role placeholders with the real names that matter to you.</p></div>
+      <div class="step"><p>Type: <strong>"Morning briefing"</strong>. Watch it scan YOUR day. Then run: <strong>"Check priority emails from the last 12 hours"</strong> and <strong>"Find the latest file on [a real project]"</strong>.</p></div>
+      <div class="step"><p>Discernment lap (Session 1 habit): tell it one thing to fix - "too long, cap the briefing at 150 words" or "add my 1:1s' prep notes". The instruction learns when you re-save it.</p></div>
+    </div>
+
+    <div class="prompt-box good"><span class="label">★ The chief-of-staff instructions - paste into your project</span>You are my executive chief of staff. You have access to my Gmail, Google Calendar, and Google Drive through connectors - use them.
+
+1. MORNING BRIEFING - when I say "Morning briefing":
+   - Scan today's calendar: bulleted meeting list (times, attendees), flag conflicts and missing prep gaps.
+   - Scan the last 24h of email. Flag CRITICAL ALERTS using my rubric:
+     * SENDER: Chairman, board members, managing directors, heads of department, my assistant. [REPLACE WITH REAL NAMES]
+     * TOPIC: budget, finance, invoices, contracts, audit, compliance, urgent HR, risk escalations. [ADJUST TO YOUR WORLD]
+     * TIMING: anything needing a response today or within hours.
+   - End with a crisp 3-5 item to-do list, most critical first.
+
+2. PRIORITY EMAIL CHECK - when I say "Check priority emails":
+   - Score each email 1-5: 5=Crisis, 4=High, 3=Normal, 2=FYI, 1=Noise.
+   - Show ONLY 4-5: Sender - Subject - why critical - action required. Never promote a 3.
+
+3. DOCUMENT SEARCH - when I say "Find a file on [topic]":
+   - Search my Drive, return the best match linked, last-updated date, and 3-5 executive takeaways.
+
+4. MEETINGS - when I ask to schedule or check availability:
+   - Check attendees' and rooms' free/busy where you can, propose 2-3 slots, and ALWAYS confirm with me before creating any event.
+
+Tone: professional, direct, executive-ready. Lead with critical items. Bullets, no fluff. If data is unavailable (connector off, no results), say so plainly - never invent.</div>
+
+    <div class="callout tip">
+      <strong>Data tip</strong>
+      Connectors read your real inbox - so today's practice IS production. Nothing needs pasting anywhere, which is exactly the point: the data never leaves the governed connection.
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 3</span>
+      <h2>Schedule the 8am auto-briefing <span class="tag demo">★ 5 min · everyone configures</span></h2>
+    </div>
+    <p class="lede">The difference between a tool and a chief of staff: the chief of staff shows up unasked. Two minutes of configuration, then it's every weekday, forever.</p>
+
+    <div class="steps">
+      <div class="step"><p>In Claude, ask: <strong>"Every weekday at 8:00am, run my morning briefing from the Chief of Staff project and send it to me."</strong> Claude sets up the scheduled task; confirm the schedule it proposes.</p></div>
+      <div class="step"><p>Check the schedule: ask "list my scheduled tasks" - you should see the weekday 8am briefing. Adjust the time to beat your commute.</p></div>
+      <div class="step"><p>Tomorrow morning: read the briefing that arrived before you did. Note ONE thing it missed or over-flagged - that's your calibration input for the week.</p></div>
+    </div>
+
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p>Week one, the briefing flags too much - everyone's rubric starts too broad. The calibration habit from the original playbook applies unchanged: each day ask "did the briefing miss anything? did it cry wolf?" and adjust one line of the instructions. By week two, the signal is clean, and that's when executives stop checking their inbox before breakfast.</p>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 3 ============ -->
+  <section class="section" id="demo-3">
+    <div class="section-kicker">
+      <span class="klabel">Demo 3 of 3</span>
+      <h2>Slack: one sentence, meeting booked <span class="tag demo">★ 5 min · follow along</span></h2>
+    </div>
+    <p class="lede">If the Claude app for Slack is already installed, everyone does this live; if not, watch the presenter and this becomes item 2 on your admin request.</p>
+
+    <div class="steps">
+      <div class="step"><p>In Slack, DM <strong>@Claude</strong>: "hello" - meet your chief of staff's front door.</p></div>
+      <div class="step"><p>The showstopper: <strong>"Book a 30-min sync with [a real colleague] tomorrow at 2pm."</strong> Confirm when it asks. Open Google Calendar - the event is there, booked from one sentence.</p></div>
+      <div class="step"><p>Try: <strong>"Is Room A free tomorrow afternoon?"</strong> and <strong>"Any urgent emails in the last 4 hours?"</strong></p></div>
+      <div class="step"><p>In your team channel, <strong>tag @Claude</strong> on a real thread: "@Claude summarize this thread and list the action items with owners." One shared Claude, visible to everyone - notice a colleague can redirect it mid-task.</p></div>
+    </div>
+
+    <div class="callout tip">
+      <strong>Why Slack and not just the Claude app?</strong>
+      Because it's where you already are at 8:03am. The #cos-alerts channel pattern keeps everything auditable in one place: scheduled briefings, critical alerts, and your one-off requests - and your EA sees the same picture you do.
+    </div>
+  </section>
+
+  <!-- ============ TRY IT / FOLLOW-UP ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">After the session</span>
+      <h2>This week, and how to ask follow-up questions <span class="tag exercise">◐ 30 min total</span></h2>
+    </div>
+    <ul>
+      <li><strong>Every morning this week:</strong> read the 8am briefing, then tell the project one correction ("X isn't critical", "always include prep notes for 1:1s"). Five daily minutes of calibration is what turns a demo into a chief of staff.</li>
+      <li><strong>Send the admin request</strong> (Part 1 template) if any connector or the Slack app was missing today.</li>
+      <li><strong>Curate your knowledge base:</strong> upload the 5 documents you re-explain most into the project.</li>
+      <li><strong>Nominate the IT champion</strong> for Tier 3 if you want push alerts - point them at <code>materials/templates/apps-script-claude-cos.md</code>; it's a ~90-minute one-time build.</li>
+      <li><strong>Stuck or curious? Ask Claude itself first</strong> - "I set up a chief-of-staff project in Claude; how do I make the briefing include my direct reports' OOO status?" It knows its own features, and the Session 1 "teach me" template works perfectly here.</li>
+      <li><strong>Then ask us:</strong> post in <strong>#learn-claude</strong> (tag @Claude in the thread - let it answer first, we'll add the company context), or bring it to next session's opening Q&amp;A.</li>
+    </ul>
+  </section>
+
+  <!-- ============ OFFICIAL COURSES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official courses and playbooks covered</h2>
+    </div>
+    <p class="lede">This session teaches the working content of three official courses from <a href="https://claude.com/resources/courses">claude.com/resources/courses</a>, plus our internal Chief-of-Staff setup playbook, adapted from its original Gemini + Apps Script design to Claude Teams. The 4D-framework halves of the two AI Fluency courses were taught in Session 1 - here you applied them.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Introduction to Claude Cowork</span><span class="note">task loop, standing context, skills &amp; plugins, Chrome/M365, safety - Part 3 + Session 3 continues skills</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">AI fluency for small businesses</span><span class="note">0.9 hr · refine loop, transparent AI use, human in the loop - applied throughout; 4D core in Session 1</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">AI fluency for nonprofits</span><span class="note">54 min · researching/writing with AI, privacy &amp; data, workflow augmentation - applied throughout; 4D core in Session 1</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Chief of Staff AI setup guide (internal)</span><span class="note">all 7 phases: gem→project, Slack app→Claude Tag, bot brain→connectors, calendar, alerts, rooms, auto-briefing</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 2 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The architecture</b><span>Slack + Claude app in front · Claude Teams project as the brain · Workspace connectors behind. Summaries out, never raw data.</span></div>
+      <div class="cheat-item"><b>Morning briefing</b><span>"Morning briefing" → schedule it for 8am weekdays. Calibrate one line daily for two weeks.</span></div>
+      <div class="cheat-item"><b>Email triage</b><span>Score 1-5 against YOUR VIP rubric. Only 4-5 interrupt. Never let it promote a 3.</span></div>
+      <div class="cheat-item"><b>Booking line</b><span>"Book a 30-min sync with [name] tomorrow 2pm" - to @Claude in Slack. Always confirm before create.</span></div>
+      <div class="cheat-item"><b>Knowledge base</b><span>Upload your 5 most re-explained docs to the project. Share the project with the team.</span></div>
+      <div class="cheat-item"><b>Security one-liner</b><span>"Runs on our licenses, reads only what I can read, never trains on our data, Slack sees summaries."</span></div>
+      <div class="cheat-item"><b>Three tiers</b><span>1: project (you, today) · 2: Slack + schedule (admin, this week) · 3: push engine (IT, ~90 min once).</span></div>
+      <div class="cheat-item"><b>Follow-up path</b><span>Ask Claude itself → #learn-claude channel (@Claude answers first) → next session's Q&amp;A.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Session 2 of 6 · learn-claude-with-phoebe · built with Claude</span>
+    <span><a href="01-foundations.html">← Session 1</a> &nbsp;·&nbsp; <a href="../index.html">All sessions</a> &nbsp;·&nbsp; <a href="03-sop-to-skill.html">Next: From SOP to skill →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=3"></script>
+</body>
+</html>

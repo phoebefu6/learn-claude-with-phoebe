@@ -43,7 +43,8 @@ Everything is static HTML/CSS/JS - no build step, works offline, prints cleanly.
 ## Status
 
 - Session 1: live
-- Sessions 2-6: in production
+- Session 2: live - includes the chief-of-staff build (Claude Project + connectors, Claude in Slack, scheduled briefings, and a Tier 3 Apps Script + Claude API push engine in `materials/templates/`)
+- Sessions 3-6: in production
 
 ---
 
