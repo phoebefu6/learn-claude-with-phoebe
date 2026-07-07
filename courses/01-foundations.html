@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session 1 · Meet Claude: AI fluency foundations - learn claude with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=2">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-claude-with-phoebe</a> / Session 1 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn Claude with Phoebe · Session 1 of 6</div>
+    <h1>Meet Claude: <span class="accent">AI fluency</span> foundations</h1>
+    <p class="sub">How AI actually works under the hood, how to drive Claude.ai like a power user, and the 4D framework that makes all of us better with AI by Friday.</p>
+    <div class="chip-row">
+      <span class="chip level">🟢 Easiest</span>
+      <span class="chip audience">All teams</span>
+      <span class="chip audience">C-level opener</span>
+      <span class="chip audience">DS &amp; AI</span>
+      <span class="chip audience">Marketing &amp; Branding</span>
+      <span class="chip time">45 min live + self-study depth</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:4">3-22 · Concepts (live cards)</span>
+      <span class="a3" style="flex:4">22-42 · Three demos</span>
+      <span class="a4" style="flex:1">42-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Why this session exists</h2>
+    </div>
+    <p class="lede">Everyone in the company now has a Claude Teams seat. Most of us are using maybe 10% of it - as a fancier search box. This series changes that in six 45-minute sessions, going from "chat better" to "build your own automations". Today replaces six official Anthropic courses (about 4 hours of lectures): the working content is all here, taught in 45 minutes plus this page for self-study.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill peach">★ Try it now prompt</span>
+      <span class="pill inkpill">6 official courses covered</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      A working mental model of how AI behaves and why, a Claude.ai workspace you set up yourself, one prompt structure (the 4D checklist) for any task, and a personal "teach me" tutor session. Cards marked "Live" are what we do together; "Self-study" cards give you the full course depth at your own pace.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: HOW AI ACTUALLY WORKS ============ -->
+  <section class="section" id="how-ai-works">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers "AI capabilities and limitations" + fluency deep dive</span>
+      <h2>How AI actually works <span class="tag concept">7 min live</span></h2>
+    </div>
+    <p class="lede">Four machine properties explain nearly every AI moment that ever surprised you: next-token prediction, knowledge, working memory, and steerability. Get these four and you can predict when Claude will be brilliant and when it will stumble - before it happens.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 265" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The four machine properties: prediction, knowledge, working memory, steerability">
+        <style>
+          .mpL { font: 800 40px Inter, sans-serif; fill: #FFFFFF; }
+          .mpT { font: 700 19px Inter, sans-serif; fill: #1B1B2F; }
+          .mpX { font: 400 13px Inter, sans-serif; fill: #6B6B80; }
+          .mpN { font: 600 14px Inter, sans-serif; fill: #3A2400; }
+        </style>
+        <rect x="20" y="30" width="80" height="80" rx="16" fill="#312E81"/>
+        <text class="mpL" x="47" y="84">P</text>
+        <text class="mpT" x="20" y="145">Prediction</text>
+        <text class="mpX" x="20" y="168">Predicts the next word,</text>
+        <text class="mpX" x="20" y="186">brilliantly - it does not</text>
+        <text class="mpX" x="20" y="204">look things up.</text>
+        <rect x="240" y="30" width="80" height="80" rx="16" fill="#4F46E5"/>
+        <text class="mpL" x="266" y="84">K</text>
+        <text class="mpT" x="240" y="145">Knowledge</text>
+        <text class="mpX" x="240" y="168">Trained knowledge with</text>
+        <text class="mpX" x="240" y="186">a cutoff - gaps invite</text>
+        <text class="mpX" x="240" y="204">hallucination.</text>
+        <rect x="460" y="30" width="80" height="80" rx="16" fill="#6366F1"/>
+        <text class="mpL" x="483" y="84">W</text>
+        <text class="mpT" x="460" y="145">Working memory</text>
+        <text class="mpX" x="460" y="168">The context window -</text>
+        <text class="mpX" x="460" y="186">big, but finite, and</text>
+        <text class="mpX" x="460" y="204">per-conversation.</text>
+        <rect x="680" y="30" width="80" height="80" rx="16" fill="#818CF8"/>
+        <text class="mpL" x="708" y="84">S</text>
+        <text class="mpT" x="680" y="145">Steerability</text>
+        <text class="mpX" x="680" y="168">Changes behavior on</text>
+        <text class="mpX" x="680" y="186">instruction - tone, format,</text>
+        <text class="mpX" x="680" y="204">rules. Most under-used.</text>
+        <rect x="20" y="228" width="14" height="14" rx="3" fill="#F59E0B"/>
+        <text class="mpN" x="44" y="240">Odd output? Two of these are colliding - diagnose which, then fix the prompt.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the four machine properties (from Anthropic's AI capabilities and limitations course)</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>What we mean by AI, and next-token prediction<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Claude is a large language model (LLM): a system trained on enormous amounts of text to do one deceptively simple thing - predict the next word, over and over, at incredible quality. It is not a database, not a search engine, and not a mind reader. Everything impressive and everything weird about AI flows from this one mechanic.</p>
+        <p>Because it predicts rather than looks up, the same prompt can produce different answers on different runs. That variability is a feature for brainstorming and a risk for facts - which is why verification habits matter (Part 3).</p>
+        <h4>Why this matters to you</h4>
+        <ul>
+          <li>It explains <strong>fluency without guarantees</strong>: Claude always sounds confident, because confident text is the most likely next text. Confidence is not evidence.</li>
+          <li>It explains why <strong>giving material beats asking cold</strong>: prediction conditioned on YOUR document is anchored; prediction from nothing is educated guessing.</li>
+        </ul>
+        <div class="prompt-box good"><span class="label">★ Try it now</span>Finish this sentence 5 different ways, from most predictable to most surprising: "The biggest bottleneck in our data team is"
+
+Then explain in 2 sentences how you generated these - what made one continuation more likely than another?</div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The same question, two ways.</strong> Ask Claude cold: "What was our company's Q2 revenue?" - it has no idea, and a weak prompt might get a confident-sounding guess. Now upload the quarterly report and ask: "Summarize this in 5 bullets for a team standup" - excellent, in seconds. Same tool; the difference is whether you gave it the facts to predict from.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>How AI gets its character<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Raw next-token prediction would happily continue any text, helpful or harmful, true or false. Models get their working personality in a second training phase: human feedback teaches the model which responses are helpful, honest, and safe. This is why Claude asks clarifying questions, declines some requests, and admits uncertainty - those behaviors were trained in deliberately.</p>
+        <ul>
+          <li><strong>Different models, different characters:</strong> the same question to Claude, ChatGPT and Gemini gets different styles because each company trains different behavior, not because one "knows more".</li>
+          <li><strong>Character is steerable:</strong> your instructions layer on top. Tell Claude "be blunt, skip the caveats" or "challenge my assumptions" and it will - see Steerability below.</li>
+          <li><strong>Claude specifically</strong> is trained by Anthropic with an emphasis on being helpful, harmless, and honest - it would rather say "I'm not sure" than fabricate, but it is not immune to error. Trust calibrated, never blind.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Knowledge - what Claude knows and when it invents<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Claude's built-in knowledge comes from training data with a <strong>cutoff date</strong>. It knows a compressed version of the public internet up to that point - and nothing after, nothing behind your company firewall, and nothing about your meeting this morning unless you paste it in.</p>
+        <figure class="zoomable">
+          <svg viewBox="0 0 880 195" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Knowledge timeline: training data up to a cutoff, then a gap until today">
+            <style>
+              .knB { font: 600 14px Inter, sans-serif; fill: #FFFFFF; }
+              .knG { font: 600 14px Inter, sans-serif; fill: #6B6B80; }
+              .knX { font: 400 13px Inter, sans-serif; fill: #6B6B80; }
+              .knC { font: 700 13px Inter, sans-serif; fill: #1B1B2F; }
+              .knN { font: 600 14px Inter, sans-serif; fill: #3A2400; }
+            </style>
+            <rect x="40" y="46" width="540" height="30" rx="8" fill="#4F46E5"/>
+            <text class="knB" x="180" y="66">training data - the public internet</text>
+            <line x1="580" y1="24" x2="580" y2="96" stroke="#1B1B2F" stroke-width="2"/>
+            <text class="knC" x="510" y="16">knowledge cutoff</text>
+            <rect x="580" y="46" width="260" height="30" rx="8" fill="#EEF2FF" stroke="#C9C9D6" stroke-dasharray="5 4"/>
+            <text class="knG" x="646" y="66">the gap - today</text>
+            <text class="knX" x="40" y="114">← ask directly: Claude's home turf</text>
+            <text class="knX" x="580" y="114">search the web, or paste sources in →</text>
+            <rect x="40" y="150" width="14" height="14" rx="3" fill="#F59E0B"/>
+            <text class="knN" x="64" y="162">Internal company info is never on this line at all - always provide the document.</text>
+          </svg>
+          <figcaption>🔍 Click to zoom - where Claude's knowledge ends and yours must begin</figcaption>
+        </figure>
+        <p>When asked for facts beyond its knowledge, a language model's failure mode is not silence - it is <strong>hallucination</strong>: fluent, plausible, wrong. The fix is always the same: supply the source, ask it to cite what it used, and tell it that "I don't know" is an acceptable answer.</p>
+        <table class="clean">
+          <thead><tr><th>Knowledge situation</th><th>What to do</th></tr></thead>
+          <tbody>
+            <tr><td>Stable public concepts (statistics, marketing frameworks, code)</td><td>Ask directly - this is Claude's home turf</td></tr>
+            <tr><td>Recent events, prices, versions, news</td><td>Use search/research mode or paste the source in</td></tr>
+            <tr><td>Anything internal to the company</td><td>Always provide the document - it cannot know</td></tr>
+            <tr><td>High-stakes facts (legal, financial, published numbers)</td><td>Provide source + verify the output yourself</td></tr>
+          </tbody>
+        </table>
+        <div class="prompt-box good"><span class="label">★ Try it now</span>What do you know about [your company name]? Split your answer into three lists:
+1. Things you're confident about
+2. Things you're unsure about
+3. Things you'd need me to provide
+
+Do not guess in list 1. Be honest about where your knowledge ends.</div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The cautionary tale everyone should know:</strong> in 2023, two New York lawyers were sanctioned in court (Mata v. Avianca) for filing a legal brief containing six cases that an AI chatbot had simply invented - they never checked. The AI didn't fail; the verification step did. That story is why this whole session exists.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Working memory - the context window<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Everything in your current conversation - your messages, uploaded files, Claude's replies - lives in a working memory called the <strong>context window</strong>. It is big (hundreds of pages) but finite, and two behaviors follow:</p>
+        <ul>
+          <li><strong>Long chats drift.</strong> In a marathon conversation, early details fade in influence. When a thread gets messy, start fresh and paste in a short summary of decisions so far - a clean context beats a cluttered one.</li>
+          <li><strong>Each conversation starts blank.</strong> Claude does not remember yesterday's chat unless your workspace has that feature enabled or you re-supply the material. Projects (Part 2) exist precisely to solve this - persistent knowledge that every conversation can see.</li>
+        </ul>
+        <div class="prompt-box good"><span class="label">★ Try it now</span>I'm going to paste a long document. Before I ask anything: list the 3 most important things you'll keep track of while reading it.
+
+Afterwards, when I ask questions - if you're not sure whether a detail was actually in the text, say "not in the document" instead of filling the gap from general knowledge.
+
+[paste a long report or policy doc]</div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>A 300-page policy PDF dumped in whole gets shallow answers - the important clause on page 214 competes with 299 other pages for attention. Feed it chapter by chapter and ask for a running summary, and the answers get sharp. Same model, managed memory.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Steerability - and when properties collide<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><strong>Steerability</strong> is the property that makes everything else usable: Claude will genuinely change its behavior - tone, format, depth, persona, rules - based on plain-language instructions. Most people dramatically under-steer. You can set rules for a whole conversation ("always answer in tables", "flag any assumption you make") and Claude will hold them.</p>
+        <p><strong>When properties collide</strong> is where AI gets weird. Steer it hard toward confidence ("give me a definitive answer") and you suppress its honesty about uncertain knowledge - you have steered it INTO hallucination. Ask for perfect recall at the end of a very long chat and steering can't beat memory limits. Odd outputs are almost never random: one property is being pushed against another. Diagnose which, fix the prompt.</p>
+        <div class="prompt-box good"><span class="label">★ Try it now</span>Explain what a data catalog is, 3 times, keeping every version factually identical:
+1. To a new intern, in 2 sentences
+2. To our CFO, in 3 bullets focused on cost and risk
+3. As a one-line Slack message
+
+Notice what changed and what didn't - that's steerability.</div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The arithmetic collision:</strong> "Total this 200-row expense list" in plain chat risks silent errors - you're asking a next-word predictor to be a calculator. Say "write and run the calculation as code" and it becomes exact, because now the right tool does the math. Knowing WHY it fails tells you the fix.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: DRIVING CLAUDE.AI ============ -->
+  <section class="section" id="driving-claude">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers "Claude 101"</span>
+      <h2>Driving Claude.ai <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">The features that separate a power user from a search-box user: conversations that compound, Projects that remember, Artifacts that ship, and the reach features your Teams plan includes.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Your first conversation, done properly<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A Claude conversation is a working session, not a query box. The habits that change everything:</p>
+        <ul>
+          <li><strong>Talk to it like a bright new colleague</strong> - full sentences, real context, actual stakes. "Help me prep for a tense budget meeting with marketing tomorrow" beats "budget meeting tips".</li>
+          <li><strong>Attach, don't describe.</strong> Drop in the file (PDF, spreadsheet, screenshot, code) instead of describing it. Claude reads images and documents directly.</li>
+          <li><strong>Iterate in the same thread.</strong> "Shorter." "More formal." "Now as a table." Each follow-up refines - you are steering, not re-rolling dice.</li>
+          <li><strong>Edit your prompt</strong> when a thread goes sideways - rewriting your message and re-running beats arguing with a bad draft.</li>
+          <li><strong>Pick the right model:</strong> the default model balances speed and depth; switch to the most capable model for complex reasoning, the fast one for bulk simple tasks.</li>
+        </ul>
+        <div class="prompt-box good"><span class="label">★ Try it now</span>I have [a real meeting from your calendar this week]. Help me prepare:
+1. Ask me up to 3 questions you need answered first
+2. Then give me a one-page prep: likely sticking points, my strongest arguments, and one question I should ask that others won't think of</div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Projects - knowledge that compounds<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A <strong>Project</strong> is a workspace with permanent memory: upload your team's key documents once, set standing instructions once, and every conversation inside the Project starts already knowing them. This is the single highest-leverage feature for teams - it turns Claude from a stranger into a briefed colleague.</p>
+        <h4>What goes in a good project</h4>
+        <ul>
+          <li><strong>Knowledge files:</strong> style guides, product specs, org charts, glossaries, key reports - the stuff you're tired of re-explaining.</li>
+          <li><strong>Custom instructions:</strong> "You support the data science team at [company]. Our stack is X. Always flag assumptions. Use our metric definitions from the glossary."</li>
+          <li><strong>Team sharing:</strong> on the Teams plan, share the Project so everyone's conversations start equally briefed - one setup, whole-team payoff.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>A brand team builds a "Brand HQ" project: voice guide, banned words, best past campaigns, current positioning doc. From then on, every caption, email, and deck request in that project comes back on-brand by default - no more pasting the style guide into every chat. We build exactly this in Demo 2.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Artifacts and skills - from answers to assets<span class="mini">1 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><strong>Artifacts</strong> turn Claude's output into a live, standalone piece of work beside the chat: documents, tables, diagrams, working web pages, small interactive tools. Ask for "an interactive checklist my team can tick off" and you get a working mini-app, not a paragraph. Artifacts can be edited by conversation ("make the header plum, add a filter"), shared with a link, and are how we prototype websites in Session 4.</p>
+        <p><strong>Skills</strong> are reusable instruction packs that teach Claude a repeatable job - your report format, your QA checklist, your SOP - so you invoke them instead of re-explaining. They are the star of Session 3, where we turn one of OUR real SOPs into a skill live.</p>
+        <div class="prompt-box good"><span class="label">★ Try it now</span>Create an artifact: a clean one-page checklist for onboarding a new [your team] team member. Make the items editable and tickable. Use only what a first-week person truly needs.</div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Expanding Claude's reach: connectors, search, research<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Connectors</strong> plug Claude into your tools - calendar, email, drive, project trackers - so it can read and act on live data. On our Teams plan most connectors need a one-time sys-admin approval; Session 2 includes the ready-to-send request template and builds the flagship automation (calendar → prioritized to-do list).</li>
+          <li><strong>Web search</strong> closes the knowledge-cutoff gap: Claude looks up current information and cites sources. Use it whenever "recent" matters.</li>
+          <li><strong>Research mode</strong> goes further: Claude plans a multi-step investigation, reads many sources, and returns a structured, cited report. Right for "compare these 5 vendors" - overkill for "what does churn mean".</li>
+          <li><strong>Enterprise search</strong> (when enabled by the org) lets Claude answer from internal company sources - ask your admin what's connected before assuming.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>What this means Monday morning.</strong> Today, zero approvals needed: upload the weekly sales CSV and ask "find the 3 biggest outliers and draft one question to ask about each". After the Session 2 connector request: "check my calendar and inbox, build my morning to-do list, flag anything from the CEO" - automatically, every morning.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Claude everywhere, and what your role uses it for<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Beyond the browser: the <strong>desktop app</strong> adds Cowork (Claude works on files in a folder you choose) and hosts Claude Code for engineers; the <strong>mobile app</strong> handles voice conversations and photos of whiteboards; Claude also lives inside some tools your team already uses. Session 5 covers Claude Code properly - here's what each seat in this room reaches for first:</p>
+        <table class="clean">
+          <thead><tr><th>Role</th><th>First wins with Claude</th></tr></thead>
+          <tbody>
+            <tr><td>DS &amp; AI</td><td>Code review and debugging, data cleaning plans, methodology critique, documentation drafts, offline script writing (Session 5)</td></tr>
+            <tr><td>Marketing &amp; Branding</td><td>Campaign copy in brand voice, audience personas, content repurposing (one asset → 5 formats), creative critique (Session 4)</td></tr>
+            <tr><td>C-level</td><td>Board pre-reads, decision framing (options + risks + recommendation), meeting prep, "explain this technical thing before my next call" (Demo 3)</td></tr>
+            <tr><td>Everyone</td><td>Email drafts, meeting summaries → action lists, document review, "teach me" sessions, first drafts of anything</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: THE 4D FRAMEWORK ============ -->
+  <section class="section" id="framework">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · covers "AI fluency: framework &amp; foundations"</span>
+      <h2>The 4D framework, properly <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">Anthropic's framework for working with AI effectively, efficiently, ethically and safely. Four competencies - Delegation, Description, Discernment, Diligence - each with real depth. This is the operating system for every demo in all six sessions.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The 4D map<span class="mini">1 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Why "fluency" and not "prompting"? Because prompting is only one D of four. Fluent people also choose the right work to hand over, judge outputs like an editor, and stay accountable for what ships. The four Ds, in working order:</p>
+        <figure class="zoomable">
+          <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The 4D AI fluency framework: Delegation, Description, Discernment, Diligence">
+            <style>
+              .dletter { font: 800 44px Inter, sans-serif; fill: #FFFFFF; }
+              .dtitle { font: 700 19px Inter, sans-serif; fill: #1B1B2F; }
+              .dtext { font: 400 13px Inter, sans-serif; fill: #6B6B80; }
+              .arrow { stroke: #C9C9D6; stroke-width: 2; fill: none; marker-end: url(#ah); }
+            </style>
+            <defs>
+              <marker id="ah" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6" fill="none" stroke="#C9C9D6" stroke-width="1.5"/>
+              </marker>
+            </defs>
+            <rect x="20" y="40" width="80" height="80" rx="16" fill="#312E81"/>
+            <text class="dletter" x="45" y="95">D</text>
+            <text class="dtitle" x="20" y="155">Delegation</text>
+            <text class="dtext" x="20" y="178">Choose WHAT to hand</text>
+            <text class="dtext" x="20" y="196">to AI vs keep human.</text>
+            <text class="dtext" x="20" y="222">"Is this a Claude task?"</text>
+            <line class="arrow" x1="205" y1="80" x2="235" y2="80"/>
+            <rect x="240" y="40" width="80" height="80" rx="16" fill="#4F46E5"/>
+            <text class="dletter" x="265" y="95">D</text>
+            <text class="dtitle" x="240" y="155">Description</text>
+            <text class="dtext" x="240" y="178">Say it well: context,</text>
+            <text class="dtext" x="240" y="196">role, format, audience,</text>
+            <text class="dtext" x="240" y="214">examples, constraints.</text>
+            <line class="arrow" x1="425" y1="80" x2="455" y2="80"/>
+            <rect x="460" y="40" width="80" height="80" rx="16" fill="#6366F1"/>
+            <text class="dletter" x="485" y="95">D</text>
+            <text class="dtitle" x="460" y="155">Discernment</text>
+            <text class="dtext" x="460" y="178">Judge the output:</text>
+            <text class="dtext" x="460" y="196">right? complete? on-brand?</text>
+            <text class="dtext" x="460" y="214">Push back, iterate.</text>
+            <line class="arrow" x1="645" y1="80" x2="675" y2="80"/>
+            <rect x="680" y="40" width="80" height="80" rx="16" fill="#818CF8"/>
+            <text class="dletter" x="705" y="95">D</text>
+            <text class="dtitle" x="680" y="155">Diligence</text>
+            <text class="dtext" x="680" y="178">Stay accountable:</text>
+            <text class="dtext" x="680" y="196">verify facts, protect data,</text>
+            <text class="dtext" x="680" y="214">own what ships.</text>
+          </svg>
+          <figcaption>🔍 Click to zoom - the 4D framework (from Anthropic's AI fluency: framework &amp; foundations course)</figcaption>
+        </figure>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Delegation - choosing the right work to hand over<span class="mini">1.5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Delegation has three layers, and most people skip the first two:</p>
+        <ul>
+          <li><strong>Problem awareness:</strong> what are you actually trying to achieve, and what does "good" look like? Fuzzy goals produce fuzzy delegations.</li>
+          <li><strong>Platform awareness:</strong> what is AI genuinely good at (Part 1!) and which tool fits - chat, a Project, research mode, or a human colleague?</li>
+          <li><strong>Task delegation:</strong> split the work. Which parts go to Claude, which stay with you, which are collaborative ping-pong?</li>
+        </ul>
+        <h4>Project planning with delegation in mind</h4>
+        <p>For any real project, list the tasks and mark each: <strong>AI-first</strong> (drafting, summarizing, structuring, variations), <strong>human-first</strong> (final judgment, relationships, confidential calls), or <strong>duet</strong> (AI drafts, you shape; you outline, AI expands). A campaign launch might delegate audience research summaries and copy variants, keep budget sign-off and partner negotiations, and duet the creative brief.</p>
+        <figure class="zoomable">
+          <svg viewBox="0 0 880 235" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Delegation lanes: AI-first, duet, human-first">
+            <style>
+              .dlH { font: 700 16px Inter, sans-serif; fill: #FFFFFF; }
+              .dlHd { font: 700 16px Inter, sans-serif; fill: #4F46E5; }
+              .dlC { font: 500 13px Inter, sans-serif; fill: #1B1B2F; }
+              .dlX { font: 400 13px Inter, sans-serif; fill: #6B6B80; }
+            </style>
+            <rect x="20" y="20" width="260" height="34" rx="8" fill="#4F46E5"/>
+            <text class="dlH" x="112" y="43">AI-first</text>
+            <rect x="310" y="20" width="260" height="34" rx="8" fill="#EEF2FF" stroke="#C9C9D6"/>
+            <text class="dlHd" x="416" y="43">Duet</text>
+            <rect x="600" y="20" width="260" height="34" rx="8" fill="#1B1B2F"/>
+            <text class="dlH" x="676" y="43">Human-first</text>
+            <rect x="20" y="70" width="260" height="28" rx="14" fill="#FFFFFF" stroke="#E9E9F2"/>
+            <text class="dlC" x="106" y="89">first drafts</text>
+            <rect x="20" y="106" width="260" height="28" rx="14" fill="#FFFFFF" stroke="#E9E9F2"/>
+            <text class="dlC" x="72" y="125">summaries &amp; structure</text>
+            <rect x="20" y="142" width="260" height="28" rx="14" fill="#FFFFFF" stroke="#E9E9F2"/>
+            <text class="dlC" x="78" y="161">variations at volume</text>
+            <rect x="310" y="70" width="260" height="28" rx="14" fill="#FFFFFF" stroke="#E9E9F2"/>
+            <text class="dlC" x="386" y="89">creative briefs</text>
+            <rect x="310" y="106" width="260" height="28" rx="14" fill="#FFFFFF" stroke="#E9E9F2"/>
+            <text class="dlC" x="368" y="125">analysis &amp; options</text>
+            <rect x="310" y="142" width="260" height="28" rx="14" fill="#FFFFFF" stroke="#E9E9F2"/>
+            <text class="dlC" x="360" y="161">performance-review notes</text>
+            <rect x="600" y="70" width="260" height="28" rx="14" fill="#FFFFFF" stroke="#E9E9F2"/>
+            <text class="dlC" x="678" y="89">final decisions</text>
+            <rect x="600" y="106" width="260" height="28" rx="14" fill="#FFFFFF" stroke="#E9E9F2"/>
+            <text class="dlC" x="668" y="125">confidential calls</text>
+            <rect x="600" y="142" width="260" height="28" rx="14" fill="#FFFFFF" stroke="#E9E9F2"/>
+            <text class="dlC" x="678" y="161">relationships</text>
+            <text class="dlX" x="20" y="210">Split any project into these three lanes before prompting anything - that is delegation.</text>
+          </svg>
+          <figcaption>🔍 Click to zoom - the three delegation lanes, with examples</figcaption>
+        </figure>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Press-release draft: delegate. Pricing decision: don't. The gray zone is where fluency shows: performance-review notes are a duet (Claude structures your raw observations; the judgment and the words that land stay yours).</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Description - the prompting masterclass<span class="mini">1.5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Description quality is the single biggest lever you control. Three kinds of describing, then the techniques:</p>
+        <ul>
+          <li><strong>Product description:</strong> what you want - task, format, length, audience.</li>
+          <li><strong>Process description:</strong> how to work - "think step by step", "ask clarifying questions first", "give 3 options before committing".</li>
+          <li><strong>Performance description:</strong> how to behave - tone, persona, confidence level, what to do when unsure.</li>
+        </ul>
+        <h4>The six elements of a strong prompt</h4>
+        <figure class="zoomable">
+          <svg viewBox="0 0 880 235" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Anatomy of a strong prompt: role, context, task, format, audience, guardrails stack into one prompt">
+            <style>
+              .paW { font: 600 14px Inter, sans-serif; fill: #FFFFFF; }
+              .paI { font: 600 14px Inter, sans-serif; fill: #1B1B2F; }
+              .paB { font: 700 17px Inter, sans-serif; fill: #1B1B2F; }
+              .paX { font: 400 13px Inter, sans-serif; fill: #6B6B80; }
+            </style>
+            <rect x="40" y="20" width="520" height="26" rx="6" fill="#312E81"/>
+            <text class="paW" x="56" y="38">Role - who Claude should be</text>
+            <rect x="40" y="52" width="520" height="26" rx="6" fill="#4F46E5"/>
+            <text class="paW" x="56" y="70">Context - the facts, pasted in</text>
+            <rect x="40" y="84" width="520" height="26" rx="6" fill="#6366F1"/>
+            <text class="paW" x="56" y="102">Task - the one thing to produce</text>
+            <rect x="40" y="116" width="520" height="26" rx="6" fill="#818CF8"/>
+            <text class="paW" x="56" y="134">Format - sections, length, tone</text>
+            <rect x="40" y="148" width="520" height="26" rx="6" fill="#A5B4FC"/>
+            <text class="paI" x="56" y="166">Audience - who reads it, with how much time</text>
+            <rect x="40" y="180" width="520" height="26" rx="6" fill="#C7D2FE"/>
+            <text class="paI" x="56" y="198">Guardrails - "only these facts; list gaps, don't guess"</text>
+            <line x1="590" y1="20" x2="590" y2="206" stroke="#C9C9D6" stroke-width="2"/>
+            <text class="paB" x="612" y="105">= one 4D prompt</text>
+            <text class="paX" x="612" y="130">six lines, two minutes,</text>
+            <text class="paX" x="612" y="148">ten times the output.</text>
+          </svg>
+          <figcaption>🔍 Click to zoom - the anatomy of a strong prompt</figcaption>
+        </figure>
+        <table class="clean">
+          <thead><tr><th>Element</th><th>Sounds like</th></tr></thead>
+          <tbody>
+            <tr><td>Role</td><td>"You are a head of data science preparing a board pre-read"</td></tr>
+            <tr><td>Context</td><td>"We are a [industry] company; here are the Q2 facts: ..."</td></tr>
+            <tr><td>Task</td><td>"Write a one-page performance summary"</td></tr>
+            <tr><td>Format</td><td>"3 sections, max 120 words each, end with the key trend"</td></tr>
+            <tr><td>Audience</td><td>"Non-technical board members with 3 minutes"</td></tr>
+            <tr><td>Guardrails</td><td>"Use ONLY these facts; list gaps instead of guessing"</td></tr>
+          </tbody>
+        </table>
+        <h4>Techniques that punch above their weight</h4>
+        <ul>
+          <li><strong>Show an example</strong> of what good looks like (last week's report) - one example outperforms three paragraphs of description.</li>
+          <li><strong>Ask it to ask:</strong> "ask me up to 3 questions before you start" catches missing context early.</li>
+          <li><strong>Positive instructions:</strong> say what TO do ("plain, confident language") over what not to do ("don't be wordy").</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Discernment - and the description-discernment loop<span class="mini">1 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Discernment is editorial judgment over three things: the <strong>product</strong> (is it right, complete, on-brand?), the <strong>process</strong> (did it reason soundly or leap?), and the <strong>performance</strong> (was the interaction style right - too agreeable, too verbose?).</p>
+        <p>The core working rhythm of AI fluency is the <strong>description-discernment loop</strong>: describe → get output → judge → describe better → repeat. First drafts are the start of the conversation, not the verdict. Specific feedback ("the tone in section 2 is alarmist - make it neutral and factual") beats re-rolling ("try again") every time.</p>
+        <figure class="zoomable">
+          <svg viewBox="0 0 880 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The description-discernment loop: describe, output, judge, refine, repeat">
+            <style>
+              .lpW { font: 700 16px Inter, sans-serif; fill: #FFFFFF; }
+              .lpI { font: 700 16px Inter, sans-serif; fill: #4F46E5; }
+              .lpX { font: 400 13px Inter, sans-serif; fill: #6B6B80; }
+              .lpArr { stroke: #C9C9D6; stroke-width: 2.5; fill: none; marker-end: url(#lpAh); }
+            </style>
+            <defs>
+              <marker id="lpAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6" fill="none" stroke="#C9C9D6" stroke-width="1.5"/>
+              </marker>
+            </defs>
+            <rect x="180" y="30" width="180" height="50" rx="10" fill="#4F46E5"/>
+            <text class="lpW" x="228" y="61">1 Describe</text>
+            <rect x="520" y="30" width="180" height="50" rx="10" fill="#EEF2FF" stroke="#C9C9D6"/>
+            <text class="lpI" x="572" y="61">2 Output</text>
+            <rect x="520" y="150" width="180" height="50" rx="10" fill="#6366F1"/>
+            <text class="lpW" x="576" y="181">3 Judge</text>
+            <rect x="180" y="150" width="180" height="50" rx="10" fill="#312E81"/>
+            <text class="lpW" x="228" y="181">4 Refine</text>
+            <line class="lpArr" x1="368" y1="55" x2="512" y2="55"/>
+            <line class="lpArr" x1="610" y1="88" x2="610" y2="142"/>
+            <line class="lpArr" x1="512" y1="175" x2="368" y2="175"/>
+            <line class="lpArr" x1="270" y1="142" x2="270" y2="88"/>
+            <text class="lpX" x="390" y="122">loop until it's right</text>
+            <text class="lpX" x="180" y="232">Refine = specific feedback on the weakest part, not "try again".</text>
+          </svg>
+          <figcaption>🔍 Click to zoom - the description-discernment loop</figcaption>
+        </figure>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>A manager's weekly report draft calls a 3% dip "alarming" - off-brand for a numbers-driven team. Weak move: accept it or start over. Fluent move: "Neutral, factual phrasing on the dip; add the 8-week trend for context" - 15 seconds, and the next draft is right. That's the loop.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Diligence - staying accountable<span class="mini">1 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Diligence is the D that protects your name and the company. Three parts:</p>
+        <ul>
+          <li><strong>Creation diligence:</strong> be thoughtful about which AI you use for what, and what data you share with it. Company policy and client confidentiality come first - when in doubt, sanitize.</li>
+          <li><strong>Transparency diligence:</strong> be appropriately open about AI's role in your work - with colleagues, clients, and regulators where it matters. "Claude drafted, I verified and decided" is a sentence to be comfortable saying.</li>
+          <li><strong>Deployment diligence:</strong> verify before it ships. You own the output - the Avianca lawyers learned this in federal court.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>The house rule</strong>
+          Claude drafts, a human decides. Anything that leaves the building - client email, board number, published copy - gets human verification. No exceptions, including for executives.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 4: LEARN, TEACH, STAY HUMAN ============ -->
+  <section class="section" id="learning">
+    <div class="section-kicker">
+      <span class="klabel">Part 4 · covers the students, educators &amp; teaching AI fluency courses</span>
+      <h2>Learn from Claude, then teach it forward <span class="tag concept">3 min live</span></h2>
+    </div>
+    <p class="lede">The most underused mode of AI - and, for leads, how to spread fluency through your team without running a 4-hour training.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Claude as your learning partner<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Claude adapts to your level, never judges a "dumb" question, and can quiz you until a concept sticks. The trap to avoid: letting AI do the understanding FOR you. Copy-pasting an explanation you didn't absorb is the professional version of copying homework - the goal is that YOU get smarter, not that an answer got produced.</p>
+        <h4>Four techniques, in rising order of learning power</h4>
+        <ul>
+          <li><strong>Explain:</strong> "Explain X like I'm a marketing director, not an engineer."</li>
+          <li><strong>Socratic:</strong> "Don't give me the answer - ask me questions until I get there."</li>
+          <li><strong>Quiz:</strong> "Quiz me with 5 questions, one at a time, and grade my answers honestly."</li>
+          <li><strong>Reverse:</strong> "I'll explain it back to you - correct my misunderstandings." (The strongest: teaching reveals what you don't know.)</li>
+        </ul>
+        <figure class="zoomable">
+          <svg viewBox="0 0 880 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Four learning techniques in rising order of power: explain, socratic, quiz, reverse">
+            <style>
+              .laT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+              .laC { font: 400 13px Inter, sans-serif; fill: #6B6B80; }
+              .laA { font: 600 13px Inter, sans-serif; fill: #6B6B80; }
+            </style>
+            <rect x="80" y="150" width="160" height="60" rx="10" fill="#818CF8"/>
+            <text class="laT" x="128" y="185">Explain</text>
+            <rect x="280" y="110" width="160" height="100" rx="10" fill="#6366F1"/>
+            <text class="laT" x="326" y="165">Socratic</text>
+            <rect x="480" y="70" width="160" height="140" rx="10" fill="#4F46E5"/>
+            <text class="laT" x="538" y="145">Quiz</text>
+            <rect x="680" y="30" width="160" height="180" rx="10" fill="#312E81"/>
+            <text class="laT" x="726" y="125">Reverse</text>
+            <text class="laC" x="88" y="232">it tells you</text>
+            <text class="laC" x="284" y="232">it asks you</text>
+            <text class="laC" x="486" y="232">it tests you</text>
+            <text class="laC" x="684" y="232">you teach it</text>
+            <line x1="40" y1="210" x2="40" y2="40" stroke="#C9C9D6" stroke-width="2"/>
+            <path d="M34,48 L40,36 L46,48" fill="none" stroke="#C9C9D6" stroke-width="2"/>
+            <text class="laA" x="22" y="125" text-anchor="middle" transform="rotate(-90 22 125)">learning power</text>
+          </svg>
+          <figcaption>🔍 Click to zoom - four learning techniques, in rising order of power</figcaption>
+        </figure>
+        <h4>Career planning, the fluent way</h4>
+        <p>The same techniques apply to your own growth: "Here's my role and where I want to be in 2 years - interview me about my skills, then give me a gap analysis and a 90-day learning plan using free resources." Claude is a tireless, honest career-planning partner - the decisions stay yours.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <ul>
+            <li>A <strong>CMO</strong> has an agency meeting about "incrementality testing" tomorrow. Fifteen minutes of Explain mode with examples from her own campaigns, and she walks in asking the sharpest question in the room.</li>
+            <li>A <strong>CFO</strong> gets pitched a "vector database" by a vendor. One Quiz session later, he can probe the claims instead of nodding along.</li>
+            <li>A <strong>new joiner</strong> pastes the onboarding doc and uses Reverse mode: "I'll explain our data pipeline back to you - correct me." Two weeks of hallway confusion compressed into an hour.</li>
+          </ul>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Being the human in the loop<span class="mini">1 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The through-line of everything today: AI changes what you can produce, not what you're responsible for. The judgment calls - what to work on, what's true enough to ship, what's right for the client, what your name stands behind - remain human work, and becoming fluent makes your judgment MORE valuable, not less. The people who thrive with AI aren't the ones who automate the most; they're the ones who know exactly which 20% must stay human.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Spreading fluency in your team<span class="mini">2 min read · for leads</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>If you lead people, you are now an AI educator whether you planned it or not. The teaching course's core insight: the 4Ds work as two loops, and people learn them by doing, not by hearing.</p>
+        <ul>
+          <li><strong>The delegation-diligence loop</strong> (the strategic loop): what should we hand to AI, and can we stand behind the result? Run it as a team exercise on YOUR team's task list - 30 minutes, whiteboard, three columns: AI-first / human-first / duet.</li>
+          <li><strong>The description-discernment loop</strong> (the craft loop): prompt, judge, re-prompt. Teach it by pairing: one person drives, the other critiques the output, swap. The critique seat learns fastest.</li>
+          <li><strong>Assess fluency by artifacts, not vibes:</strong> ask each person to bring one before/after (their old way vs their 4D-prompted way) to a team meeting. The delta is the assessment - and the demos become the team's shared playbook.</li>
+          <li><strong>Apply your discipline's expertise:</strong> every field has quality standards AI doesn't know by default (your data QA bar, your brand voice, your legal review). Fluency in YOUR team means encoding those standards into prompts, Projects, and later skills (Session 3).</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 3</span>
+      <h2>Bad prompt vs 4D prompt <span class="tag demo">★ 8 min · follow along</span></h2>
+    </div>
+    <p class="lede">Same task, two prompts, run side by side. Watch the quality gap, then dissect WHY using the 4D checklist - and finish with one lap of the description-discernment loop. Works in the session or on your own with a real task from your week.</p>
+
+    <div class="prompt-box bad"><span class="label">Prompt A - what most of us type</span>As head of [your team], write a summary of our Q2 performance for the board.</div>
+
+    <div class="prompt-box good"><span class="label">Prompt B - 4D structured</span>You are a head of data science &amp; analytics preparing a board pre-read.
+
+Context: We are a [industry] company. Q2 highlights I'm giving you below - use ONLY these facts, do not invent numbers.
+[paste 5-10 bullet points of real Q2 facts]
+
+Task: Write a one-page Q2 performance summary for the board.
+
+Format:
+- 3 sections: Wins, Watchouts, Asks
+- Max 120 words per section, confident but factual tone
+- End with one sentence on the single most important trend
+
+Audience: Non-technical board members who have 3 minutes.
+
+If any important information is missing for a board summary, list what you'd need instead of guessing.</div>
+
+    <div class="steps">
+      <div class="step"><p>Run Prompt A in Claude and read the output. Notice how generic it is - it could be any company's summary.</p></div>
+      <div class="step"><p>Run Prompt B, pasting in 5 real, non-confidential bullets from your own work. Compare the two side by side.</p></div>
+      <div class="step"><p>Dissect the gap with the six elements: find the role, context, task, format, audience, and guardrails in Prompt B.</p></div>
+      <div class="step"><p>Run one discernment lap: find the weakest sentence in B's output and fix it with specific feedback ("section 2 is too cautious - state the win plainly"). Watch the redraft.</p></div>
+      <div class="step"><p>Rewrite one of YOUR pending tasks as a 4D prompt and run it. Keep the version that works as your template.</p></div>
+    </div>
+
+    <div class="callout tip">
+      <strong>Data tip</strong>
+      Practice with public or sanitized figures. Never paste confidential numbers into a practice chat - that is creation diligence in action.
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 3</span>
+      <h2>Build your workspace: a Project + your first artifact <span class="tag demo">★ 7 min · build your own</span></h2>
+    </div>
+    <p class="lede">Ten minutes of setup that pays back every day: a Project that knows your work, and an artifact you can share. This is Claude 101's whole "organizing your work" module, done rather than watched.</p>
+
+    <div class="steps">
+      <div class="step"><p>Create a Project named after your team or your biggest recurring workflow (e.g. "Weekly reporting HQ", "Brand HQ").</p></div>
+      <div class="step"><p>Upload 2-3 non-confidential documents you're tired of re-explaining: a template, a style guide, a glossary, a sample of good past work.</p></div>
+      <div class="step"><p>Set the custom instructions - use the template below and make it yours.</p></div>
+      <div class="step"><p>Test it: ask a question that needs the uploaded knowledge ("Draft this week's update in our usual format"). Notice it already knows the format.</p></div>
+      <div class="step"><p>Ask for an artifact: "Create a one-page checklist artifact for [a recurring task]". You now have a shareable asset, not a chat answer.</p></div>
+    </div>
+
+    <div class="prompt-box good"><span class="label">Project instructions template</span>You support the [team name] team at [company], a [industry] company.
+
+Our context:
+- What we do: [1-2 sentences]
+- Key terms: see the glossary in project knowledge - use OUR definitions
+- House style: [e.g. plain language, no hype words, numbers rounded, UK spelling]
+
+Always:
+- Flag any assumption you make
+- Ask before inventing facts about our company
+- When drafting, match the format of the examples in project knowledge</div>
+
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p>The marketing lead who set up "Brand HQ" in week 1 stopped pasting the style guide into chats. Three weeks later the whole team drafts in one shared project, and "sounds like us" stopped being a review comment. Setup: 10 minutes, once.</p>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 3 ============ -->
+  <section class="section" id="demo-3">
+    <div class="section-kicker">
+      <span class="klabel">Demo 3 of 3</span>
+      <h2>Teach me anything <span class="tag demo">★ 5 min · build your own</span></h2>
+    </div>
+    <p class="lede">Pick one topic you've been meaning to understand - a metric, a technology, a market - and start a personal tutoring session with this template.</p>
+
+    <div class="prompt-box good"><span class="label">The "teach me" template</span>I want to truly understand: [topic - e.g. "how LLMs are trained", "attribution models in marketing", "what a data catalog does"]
+
+My starting level: [beginner / know the buzzwords / can follow technical detail]
+My role: [your job] - tailor examples to my world.
+
+Teach it in 3 rounds:
+1. The 2-minute version with one concrete analogy from my industry
+2. The mechanics - how it actually works, step by step
+3. Quiz me with 3 questions, one at a time. Grade each answer honestly and fix my misunderstandings.
+
+Keep each round short. Wait for me to say "next" before moving on.</div>
+
+    <div class="steps">
+      <div class="step"><p>Pick one topic you have genuinely been meaning to understand.</p></div>
+      <div class="step"><p>Fill in the template and go through all 3 rounds. Give it 5 focused minutes - say "next" to move between rounds.</p></div>
+      <div class="step"><p>Notice the moment a quiz answer comes back corrected. Being corrected is the value - that is where the learning happens.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ TRY IT YOURSELF ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Try it yourself - this week <span class="tag exercise">◐ 30-60 min total</span></h2>
+    </div>
+    <ul>
+      <li>Run the four <strong>★ Try it now</strong> prompts from Part 1 you didn't do live - each takes 2 minutes and locks in one machine property.</li>
+      <li>Take three recurring tasks from your week through the delegation lens (AI-first / human-first / duet), then write the 4D prompt for the best candidate - e.g. your Monday status email, meeting-notes cleanup, or weekly metrics recap.</li>
+      <li>Finish setting up the Project you started in Demo 2: real documents, real instructions, share it with one teammate.</li>
+      <li>Complete one full "teach me" session on a topic from your actual roadmap. Bring the best insight to Session 2.</li>
+      <li><strong>Leads:</strong> run the 30-minute delegation whiteboard exercise (Part 4) with your team before Session 2.</li>
+      <li>Optional, for the certificate: the official courses below are free - this page covers their working content, but certificates come from Anthropic.</li>
+    </ul>
+  </section>
+
+  <!-- ============ OFFICIAL COURSES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official Anthropic courses covered</h2>
+    </div>
+    <p class="lede">This session teaches the working content of six official courses from <a href="https://claude.com/resources/courses">claude.com/resources/courses</a> - about 4 hours of lectures distilled into 45 live minutes plus this page. What stays exclusive to the official courses: video walkthroughs, final assessments, and certificates.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Claude 101</span><span class="note">1 hr · Part 2 + Demo 2 cover all 4 modules</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">AI fluency: framework &amp; foundations</span><span class="note">1.1 hr · Part 3 covers all four Ds + prompting deep dive</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">AI capabilities and limitations</span><span class="note">15 min · Part 1 covers all four properties + try-it-outs</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">AI fluency for students</span><span class="note">30 min · Part 4 + Demo 3: learning partner, career planning, human in the loop</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">AI fluency for educators</span><span class="note">24 min · Part 4 "spreading fluency"; course-design specifics left to the original</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Teaching AI fluency</span><span class="note">36 min · Part 4: the two loops, assessing the 4Ds, discipline expertise</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 1 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Four machine properties</b><span>Next-token prediction · Knowledge (cutoff!) · Working memory · Steerability. Weird output = two properties colliding.</span></div>
+      <div class="cheat-item"><b>Delegation</b><span>AI-first / human-first / duet. Drafts and structure: delegate. Final calls: human.</span></div>
+      <div class="cheat-item"><b>Description</b><span>Role + context + task + format + audience + guardrails. Show an example. Ask it to ask.</span></div>
+      <div class="cheat-item"><b>Discernment</b><span>Judge product, process, performance. Specific feedback beats re-rolling. Loop it.</span></div>
+      <div class="cheat-item"><b>Diligence</b><span>Right tool, right data, verified output. You own what ships - remember Avianca.</span></div>
+      <div class="cheat-item"><b>Power features</b><span>Projects = permanent briefing. Artifacts = shippable assets. Connectors = live data (Session 2).</span></div>
+      <div class="cheat-item"><b>Anti-hallucination line</b><span>"Use ONLY the facts I gave you. If something is missing, ask."</span></div>
+      <div class="cheat-item"><b>Learning line</b><span>"Teach me in 3 rounds, then quiz me one question at a time."</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Session 1 of 6 · learn-claude-with-phoebe · built with Claude</span>
+    <span><a href="../index.html">← All sessions</a> &nbsp;·&nbsp; <a href="02-daily-automation.html">Next: Your AI chief of staff →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=3"></script>
+</body>
+</html>
