@@ -129,6 +129,63 @@
     });
   });
 
+  /* Reading progress bar */
+  var pbar = document.createElement("div");
+  pbar.id = "progress-bar";
+  document.body.appendChild(pbar);
+  var updateBar = function () {
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    pbar.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + "%";
+  };
+  window.addEventListener("scroll", updateBar, { passive: true });
+  updateBar();
+
+  /* Floating section-dot navigation (built from section kickers) */
+  var navSections = Array.prototype.slice.call(document.querySelectorAll(".section[id]"));
+  if (navSections.length >= 4) {
+    var nav = document.createElement("nav");
+    nav.className = "pagenav";
+    nav.setAttribute("aria-label", "Page sections");
+    navSections.forEach(function (sec) {
+      var h2 = sec.querySelector(".section-kicker h2");
+      var label = h2 ? h2.childNodes[0].textContent.trim() : sec.id;
+      if (label.length > 34) label = label.slice(0, 32) + "…";
+      var a = document.createElement("a");
+      a.href = "#" + sec.id;
+      var tip = document.createElement("span");
+      tip.className = "nlabel";
+      tip.textContent = label;
+      a.appendChild(tip);
+      nav.appendChild(a);
+    });
+    document.body.appendChild(nav);
+    var dots = nav.querySelectorAll("a");
+    var updateDots = function () {
+      var current = 0;
+      navSections.forEach(function (sec, i) {
+        if (sec.getBoundingClientRect().top <= 140) current = i;
+      });
+      dots.forEach(function (d, i) { d.classList.toggle("active", i === current); });
+    };
+    window.addEventListener("scroll", updateDots, { passive: true });
+    updateDots();
+  }
+
+  /* CountUp: numbers with data-count tick up on load */
+  var reduceMotionCU = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.querySelectorAll("[data-count]").forEach(function (el) {
+    var target = parseInt(el.getAttribute("data-count"), 10);
+    if (isNaN(target) || reduceMotionCU) { el.textContent = target; return; }
+    var start = null, dur = 900;
+    var tick = function (ts) {
+      if (!start) start = ts;
+      var p = Math.min((ts - start) / dur, 1);
+      el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+
   /* ScrollReveal: sections rise in as they enter the viewport */
   if (!reduceMotion) {
     var toReveal = Array.prototype.slice.call(document.querySelectorAll(".section, .cheat"));

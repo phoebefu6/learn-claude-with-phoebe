@@ -455,6 +455,78 @@ footer.pagefoot {
 }
 footer.pagefoot a { color: var(--indigo); text-decoration: none; font-weight: 600; }
 
+/* ---------- wayfinding: reading progress + section dots + part numbers ---------- */
+
+#progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  width: 0;
+  background: linear-gradient(90deg, var(--indigo), var(--amber));
+  z-index: 90;
+}
+
+.pagenav {
+  position: fixed;
+  right: 1.1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: .55rem;
+}
+.pagenav a {
+  width: .68rem; height: .68rem;
+  border-radius: 999px;
+  background: #fff;
+  border: 2px solid var(--faint);
+  display: block;
+  position: relative;
+  transition: all .15s ease;
+}
+.pagenav a:hover { border-color: var(--indigo); transform: scale(1.3); }
+.pagenav a.active { background: var(--indigo); border-color: var(--indigo); }
+.pagenav a .nlabel {
+  position: absolute;
+  right: 1.4rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--ink);
+  color: #fff;
+  font-size: .7rem;
+  font-weight: 600;
+  padding: .22rem .65rem;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .15s ease;
+}
+.pagenav a:hover .nlabel { opacity: 1; }
+@media (max-width: 74rem) { .pagenav { display: none; } }
+
+main { counter-reset: partnum -1; }
+.section .section-kicker { position: relative; }
+.section .section-kicker::before {
+  counter-increment: partnum;
+  content: counter(partnum, decimal-leading-zero);
+  position: absolute;
+  right: 0;
+  top: -1.2rem;
+  font-size: 4.4rem;
+  font-weight: 800;
+  color: var(--indigo-50);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  z-index: 0;
+}
+.section .section-kicker > * { position: relative; z-index: 1; }
+
+details.card summary { transition: background .15s ease; }
+details.card summary:hover { background: #FAFAFE; }
+
 /* ---------- micro-interactions (react-bits inspired, vanilla) ---------- */
 
 /* BlurText: staggered word reveal on the masthead headline */
