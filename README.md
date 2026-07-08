@@ -46,4 +46,4 @@ All six sessions plus the eight-page engineering deep-dive track (6.1-6.8) are l
 
 ---
 
-Built with [Claude Code](https://claude.com/claude-code) by Phoebe Fu.
+Created and taught by Phoebe Fu.
