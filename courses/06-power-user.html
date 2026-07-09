@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Session 6 · Power user: subagents, MCP, and the platform - learn claude with phoebe</title>
-<link rel="stylesheet" href="../assets/style.css?v=3">
+<link rel="stylesheet" href="../assets/style.css?v=4">
 </head>
 <body>
 
@@ -266,6 +266,35 @@ print(msg.content[0].text)</div>
     </div>
   </section>
 
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · A subagent's superpower is...</p>
+      <button class="qopt" type="button">A · It runs on a faster model</button>
+      <button class="qopt" type="button">B · Its own clean context window - it works in isolation and returns only the summary</button>
+      <button class="qopt" type="button">C · It has more permissions than you</button>
+      <p class="qwhy">Session 1's working-memory lesson, weaponized: your context stays clean, the verdict comes back. And give it MINIMUM tools - governance by construction.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">2 · MCP's three primitives are...</p>
+      <button class="qopt" type="button">A · Tools, resources, prompts</button>
+      <button class="qopt" type="button">B · Models, chats, files</button>
+      <button class="qopt" type="button">C · Agents, loops, hooks</button>
+      <p class="qwhy">Actions the server exposes, data it offers, templates it ships. Every connector you've used since Session 2 is this one protocol.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">3 · Which model do you prototype on?</p>
+      <button class="qopt" type="button">A · The cheapest - save budget from day one</button>
+      <button class="qopt" type="button">B · Whichever is newest</button>
+      <button class="qopt" type="button">C · The most capable - prove quality first, then optimize down</button>
+      <p class="qwhy">Never the reverse: if the best model can't do the task, no cheaper one will - and you'll blame the wrong thing.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
   <section class="cheat" id="cheatsheet">
     <h3>Session 6 cheat sheet <span>· pin this</span></h3>
     <div class="grid-2">
@@ -285,6 +314,6 @@ print(msg.content[0].text)</div>
 
 </main>
 
-<script src="../assets/app.js?v=4"></script>
+<script src="../assets/app.js?v=5"></script>
 </body>
 </html>

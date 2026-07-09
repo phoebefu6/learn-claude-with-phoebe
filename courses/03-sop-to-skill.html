@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Session 3 · From SOP to skill - learn claude with phoebe</title>
-<link rel="stylesheet" href="../assets/style.css?v=3">
+<link rel="stylesheet" href="../assets/style.css?v=4">
 </head>
 <body>
 
@@ -363,6 +363,36 @@ Rules: no framework imports until step 5. No hand-waving - if a step can't be co
     </div>
   </section>
 
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · Your skill never fires when you ask for the weekly report. First suspect?</p>
+      <button class="qopt" type="button">A · The body needs more detail</button>
+      <button class="qopt" type="button">B · The description - it doesn't name your trigger phrases</button>
+      <button class="qopt" type="button">C · You need to restart Claude</button>
+      <p class="qwhy">The description is the doorbell. "Helps with reports" fires never; naming the exact phrases and task types fires reliably.</p>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">2 · You want Claude to know your team, product, and glossary in EVERY conversation. That's a job for...</p>
+      <button class="qopt" type="button">A · A skill</button>
+      <button class="qopt" type="button">B · A project - standing knowledge for a whole domain</button>
+      <button class="qopt" type="button">C · A really long prompt each time</button>
+      <p class="qwhy">Domain-wide context = project. A skill is for a repeatable PROCEDURE with rules and a format. Different tools, different jobs.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">3 · Which of these is the best skill candidate?</p>
+      <button class="qopt" type="button">A · "Should we enter this market?" analysis</button>
+      <button class="qopt" type="button">B · A one-off data pull for the board</button>
+      <button class="qopt" type="button">C · The campaign wrap-up report everyone formats differently</button>
+      <p class="qwhy">Repeatable + rule-based + currently inconsistent - the skill IS the standard. Judgment calls and one-offs stay human work.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
   <!-- ============ CHEAT SHEET ============ -->
   <section class="cheat" id="cheatsheet">
     <h3>Session 3 cheat sheet <span>· pin this</span></h3>
@@ -383,6 +413,6 @@ Rules: no framework imports until step 5. No hand-waving - if a step can't be co
 
 </main>
 
-<script src="../assets/app.js?v=4"></script>
+<script src="../assets/app.js?v=5"></script>
 </body>
 </html>

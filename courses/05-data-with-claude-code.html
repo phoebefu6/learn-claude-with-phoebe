@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Session 5 · Data work with Claude Code - learn claude with phoebe</title>
-<link rel="stylesheet" href="../assets/style.css?v=3">
+<link rel="stylesheet" href="../assets/style.css?v=4">
 </head>
 <body>
 
@@ -300,6 +300,35 @@ It's a stakeholder demo, not production: favor obvious code over clever code.</d
     </div>
   </section>
 
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">1 · Your control point when Claude Code works on data is...</p>
+      <button class="qopt" type="button">A · Approving (or rejecting) the plan before any code runs</button>
+      <button class="qopt" type="button">B · Reading the commit message afterwards</button>
+      <button class="qopt" type="button">C · Choosing a smaller model</button>
+      <p class="qwhy">Explore → plan → APPROVE → code. You're approving what happens to the data - that step is non-negotiable.</p>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">2 · A script destined for our AWS WorkSpaces must be...</p>
+      <button class="qopt" type="button">A · Modular, with a requirements.txt to install on arrival</button>
+      <button class="qopt" type="button">B · One self-contained file using only the verified library list</button>
+      <button class="qopt" type="button">C · Configured via environment variables</button>
+      <p class="qwhy">No internet, no pip: single file, constants block, dry-run flag, graceful failures - and ask for the "impossible parts" list first.</p>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">3 · CLAUDE.md is best described as...</p>
+      <button class="qopt" type="button">A · A changelog Claude writes for you</button>
+      <button class="qopt" type="button">B · The repo's standing brief - stack, commands, conventions, guardrails - read every session</button>
+      <button class="qopt" type="button">C · A place to store API keys</button>
+      <p class="qwhy">It's Session 2's "project instructions" for your repo. /init drafts it; your guardrails (raw read-only, PII masking) do the real work.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
   <section class="cheat" id="cheatsheet">
     <h3>Session 5 cheat sheet <span>· pin this</span></h3>
     <div class="grid-2">
@@ -319,6 +348,6 @@ It's a stakeholder demo, not production: favor obvious code over clever code.</d
 
 </main>
 
-<script src="../assets/app.js?v=4"></script>
+<script src="../assets/app.js?v=5"></script>
 </body>
 </html>

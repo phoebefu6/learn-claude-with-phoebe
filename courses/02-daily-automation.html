@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Session 2 · Your AI chief of staff: daily automation - learn claude with phoebe</title>
-<link rel="stylesheet" href="../assets/style.css?v=3">
+<link rel="stylesheet" href="../assets/style.css?v=4">
 </head>
 <body>
 
@@ -521,6 +521,36 @@ Tone: professional, direct, executive-ready. Lead with critical items. Bullets, 
     </div>
   </section>
 
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">1 · Why can your chief of staff only see YOUR inbox, never a colleague's?</p>
+      <button class="qopt" type="button">A · Connectors inherit your permissions - Claude acts as you, by construction</button>
+      <button class="qopt" type="button">B · Because the prompt politely asks it not to look</button>
+      <button class="qopt" type="button">C · A Slack setting blocks it</button>
+      <p class="qwhy">Permission inheritance is the security model - governance by construction, not by promise. That's the line for your own boss.</p>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">2 · Which emails are allowed to interrupt you?</p>
+      <button class="qopt" type="button">A · Everything unread, to be safe</button>
+      <button class="qopt" type="button">B · Only score 4-5 against YOUR rubric - and never promote a 3</button>
+      <button class="qopt" type="button">C · Anything with URGENT in the subject</button>
+      <p class="qwhy">The triage funnel: ~5% interrupts, everything else waits for your check. Calibrate the rubric weekly until the signal is clean.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">3 · What does Tier 1 (build it today, yourself) require?</p>
+      <button class="qopt" type="button">A · A Claude API key from the console</button>
+      <button class="qopt" type="button">B · An Apps Script deployment</button>
+      <button class="qopt" type="button">C · Just a project + approved connectors - no code at all</button>
+      <p class="qwhy">The core (briefing, triage, doc search) is a 10-minute no-code build. Code only enters at Tier 3, once, for the push automations.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
   <!-- ============ CHEAT SHEET ============ -->
   <section class="cheat" id="cheatsheet">
     <h3>Session 2 cheat sheet <span>· pin this</span></h3>
@@ -543,6 +573,6 @@ Tone: professional, direct, executive-ready. Lead with critical items. Bullets, 
 
 </main>
 
-<script src="../assets/app.js?v=4"></script>
+<script src="../assets/app.js?v=5"></script>
 </body>
 </html>

@@ -527,6 +527,85 @@ main { counter-reset: partnum -1; }
 details.card summary { transition: background .15s ease; }
 details.card summary:hover { background: #FAFAFE; }
 
+/* ---------- journey strip: you are here in the series ---------- */
+.journey {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  margin-top: 1.1rem;
+  flex-wrap: wrap;
+}
+.journey .jlabel { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; opacity: .8; margin-right: .3rem; }
+.journey a {
+  width: 1.7rem; height: 1.7rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .8rem;
+  font-weight: 700;
+  text-decoration: none;
+  color: #fff;
+  border: 1.5px solid rgba(255,255,255,.45);
+  transition: all .15s ease;
+  font-variant-numeric: tabular-nums;
+}
+.journey a:hover { border-color: #fff; transform: scale(1.12); }
+.journey a.here { background: #fff; color: var(--indigo); border-color: #fff; }
+.journey a.dd-chip { width: auto; border-radius: 999px; padding: 0 .7rem; font-size: .72rem; }
+
+/* ---------- check-yourself quiz ---------- */
+.quiz-q {
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.25rem 1rem;
+  margin-bottom: .9rem;
+  background: #fff;
+}
+.quiz-q .qtext { font-weight: 700; margin-bottom: .7rem; }
+.quiz-q .qopt {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  padding: .6rem .9rem;
+  margin-bottom: .5rem;
+  font-size: .9rem;
+  font-family: inherit;
+  color: var(--ink);
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.quiz-q .qopt:hover { border-color: var(--indigo); background: var(--indigo-50); }
+.quiz-q .qopt.correct { background: var(--indigo); border-color: var(--indigo); color: #fff; font-weight: 600; }
+.quiz-q .qopt.correct::after { content: "  ✓"; }
+.quiz-q .qopt.wrong { background: #FEF2F2; border-color: #FCA5A5; color: #991B1B; animation: qshake .3s ease; }
+.quiz-q .qopt.wrong::after { content: "  ✗ try again"; font-size: .78rem; }
+.quiz-q .qopt:disabled { cursor: default; }
+.quiz-q .qwhy {
+  display: none;
+  background: var(--amber-50);
+  border-left: 4px solid var(--amber);
+  border-radius: 8px;
+  padding: .6rem .9rem;
+  font-size: .86rem;
+  margin-top: .3rem;
+}
+.quiz-q.answered .qwhy { display: block; }
+@keyframes qshake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+.quiz-score { font-weight: 700; color: var(--indigo); margin-top: .4rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .quiz-q .qopt.wrong { animation: none; }
+  .journey a:hover { transform: none; }
+}
+
 /* ---------- micro-interactions (react-bits inspired, vanilla) ---------- */
 
 /* BlurText: staggered word reveal on the masthead headline */

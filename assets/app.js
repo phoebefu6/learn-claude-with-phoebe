@@ -129,6 +129,66 @@
     });
   });
 
+  /* Journey strip: you-are-here across the 6 sessions */
+  var crumb = document.querySelector(".toolbar .crumb");
+  var mastheadWrap = document.querySelector(".masthead .wrap");
+  if (crumb && mastheadWrap) {
+    var m = crumb.textContent.match(/Session (\d) of 6/);
+    var isDeepDive = /Deep dive 6\./.test(crumb.textContent);
+    if (m || isDeepDive) {
+      var current = m ? parseInt(m[1], 10) : 0;
+      var pages = ["01-foundations.html", "02-daily-automation.html", "03-sop-to-skill.html",
+                   "04-creative-studio.html", "05-data-with-claude-code.html", "06-power-user.html"];
+      var journey = document.createElement("div");
+      journey.className = "journey";
+      var jl = document.createElement("span");
+      jl.className = "jlabel";
+      jl.textContent = "Your journey";
+      journey.appendChild(jl);
+      pages.forEach(function (href, i) {
+        var a = document.createElement("a");
+        a.href = href;
+        a.textContent = i + 1;
+        a.title = "Session " + (i + 1);
+        if (i + 1 === current) a.className = "here";
+        journey.appendChild(a);
+      });
+      var dd = document.createElement("a");
+      dd.href = "61-claude-api.html";
+      dd.className = "dd-chip" + (isDeepDive ? " here" : "");
+      dd.textContent = "+8 deep dives";
+      journey.appendChild(dd);
+      mastheadWrap.appendChild(journey);
+    }
+  }
+
+  /* Check-yourself quiz */
+  var quizQs = document.querySelectorAll(".quiz-q");
+  var quizCorrect = 0;
+  quizQs.forEach(function (q) {
+    var answer = parseInt(q.getAttribute("data-answer"), 10);
+    var opts = q.querySelectorAll(".qopt");
+    opts.forEach(function (opt, i) {
+      opt.addEventListener("click", function () {
+        if (q.classList.contains("answered")) return;
+        if (i === answer) {
+          opt.classList.add("correct");
+          q.classList.add("answered");
+          opts.forEach(function (o) { o.disabled = true; });
+          quizCorrect++;
+          var score = document.querySelector(".quiz-score");
+          if (score && quizCorrect === quizQs.length) {
+            score.textContent = "🎉 " + quizQs.length + "/" + quizQs.length + " - you're ready for the next session.";
+          }
+        } else {
+          opt.classList.remove("wrong");
+          void opt.offsetWidth; /* restart the shake */
+          opt.classList.add("wrong");
+        }
+      });
+    });
+  });
+
   /* Reading progress bar */
   var pbar = document.createElement("div");
   pbar.id = "progress-bar";
