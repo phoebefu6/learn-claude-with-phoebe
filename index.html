@@ -49,6 +49,17 @@
   .dd { border: 1px solid var(--hairline); border-radius: 10px; padding: .6rem .85rem; display: flex; gap: .55rem; align-items: baseline; text-decoration: none; color: var(--ink); font-weight: 600; font-size: .84rem; transition: all .12s ease; }
   .dd b { color: var(--indigo); font-variant-numeric: tabular-nums; }
   .dd:hover { border-color: var(--indigo); transform: translateY(-2px); }
+
+  .mm-section { margin-top: 1.6rem; }
+  .mm-section h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: .2rem; }
+  .mm-section .mm-lede { color: var(--muted); font-size: .92rem; margin-bottom: .4rem; }
+  .mm-wrap { border: 1px solid var(--hairline); border-radius: var(--radius); background: linear-gradient(180deg,#fff, #F6FAFD); padding: .6rem; overflow-x: auto; }
+  .mm-svg { width: 100%; height: auto; display: block; max-width: 60rem; margin: 0 auto; min-width: 34rem; }
+  .mm-link { cursor: pointer; text-decoration: none; }
+  .mm-node rect { transition: opacity .15s ease, filter .15s ease; }
+  .mm-node text { pointer-events: none; }
+  .mm-link:hover .mm-node rect { filter: brightness(1.06); }
+  .mm-edge { transition: opacity .15s ease; }
 </style>
 </head>
 <body>
@@ -68,6 +79,12 @@
 </header>
 
 <main class="wrap">
+  <section class="section mm-section">
+    <h2>The knowledge map 🧠</h2>
+    <p class="mm-lede">The whole course at a glance - hover a session to spotlight its concepts, click any node to jump in.</p>
+    <div class="mm-wrap"><div id="mindmap"></div></div>
+  </section>
+
   <section class="section">
     <div class="course-grid">
       <a class="course-card" href="courses/01-foundations.html" style="--diff:#34D399">
@@ -166,6 +183,45 @@
   </footer>
 </main>
 
+<script>
+window.MINDMAP_DATA = {
+  title: "Learn\nClaude",
+  centerColor: "#312E81",
+  sessions: [
+    { label: "AI fluency\nfoundations", href: "courses/01-foundations.html", color: "#34D399",
+      concepts: [
+        { label: "How AI works", href: "courses/01-foundations.html" },
+        { label: "Driving Claude", href: "courses/01-foundations.html" },
+        { label: "4D framework", href: "courses/01-foundations.html" } ] },
+    { label: "AI chief\nof staff", href: "courses/02-daily-automation.html", color: "#34D399",
+      concepts: [
+        { label: "Chief-of-staff", href: "courses/02-daily-automation.html" },
+        { label: "Morning briefing", href: "courses/02-daily-automation.html" },
+        { label: "Six jobs", href: "courses/02-daily-automation.html" } ] },
+    { label: "SOP to\nskill", href: "courses/03-sop-to-skill.html", color: "#FBBF24",
+      concepts: [
+        { label: "Agent skills", href: "courses/03-sop-to-skill.html" },
+        { label: "SOP conversion", href: "courses/03-sop-to-skill.html" },
+        { label: "Install vs build", href: "courses/03-sop-to-skill.html" } ] },
+    { label: "Creative\nstudio", href: "courses/04-creative-studio.html", color: "#FBBF24",
+      concepts: [
+        { label: "Brand system", href: "courses/04-creative-studio.html" },
+        { label: "Content engine", href: "courses/04-creative-studio.html" },
+        { label: "Design critique", href: "courses/04-creative-studio.html" } ] },
+    { label: "Data with\nClaude Code", href: "courses/05-data-with-claude-code.html", color: "#FB923C",
+      concepts: [
+        { label: "Claude Code 101", href: "courses/05-data-with-claude-code.html" },
+        { label: "Data workflows", href: "courses/05-data-with-claude-code.html" },
+        { label: "Data catalog", href: "courses/05-data-with-claude-code.html" } ] },
+    { label: "Power\nuser", href: "courses/06-power-user.html", color: "#F87171",
+      concepts: [
+        { label: "Subagents", href: "courses/06-power-user.html" },
+        { label: "MCP", href: "courses/06-power-user.html" },
+        { label: "First API call", href: "courses/06-power-user.html" } ] }
+  ]
+};
+</script>
+<script src="assets/mindmap.js?v=1"></script>
 <script src="assets/app.js?v=5"></script>
 </body>
 </html>
