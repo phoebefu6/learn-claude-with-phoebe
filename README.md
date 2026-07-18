@@ -1,3 +1,8 @@
+<!-- learn-with-phoebe hub banner -->
+> ### 📚 Part of [**Learn with Phoebe**](https://phoebefu6.github.io/learn-with-phoebe/)
+> The shelf of 20 free, hands-on courses on AI, data, and the craft around them. **[Browse every course ↗](https://phoebefu6.github.io/learn-with-phoebe/)**
+<!-- /learn-with-phoebe hub banner -->
+
 # learn-claude-with-phoebe
 
 A 6-session, 45-minutes-per-session onboarding series that takes a whole company - data science & AI, marketing & branding, and the C-suite - from "Claude as a fancier search box" to building their own automations.
