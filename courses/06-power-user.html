@@ -149,6 +149,45 @@ You are a meticulous data-QA reviewer. For the change you're given:
       <h2>MCP: the port that connects Claude to everything <span class="tag concept">5 min live</span></h2>
     </div>
     <p class="lede">Model Context Protocol is the open standard behind every connector you've used since Session 2. One protocol, three primitives - learn it once, plug in anything.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A decision tree showing that MCP capabilities Claude decides to call mid-task are tools, capabilities the client loads automatically as context are resources, and capabilities a person picks deliberately are prompts.">
+    <style>
+      .mcpT { font: 700 13px Inter, sans-serif; fill: #1B1B2F; }
+      .mcpQ { font: 700 12px Inter, sans-serif; fill: #FFFFFF; }
+      .mcpO { font: 700 11.5px Inter, sans-serif; fill: #312E81; }
+      .mcpE { font: 600 11px Inter, sans-serif; fill: #6B6B80; }
+      .mcpN { font: 400 12px Inter, sans-serif; fill: #6B6B80; }
+    </style>
+    <rect x="0" y="0" width="880" height="360" fill="#FFFFFF"/>
+    <text class="mcpT" x="40" y="28">Who decides when this capability fires</text>
+    <rect x="40" y="40" width="240" height="56" rx="10" fill="#312E81"/>
+    <text class="mcpQ" x="160" y="62" text-anchor="middle">Does Claude decide</text>
+    <text class="mcpQ" x="160" y="80" text-anchor="middle">to call it mid-task?</text>
+    <line x1="280" y1="68" x2="640" y2="72" stroke="#C9C9D6" stroke-width="1.5"/>
+    <line x1="280" y1="68" x2="340" y2="168" stroke="#C9C9D6" stroke-width="1.5"/>
+    <text class="mcpE" x="460" y="58" text-anchor="middle">yes</text>
+    <text class="mcpE" x="310" y="112" text-anchor="middle">no</text>
+    <rect x="640" y="40" width="200" height="64" rx="10" fill="#EEF2FF" stroke="#312E81" stroke-width="1.5"/>
+    <text class="mcpO" x="740" y="66" text-anchor="middle">TOOL</text>
+    <text class="mcpO" x="740" y="84" text-anchor="middle">model-controlled</text>
+    <rect x="340" y="140" width="240" height="56" rx="10" fill="#312E81"/>
+    <text class="mcpQ" x="460" y="162" text-anchor="middle">Does the client load</text>
+    <text class="mcpQ" x="460" y="180" text-anchor="middle">it as context?</text>
+    <line x1="580" y1="168" x2="640" y2="172" stroke="#C9C9D6" stroke-width="1.5"/>
+    <line x1="580" y1="168" x2="640" y2="272" stroke="#C9C9D6" stroke-width="1.5"/>
+    <text class="mcpE" x="610" y="164" text-anchor="middle">yes</text>
+    <text class="mcpE" x="610" y="214" text-anchor="middle">no</text>
+    <rect x="640" y="140" width="200" height="64" rx="10" fill="#EEF2FF" stroke="#312E81" stroke-width="1.5"/>
+    <text class="mcpO" x="740" y="166" text-anchor="middle">RESOURCE</text>
+    <text class="mcpO" x="740" y="184" text-anchor="middle">application-controlled</text>
+    <rect x="640" y="240" width="200" height="64" rx="10" fill="#EEF2FF" stroke="#312E81" stroke-width="1.5"/>
+    <text class="mcpO" x="740" y="266" text-anchor="middle">PROMPT</text>
+    <text class="mcpO" x="740" y="284" text-anchor="middle">user-controlled</text>
+    <text class="mcpN" x="40" y="330">Tools fire mid-task, resources load like an attached file, prompts are picked by a person.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - who initiates decides whether it's a tool, a resource, or a prompt</figcaption>
+</figure>
+
 
     <details class="card" open>
       <summary><span class="mode live">Live</span>The three primitives + why this matters to us<span class="mini">5 min</span><span class="caret">▶</span></summary>
@@ -177,7 +216,33 @@ You are a meticulous data-QA reviewer. For the change you're given:
       <div class="step"><p>In the claude-data-lab repo from Session 5, run <code>/agents</code> → create → paste the data-qa definition (Part 2), or write your own reviewer for your stack.</p></div>
       <div class="step"><p>Make a deliberately sloppy change to the cleaning script (add a join without dedupe). Then: "Use the data-qa agent to review my uncommitted changes."</p></div>
       <div class="step"><p>Watch the handoff: your session stays clean while the subagent works; only the verdict returns. Check it caught the fan-out.</p></div>
-      <div class="step"><p>Note the governance angle: the reviewer has read + pytest only. It CANNOT modify anything - by construction, not by promise.</p></div>
+      <div class="step"><p>Note the governance angle: the reviewer has read + pytest only. It CANNOT modify anything - by construction, not by promise.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A before and after comparison of subagent design, showing a reviewer with full read, write and deploy access that can hide problems and returns a long transcript, against a reviewer restricted to read and pytest only that cannot modify anything and returns just a verdict.">
+    <style>
+      .sarT { font: 700 13px Inter, sans-serif; fill: #1B1B2F; }
+      .sarHA { font: 700 13px Inter, sans-serif; fill: #991B1B; }
+      .sarHB { font: 700 13px Inter, sans-serif; fill: #312E81; }
+      .sarB { font: 400 12px Inter, sans-serif; fill: #1B1B2F; }
+      .sarN { font: 400 12px Inter, sans-serif; fill: #6B6B80; }
+    </style>
+    <rect x="0" y="0" width="880" height="300" fill="#FFFFFF"/>
+    <text class="sarT" x="40" y="28">Designing the data-QA subagent</text>
+    <rect x="40" y="50" width="390" height="180" rx="12" fill="#FEF2F2" stroke="#FCA5A5" stroke-width="1.5"/>
+    <rect x="450" y="50" width="390" height="180" rx="12" fill="#EEF2FF" stroke="#4F46E5" stroke-width="1.5"/>
+    <text class="sarHA" x="58" y="84">✗ Reviewer, full access</text>
+    <text class="sarB" x="58" y="114">Can read, write, and deploy</text>
+    <text class="sarB" x="58" y="134">Fixes AND hides the problem</text>
+    <text class="sarB" x="58" y="154">Returns a long transcript</text>
+    <text class="sarHB" x="468" y="84">✓ Read + pytest only</text>
+    <text class="sarB" x="468" y="114">One job: review, never modify</text>
+    <text class="sarB" x="468" y="134">Cannot touch data, by construction</text>
+    <text class="sarB" x="468" y="154">Returns a verdict format only</text>
+    <text class="sarN" x="40" y="276">One job, minimum tools, a stated return format: governance by construction, not by promise.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - the tool list is the permission model, not the prompt</figcaption>
+</figure>
+</div>
     </div>
   </section>
 

@@ -89,7 +89,36 @@ print(response.content[0].text)</div>
       <summary><span class="mode live">Core</span>Anatomy of a request: model, max_tokens, temperature<span class="mini">7 min</span><span class="caret">▶</span></summary>
       <div class="body">
         <p>Three parameters do most of the work. Get the mental model right for each:</p>
-        <table class="clean">
+        
+<figure class="zoomable">
+  <svg viewBox="0 0 880 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A decision tree showing that tasks needing hard reasoning or extraction should use the capable tier, Opus or Sonnet, while classification, routing and high-volume simple tasks should use the fast tier, Haiku.">
+    <style>
+      .mtcT { font: 700 13px Inter, sans-serif; fill: #1B1B2F; }
+      .mtcQ { font: 700 12.5px Inter, sans-serif; fill: #FFFFFF; }
+      .mtcO { font: 700 12px Inter, sans-serif; fill: #312E81; }
+      .mtcE { font: 600 11px Inter, sans-serif; fill: #6B6B80; }
+      .mtcN { font: 400 12px Inter, sans-serif; fill: #6B6B80; }
+    </style>
+    <rect x="0" y="0" width="880" height="340" fill="#FFFFFF"/>
+    <text class="mtcT" x="40" y="28">Which model tier for this call</text>
+    <rect x="40" y="40" width="240" height="56" rx="10" fill="#312E81"/>
+    <text class="mtcQ" x="160" y="62" text-anchor="middle">Does the task need</text>
+    <text class="mtcQ" x="160" y="80" text-anchor="middle">hard reasoning?</text>
+    <line x1="280" y1="68" x2="640" y2="72" stroke="#C9C9D6" stroke-width="1.5"/>
+    <line x1="280" y1="68" x2="640" y2="212" stroke="#C9C9D6" stroke-width="1.5"/>
+    <text class="mtcE" x="460" y="60" text-anchor="middle">yes</text>
+    <text class="mtcE" x="460" y="134" text-anchor="middle">no</text>
+    <rect x="640" y="40" width="200" height="64" rx="10" fill="#EEF2FF" stroke="#312E81" stroke-width="1.5"/>
+    <text class="mtcO" x="740" y="66" text-anchor="middle">Capable tier</text>
+    <text class="mtcO" x="740" y="84" text-anchor="middle">Opus, Sonnet</text>
+    <rect x="640" y="180" width="200" height="64" rx="10" fill="#EEF2FF" stroke="#312E81" stroke-width="1.5"/>
+    <text class="mtcO" x="740" y="206" text-anchor="middle">Fast tier: Haiku</text>
+    <text class="mtcO" x="740" y="224" text-anchor="middle">classification, routing</text>
+    <text class="mtcN" x="40" y="316">Prototype on the capable tier first; move to Haiku only once quality already holds.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - prototype on the capable tier, downgrade to Haiku once quality holds</figcaption>
+</figure>
+<table class="clean">
           <thead><tr><th>Parameter</th><th>What it controls</th><th>How to set it</th></tr></thead>
           <tbody>
             <tr><td><code>model</code></td><td>Capability vs speed vs cost</td><td>Capable tier (Opus, Sonnet) for reasoning and hard extraction; fast tier (Haiku) for classification, routing, high-volume simple tasks</td></tr>
@@ -180,6 +209,32 @@ while True:
 )
 print(response.content[0].text)</div>
         <p>Rule of thumb: if it should be true for EVERY turn (persona, rules, format, tone), it belongs in <code>system</code>. If it is this particular task's data or question, it belongs in a <code>user</code> message. Mixing them - stuffing documents into system, or repeating rules in every user turn - works, but degrades both steering and cost.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A before and after comparison showing that mixing standing rules and documents into the system prompt while repeating rules every user turn degrades steering and cost, against keeping persona and rules in system once and task data in user messages for better steering and lower cost.">
+    <style>
+      .sudT { font: 700 13px Inter, sans-serif; fill: #1B1B2F; }
+      .sudHA { font: 700 13px Inter, sans-serif; fill: #991B1B; }
+      .sudHB { font: 700 13px Inter, sans-serif; fill: #312E81; }
+      .sudB { font: 400 12px Inter, sans-serif; fill: #1B1B2F; }
+      .sudN { font: 400 12px Inter, sans-serif; fill: #6B6B80; }
+    </style>
+    <rect x="0" y="0" width="880" height="300" fill="#FFFFFF"/>
+    <text class="sudT" x="40" y="28">Where does this content belong: system or user</text>
+    <rect x="40" y="50" width="390" height="180" rx="12" fill="#FEF2F2" stroke="#FCA5A5" stroke-width="1.5"/>
+    <rect x="450" y="50" width="390" height="180" rx="12" fill="#EEF2FF" stroke="#4F46E5" stroke-width="1.5"/>
+    <text class="sudHA" x="58" y="84">✗ Mixed system and user</text>
+    <text class="sudB" x="58" y="114">Rules repeated every user turn</text>
+    <text class="sudB" x="58" y="134">Documents stuffed into system</text>
+    <text class="sudB" x="58" y="154">Degrades steering and cost</text>
+    <text class="sudHB" x="468" y="84">✓ Clean separation</text>
+    <text class="sudB" x="468" y="114">Persona and rules in system once</text>
+    <text class="sudB" x="468" y="134">Task data lives in messages</text>
+    <text class="sudB" x="468" y="154">Better steering, lower cost</text>
+    <text class="sudN" x="40" y="276">If it's true every turn it belongs in system; this task's data belongs in a user message.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - standing rules live in system, task data lives in messages</figcaption>
+</figure>
+
       </div>
     </details>
   </section>

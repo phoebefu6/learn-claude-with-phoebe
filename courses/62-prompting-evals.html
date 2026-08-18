@@ -66,6 +66,32 @@
       <summary><span class="mode live">Core</span>Clear, direct, and specific<span class="mini">5 min</span><span class="caret">▶</span></summary>
       <div class="body">
         <p>This is the 4D Description from Session 1, held to an engineering standard: every vague word in your prompt is a decision you delegated to the model. Name the audience, the format, the length, the edge-case behavior. The test: could a new hire execute your prompt without asking a follow-up question?</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A before and after comparison of a customer feedback summarization prompt, showing a vague version with no format or length rules producing a different result every run, against a specific version naming three sections, an evidence rule, a length cap and British English.">
+    <style>
+      .vspT { font: 700 13px Inter, sans-serif; fill: #1B1B2F; }
+      .vspHA { font: 700 13px Inter, sans-serif; fill: #991B1B; }
+      .vspHB { font: 700 13px Inter, sans-serif; fill: #312E81; }
+      .vspB { font: 400 12px Inter, sans-serif; fill: #1B1B2F; }
+      .vspN { font: 400 12px Inter, sans-serif; fill: #6B6B80; }
+    </style>
+    <rect x="0" y="0" width="880" height="300" fill="#FFFFFF"/>
+    <text class="vspT" x="40" y="28">The same request, vague vs specific</text>
+    <rect x="40" y="50" width="390" height="180" rx="12" fill="#FEF2F2" stroke="#FCA5A5" stroke-width="1.5"/>
+    <rect x="450" y="50" width="390" height="180" rx="12" fill="#EEF2FF" stroke="#4F46E5" stroke-width="1.5"/>
+    <text class="vspHA" x="58" y="84">✗ Vague prompt</text>
+    <text class="vspB" x="58" y="114">Summarize this customer feedback</text>
+    <text class="vspB" x="58" y="134">No format, length, or edge rule</text>
+    <text class="vspB" x="58" y="154">Every run reads differently</text>
+    <text class="vspHB" x="468" y="84">✓ Specific prompt</text>
+    <text class="vspB" x="468" y="114">3 sections, exact bullet limits</text>
+    <text class="vspB" x="468" y="134">Evidence rule: no inferred tone</text>
+    <text class="vspB" x="468" y="154">Length cap + British English</text>
+    <text class="vspN" x="40" y="276">Most prompt engineering is just finishing your own specification.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - every vague word is a decision you handed to the model</figcaption>
+</figure>
+
         <div class="prompt-box good"><span class="label">★ Before and after</span>BEFORE (vague - every run different):
 Summarize this customer feedback.
 
@@ -185,6 +211,35 @@ Requirements:
       <summary><span class="mode live">Core</span>Code-based grading: cheap and objective<span class="mini">3 min</span><span class="caret">▶</span></summary>
       <div class="body">
         <p>If the output is structured - a category, a JSON object, a SQL string - grade it with plain Python. Exact match, regex, or schema checks: free, instant, deterministic, and immune to flattery.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A decision tree showing that structured outputs such as categories, JSON or SQL are graded with cheap code-based checks, while subjective outputs such as summaries or tone are graded with a model-based rubric.">
+    <style>
+      .cmgT { font: 700 13px Inter, sans-serif; fill: #1B1B2F; }
+      .cmgQ { font: 700 12.5px Inter, sans-serif; fill: #FFFFFF; }
+      .cmgO { font: 700 12px Inter, sans-serif; fill: #312E81; }
+      .cmgE { font: 600 11px Inter, sans-serif; fill: #6B6B80; }
+      .cmgN { font: 400 12px Inter, sans-serif; fill: #6B6B80; }
+    </style>
+    <rect x="0" y="0" width="880" height="340" fill="#FFFFFF"/>
+    <text class="cmgT" x="40" y="28">Which grader for this output</text>
+    <rect x="40" y="40" width="240" height="56" rx="10" fill="#312E81"/>
+    <text class="cmgQ" x="160" y="62" text-anchor="middle">Is the output</text>
+    <text class="cmgQ" x="160" y="80" text-anchor="middle">structured (JSON, SQL)?</text>
+    <line x1="280" y1="68" x2="640" y2="72" stroke="#C9C9D6" stroke-width="1.5"/>
+    <line x1="280" y1="68" x2="640" y2="212" stroke="#C9C9D6" stroke-width="1.5"/>
+    <text class="cmgE" x="460" y="60" text-anchor="middle">yes</text>
+    <text class="cmgE" x="460" y="134" text-anchor="middle">no</text>
+    <rect x="640" y="40" width="200" height="64" rx="10" fill="#EEF2FF" stroke="#312E81" stroke-width="1.5"/>
+    <text class="cmgO" x="740" y="66" text-anchor="middle">Code-based grader</text>
+    <text class="cmgO" x="740" y="84" text-anchor="middle">exact match or schema</text>
+    <rect x="640" y="180" width="200" height="64" rx="10" fill="#EEF2FF" stroke="#312E81" stroke-width="1.5"/>
+    <text class="cmgO" x="740" y="206" text-anchor="middle">Model-based grader</text>
+    <text class="cmgO" x="740" y="224" text-anchor="middle">rubric graded by Claude</text>
+    <text class="cmgN" x="40" y="316">Code grading is free and objective; model grading needs a spot-checked rubric.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - grade with code when you can, a rubric only when you must</figcaption>
+</figure>
+
         <div class="prompt-box good"><span class="label">★ Three code graders</span>import json
 import re
 

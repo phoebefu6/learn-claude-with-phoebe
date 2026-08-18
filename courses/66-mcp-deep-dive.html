@@ -73,6 +73,45 @@
           <li><strong>Three primitives</strong>, by who initiates: <strong>tools</strong> are model-controlled (Claude decides to call them mid-task), <strong>resources</strong> are application-controlled (the client loads them as context, like attaching a file), <strong>prompts</strong> are user-controlled (a person picks a template, like a slash command).</li>
         </ul>
         <p>Most teams ship tools first and forget the other two exist. That's a mistake we'll fix in this page: schemas and configs usually belong in resources, and your team's standard workflows belong in prompts.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A decision tree showing that capabilities the model decides to call mid-task are tools, capabilities the client loads automatically as context are resources, and capabilities a person invokes deliberately are prompts.">
+    <style>
+      .trpT { font: 700 13px Inter, sans-serif; fill: #1B1B2F; }
+      .trpQ { font: 700 12px Inter, sans-serif; fill: #FFFFFF; }
+      .trpO { font: 700 11.5px Inter, sans-serif; fill: #312E81; }
+      .trpE { font: 600 11px Inter, sans-serif; fill: #6B6B80; }
+      .trpN { font: 400 12px Inter, sans-serif; fill: #6B6B80; }
+    </style>
+    <rect x="0" y="0" width="880" height="360" fill="#FFFFFF"/>
+    <text class="trpT" x="40" y="28">Tool, resource, or prompt: who initiates</text>
+    <rect x="40" y="40" width="240" height="56" rx="10" fill="#312E81"/>
+    <text class="trpQ" x="160" y="62" text-anchor="middle">Does the model decide</text>
+    <text class="trpQ" x="160" y="80" text-anchor="middle">to call it mid-task?</text>
+    <line x1="280" y1="68" x2="640" y2="72" stroke="#C9C9D6" stroke-width="1.5"/>
+    <line x1="280" y1="68" x2="340" y2="168" stroke="#C9C9D6" stroke-width="1.5"/>
+    <text class="trpE" x="460" y="58" text-anchor="middle">yes</text>
+    <text class="trpE" x="310" y="112" text-anchor="middle">no</text>
+    <rect x="640" y="40" width="200" height="64" rx="10" fill="#EEF2FF" stroke="#312E81" stroke-width="1.5"/>
+    <text class="trpO" x="740" y="66" text-anchor="middle">Tool</text>
+    <text class="trpO" x="740" y="84" text-anchor="middle">model-controlled</text>
+    <rect x="340" y="140" width="240" height="56" rx="10" fill="#312E81"/>
+    <text class="trpQ" x="460" y="162" text-anchor="middle">Does the client load</text>
+    <text class="trpQ" x="460" y="180" text-anchor="middle">it automatically?</text>
+    <line x1="580" y1="168" x2="640" y2="172" stroke="#C9C9D6" stroke-width="1.5"/>
+    <line x1="580" y1="168" x2="640" y2="272" stroke="#C9C9D6" stroke-width="1.5"/>
+    <text class="trpE" x="610" y="164" text-anchor="middle">yes</text>
+    <text class="trpE" x="610" y="214" text-anchor="middle">no</text>
+    <rect x="640" y="140" width="200" height="64" rx="10" fill="#EEF2FF" stroke="#312E81" stroke-width="1.5"/>
+    <text class="trpO" x="740" y="166" text-anchor="middle">Resource</text>
+    <text class="trpO" x="740" y="184" text-anchor="middle">application-controlled</text>
+    <rect x="640" y="240" width="200" height="64" rx="10" fill="#EEF2FF" stroke="#312E81" stroke-width="1.5"/>
+    <text class="trpO" x="740" y="266" text-anchor="middle">Prompt</text>
+    <text class="trpO" x="740" y="284" text-anchor="middle">user-controlled</text>
+    <text class="trpN" x="40" y="330">Most teams ship tools and forget resources and prompts exist at all.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - by who initiates: model calls tools, client loads resources, users pick prompts</figcaption>
+</figure>
+
       </div>
     </details>
 
@@ -217,6 +256,38 @@ asyncio.run(main())</div>
       <summary><span class="mode self">Advanced</span>Sampling: the server borrows the client's model<span class="mini">4 min</span><span class="caret">▶</span></summary>
       <div class="body">
         <p>Sampling inverts the usual direction: the SERVER asks the CLIENT to run a model call on its behalf. The server gets intelligence without owning an API key, choosing a model, or paying the bill - all of that stays with the client, which can also show the user what's being requested and let them approve it.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A two-layer diagram showing a plain MCP server needs its own API key, model choice and bill, while adding sampling lets it ask the client to run a model call, with no API key owned, the client picking the model, and the user able to approve, equalling borrowed intelligence.">
+    <style>
+      .smpT { font: 700 13px Inter, sans-serif; fill: #1B1B2F; }
+      .smpB { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+      .smpS { font: 400 11.5px Inter, sans-serif; fill: rgba(255,255,255,.84); }
+      .smpC { font: 700 11px Inter, sans-serif; fill: #312E81; }
+      .smpE { font: 700 11.5px Inter, sans-serif; fill: #312E81; }
+      .smpN { font: 400 12px Inter, sans-serif; fill: #6B6B80; }
+    </style>
+    <rect x="0" y="0" width="880" height="300" fill="#FFFFFF"/>
+    <text class="smpT" x="40" y="28">What sampling adds to a plain server</text>
+    <rect x="60" y="60" width="150" height="30" rx="8" fill="#EEF2FF"/>
+    <text class="smpC" x="135" y="80" text-anchor="middle">no API key owned</text>
+    <rect x="220" y="60" width="150" height="30" rx="8" fill="#EEF2FF"/>
+    <text class="smpC" x="295" y="80" text-anchor="middle">client picks model</text>
+    <rect x="380" y="60" width="150" height="30" rx="8" fill="#EEF2FF"/>
+    <text class="smpC" x="455" y="80" text-anchor="middle">user can approve</text>
+    <rect x="60" y="104" width="640" height="52" rx="10" fill="#4F46E5"/>
+    <text class="smpB" x="78" y="128">SERVER + SAMPLING</text>
+    <text class="smpS" x="78" y="146">asks the client to run a model call on its behalf</text>
+    <rect x="60" y="196" width="640" height="52" rx="10" fill="#6B6B80"/>
+    <text class="smpB" x="78" y="220">SERVER, TOOLS ONLY</text>
+    <text class="smpS" x="78" y="238">needs its own API key, model choice, and bill</text>
+    <path d="M716,104 h14 v144 h-14" fill="none" stroke="#312E81" stroke-width="1.6"/>
+    <text class="smpE" x="740" y="178">= borrowed</text>
+    <text class="smpE" x="740" y="194">intelligence</text>
+    <text class="smpN" x="60" y="276">The server gets intelligence without ever holding a key, choosing a model, or paying the bill.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - sampling borrows the client's model instead of owning one</figcaption>
+</figure>
+
         <div class="prompt-box good"><span class="label">★ A tool that samples the client's model</span>from mcp.server.fastmcp import Context
 from mcp.types import SamplingMessage, TextContent
 

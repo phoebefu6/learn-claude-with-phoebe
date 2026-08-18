@@ -43,6 +43,38 @@
       <h2>Why this page exists</h2>
     </div>
     <p class="lede">A model that can only emit text is an advisor. A model that can call your functions is a worker. Tool use is the one API feature that turns "Claude tells you the SQL" into "Claude runs the query, reads the result, and writes the summary". Every skill, every MCP server, every agent framework you will ever touch is this loop underneath.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A two-layer diagram showing that plain chat is an advisor that only emits text, while adding tool use turns it into a worker that defines tools, lets Claude decide, and has you execute and report the result, equalling Claude running the task and reporting back.">
+    <style>
+      .avwT { font: 700 13px Inter, sans-serif; fill: #1B1B2F; }
+      .avwB { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+      .avwS { font: 400 11.5px Inter, sans-serif; fill: rgba(255,255,255,.84); }
+      .avwC { font: 700 11px Inter, sans-serif; fill: #312E81; }
+      .avwE { font: 700 11.5px Inter, sans-serif; fill: #312E81; }
+      .avwN { font: 400 12px Inter, sans-serif; fill: #6B6B80; }
+    </style>
+    <rect x="0" y="0" width="880" height="300" fill="#FFFFFF"/>
+    <text class="avwT" x="40" y="28">What tool use adds over plain chat</text>
+    <rect x="60" y="60" width="150" height="30" rx="8" fill="#EEF2FF"/>
+    <text class="avwC" x="135" y="80" text-anchor="middle">you define tools</text>
+    <rect x="220" y="60" width="150" height="30" rx="8" fill="#EEF2FF"/>
+    <text class="avwC" x="295" y="80" text-anchor="middle">Claude decides</text>
+    <rect x="380" y="60" width="150" height="30" rx="8" fill="#EEF2FF"/>
+    <text class="avwC" x="455" y="80" text-anchor="middle">you execute + report</text>
+    <rect x="60" y="104" width="640" height="52" rx="10" fill="#4F46E5"/>
+    <text class="avwB" x="78" y="128">WORKER (tool use)</text>
+    <text class="avwS" x="78" y="146">calls your functions, reads results, decides next step</text>
+    <rect x="60" y="196" width="640" height="52" rx="10" fill="#6B6B80"/>
+    <text class="avwB" x="78" y="220">ADVISOR (plain chat)</text>
+    <text class="avwS" x="78" y="238">emits text only, tells you the SQL, never runs it</text>
+    <path d="M716,104 h14 v144 h-14" fill="none" stroke="#312E81" stroke-width="1.6"/>
+    <text class="avwE" x="740" y="178">= Claude runs it</text>
+    <text class="avwE" x="740" y="194">and reports back</text>
+    <text class="avwN" x="60" y="276">Every skill, MCP server, and agent you touch is this loop underneath.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - tool use turns an advisor into a worker with hands</figcaption>
+</figure>
+
     <div class="legend">
       <span class="pill solid">Core - the loop everyone needs</span>
       <span class="pill light">Advanced - read when you need it</span>
@@ -303,7 +335,46 @@ print(data["severity"], "-", data["summary"])</div>
       <summary><span class="mode self">Advanced</span>Server-side tools: web search and the text editor<span class="mini">4 min</span><span class="caret">▶</span></summary>
       <div class="body">
         <p>Client tools (everything above) follow the loop: Claude asks, YOU execute. Server tools invert it: you enable them in the request and ANTHROPIC executes them mid-response - no loop on your side for the execution.</p>
-        <table class="clean">
+        
+<figure class="zoomable">
+  <svg viewBox="0 0 880 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A decision tree showing that actions Anthropic already executes server-side, like web search, are server tools you just enable, actions using Anthropic's standardized file-editing schema are the text editor tool you implement, and everything else is a client tool you define and execute yourself.">
+    <style>
+      .ttcT { font: 700 13px Inter, sans-serif; fill: #1B1B2F; }
+      .ttcQ { font: 700 12px Inter, sans-serif; fill: #FFFFFF; }
+      .ttcO { font: 700 11.5px Inter, sans-serif; fill: #312E81; }
+      .ttcE { font: 600 11px Inter, sans-serif; fill: #6B6B80; }
+      .ttcN { font: 400 12px Inter, sans-serif; fill: #6B6B80; }
+    </style>
+    <rect x="0" y="0" width="880" height="360" fill="#FFFFFF"/>
+    <text class="ttcT" x="40" y="28">Who executes this action</text>
+    <rect x="40" y="40" width="240" height="56" rx="10" fill="#312E81"/>
+    <text class="ttcQ" x="160" y="62" text-anchor="middle">Does Anthropic run it</text>
+    <text class="ttcQ" x="160" y="80" text-anchor="middle">server-side already?</text>
+    <line x1="280" y1="68" x2="640" y2="72" stroke="#C9C9D6" stroke-width="1.5"/>
+    <line x1="280" y1="68" x2="340" y2="168" stroke="#C9C9D6" stroke-width="1.5"/>
+    <text class="ttcE" x="460" y="58" text-anchor="middle">yes</text>
+    <text class="ttcE" x="310" y="112" text-anchor="middle">no</text>
+    <rect x="640" y="40" width="200" height="64" rx="10" fill="#EEF2FF" stroke="#312E81" stroke-width="1.5"/>
+    <text class="ttcO" x="740" y="66" text-anchor="middle">Server tool</text>
+    <text class="ttcO" x="740" y="84" text-anchor="middle">enable + max_uses cap</text>
+    <rect x="340" y="140" width="240" height="56" rx="10" fill="#312E81"/>
+    <text class="ttcQ" x="460" y="162" text-anchor="middle">Is it a standardized</text>
+    <text class="ttcQ" x="460" y="180" text-anchor="middle">file-edit pattern?</text>
+    <line x1="580" y1="168" x2="640" y2="172" stroke="#C9C9D6" stroke-width="1.5"/>
+    <line x1="580" y1="168" x2="640" y2="272" stroke="#C9C9D6" stroke-width="1.5"/>
+    <text class="ttcE" x="610" y="164" text-anchor="middle">yes</text>
+    <text class="ttcE" x="610" y="214" text-anchor="middle">no</text>
+    <rect x="640" y="140" width="200" height="64" rx="10" fill="#EEF2FF" stroke="#312E81" stroke-width="1.5"/>
+    <text class="ttcO" x="740" y="166" text-anchor="middle">Text editor</text>
+    <text class="ttcO" x="740" y="184" text-anchor="middle">schema given, you run it</text>
+    <rect x="640" y="240" width="200" height="64" rx="10" fill="#EEF2FF" stroke="#312E81" stroke-width="1.5"/>
+    <text class="ttcO" x="740" y="266" text-anchor="middle">Client tool</text>
+    <text class="ttcO" x="740" y="284" text-anchor="middle">you define and execute</text>
+    <text class="ttcN" x="40" y="330">You define client tools; Anthropic executes server tools; the text editor sits in between.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - three tool types split by who actually runs the code</figcaption>
+</figure>
+<table class="clean">
           <thead><tr><th>Tool</th><th>Who executes</th><th>What it gives you</th></tr></thead>
           <tbody>
             <tr><td>Your functions (client tools)</td><td>You, in your code</td><td>Anything: your DB, your APIs, your files. Full control, full responsibility.</td></tr>

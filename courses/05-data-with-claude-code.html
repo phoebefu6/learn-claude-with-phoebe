@@ -112,6 +112,40 @@ claude
 # first prompt - just talk:
 &gt; look around this project and tell me what it does, what's messy, and what you'd tackle first</div>
         <p>Talk to it like a capable new teammate, let it explore before you ask for changes, and treat permission prompts as a feature: saying "no" teaches it your boundaries.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A two-layer diagram showing that a bare Claude Code session is a capable teammate that does not know the repo, while adding a CLAUDE.md file contributes the stack, commands, conventions and guardrails sections, equalling a tool that is genuinely yours rather than a generic one.">
+    <style>
+      .cmdT { font: 700 13px Inter, sans-serif; fill: #1B1B2F; }
+      .cmdB { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+      .cmdS { font: 400 11.5px Inter, sans-serif; fill: rgba(255,255,255,.84); }
+      .cmdC { font: 700 11px Inter, sans-serif; fill: #312E81; }
+      .cmdE { font: 700 11.5px Inter, sans-serif; fill: #312E81; }
+      .cmdN { font: 400 12px Inter, sans-serif; fill: #6B6B80; }
+    </style>
+    <rect x="0" y="0" width="880" height="300" fill="#FFFFFF"/>
+    <text class="cmdT" x="40" y="28">What CLAUDE.md adds over a bare Claude Code session</text>
+    <rect x="60" y="60" width="150" height="30" rx="8" fill="#EEF2FF"/>
+    <text class="cmdC" x="135" y="80" text-anchor="middle">Stack</text>
+    <rect x="220" y="60" width="150" height="30" rx="8" fill="#EEF2FF"/>
+    <text class="cmdC" x="295" y="80" text-anchor="middle">Commands</text>
+    <rect x="380" y="60" width="150" height="30" rx="8" fill="#EEF2FF"/>
+    <text class="cmdC" x="455" y="80" text-anchor="middle">Conventions</text>
+    <rect x="540" y="60" width="150" height="30" rx="8" fill="#EEF2FF"/>
+    <text class="cmdC" x="615" y="80" text-anchor="middle">Guardrails</text>
+    <rect x="60" y="104" width="640" height="52" rx="10" fill="#4F46E5"/>
+    <text class="cmdB" x="78" y="128">CLAUDE.md</text>
+    <text class="cmdS" x="78" y="146">the standing brief, read automatically at session start</text>
+    <rect x="60" y="196" width="640" height="52" rx="10" fill="#6B6B80"/>
+    <text class="cmdB" x="78" y="220">PLAIN CLAUDE CODE</text>
+    <text class="cmdS" x="78" y="238">capable teammate who doesn't know your repo yet</text>
+    <path d="M716,104 h14 v144 h-14" fill="none" stroke="#312E81" stroke-width="1.6"/>
+    <text class="cmdE" x="740" y="178">= YOUR tool</text>
+    <text class="cmdE" x="740" y="194">not a generic one</text>
+    <text class="cmdN" x="60" y="276">Run /init and Claude drafts one; you correct it, the usual discernment lap.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - CLAUDE.md turns a generic agent into your repo's own tool</figcaption>
+</figure>
+
       </div>
     </details>
 
@@ -251,7 +285,36 @@ It's a stakeholder demo, not production: favor obvious code over clever code.</d
       <div class="step"><p>Setup (pre-session homework was: npm install + <code>claude</code> login working). Grab the practice repo: <code>git clone [internal-repo]/claude-data-lab</code> - it has a deliberately messy <code>sales_export.csv</code>.</p></div>
       <div class="step"><p>Run <code>/init</code>, read the generated CLAUDE.md, add the two guardrails (raw read-only, PII masking) from Part 1.</p></div>
       <div class="step"><p>Run the <strong>cleaning brief</strong> (Workflow 1). Read the profile it reports - what did it catch that you'd have missed?</p></div>
-      <div class="step"><p>THE key moment: it proposes the plan and stops. Reject one step out loud ("don't impute region - drop and log instead") - feel the control point.</p></div>
+      <div class="step"><p>THE key moment: it proposes the plan and stops. Reject one step out loud ("don't impute region - drop and log instead") - feel the control point.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A decision tree showing that when Claude Code proposes a cleaning plan, an approved step runs, executes and logs to the changelog, while a rejected step is dropped and logged instead, without being coded.">
+    <style>
+      .pgtT { font: 700 13px Inter, sans-serif; fill: #1B1B2F; }
+      .pgtQ { font: 700 12.5px Inter, sans-serif; fill: #FFFFFF; }
+      .pgtO { font: 700 12px Inter, sans-serif; fill: #312E81; }
+      .pgtE { font: 600 11px Inter, sans-serif; fill: #6B6B80; }
+      .pgtN { font: 400 12px Inter, sans-serif; fill: #6B6B80; }
+    </style>
+    <rect x="0" y="0" width="880" height="340" fill="#FFFFFF"/>
+    <text class="pgtT" x="40" y="28">The plan gate: your control point</text>
+    <rect x="40" y="40" width="240" height="56" rx="10" fill="#312E81"/>
+    <text class="pgtQ" x="160" y="62" text-anchor="middle">Approve the proposed</text>
+    <text class="pgtQ" x="160" y="80" text-anchor="middle">cleaning step?</text>
+    <line x1="280" y1="68" x2="640" y2="72" stroke="#C9C9D6" stroke-width="1.5"/>
+    <line x1="280" y1="68" x2="640" y2="212" stroke="#C9C9D6" stroke-width="1.5"/>
+    <text class="pgtE" x="460" y="60" text-anchor="middle">yes</text>
+    <text class="pgtE" x="460" y="134" text-anchor="middle">no</text>
+    <rect x="640" y="40" width="200" height="64" rx="10" fill="#EEF2FF" stroke="#312E81" stroke-width="1.5"/>
+    <text class="pgtO" x="740" y="66" text-anchor="middle">Script runs, CHANGELOG</text>
+    <text class="pgtO" x="740" y="84" text-anchor="middle">logs it, tests green</text>
+    <rect x="640" y="180" width="200" height="64" rx="10" fill="#EEF2FF" stroke="#312E81" stroke-width="1.5"/>
+    <text class="pgtO" x="740" y="206" text-anchor="middle">Step dropped, logged</text>
+    <text class="pgtO" x="740" y="224" text-anchor="middle">instead (your call)</text>
+    <text class="pgtN" x="40" y="316">Rejecting a step out loud is the control point: the loop only runs what you approved.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - approval decides what actually gets coded, not Claude</figcaption>
+</figure>
+</div>
       <div class="step"><p>Approve, watch the loop run: script written, executed, CHANGELOG updated, assertions green.</p></div>
       <div class="step"><p>Run the <strong>catalog generator</strong> (Workflow 2) on the result. Open docs/catalog/ - your dataset now has documentation newer than most production tables.</p></div>
     </div>

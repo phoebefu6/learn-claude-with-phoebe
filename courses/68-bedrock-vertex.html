@@ -75,6 +75,38 @@
         <div class="callout example">
           <span class="ex-pill">Real world</span>
           <p>A bank's data science team prototyped happily on the first-party API for six weeks - then the production review asked three questions: does data leave our AWS account boundary? who holds the credentials? which bill does it land on? The Bedrock answers (no - VPC endpoint; nobody - IAM role; ours - consolidated billing) closed the review in one meeting. Same prompts, same model, different front door.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A two-layer diagram showing the first-party API is the same Claude reached with an API key at one global endpoint, while Bedrock adds a VPC endpoint, an IAM role instead of keys, and consolidated AWS billing, equalling a governed front door for the same model and prompts.">
+    <style>
+      .bvgT { font: 700 13px Inter, sans-serif; fill: #1B1B2F; }
+      .bvgB { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+      .bvgS { font: 400 11.5px Inter, sans-serif; fill: rgba(255,255,255,.84); }
+      .bvgC { font: 700 11px Inter, sans-serif; fill: #312E81; }
+      .bvgE { font: 700 11.5px Inter, sans-serif; fill: #312E81; }
+      .bvgN { font: 400 12px Inter, sans-serif; fill: #6B6B80; }
+    </style>
+    <rect x="0" y="0" width="880" height="300" fill="#FFFFFF"/>
+    <text class="bvgT" x="40" y="28">What Bedrock adds over the first-party API</text>
+    <rect x="60" y="60" width="150" height="30" rx="8" fill="#EEF2FF"/>
+    <text class="bvgC" x="135" y="80" text-anchor="middle">VPC endpoint</text>
+    <rect x="220" y="60" width="150" height="30" rx="8" fill="#EEF2FF"/>
+    <text class="bvgC" x="295" y="80" text-anchor="middle">IAM role, no keys</text>
+    <rect x="380" y="60" width="150" height="30" rx="8" fill="#EEF2FF"/>
+    <text class="bvgC" x="455" y="80" text-anchor="middle">consolidated billing</text>
+    <rect x="60" y="104" width="640" height="52" rx="10" fill="#4F46E5"/>
+    <text class="bvgB" x="78" y="128">BEDROCK</text>
+    <text class="bvgS" x="78" y="146">same model and prompts, routed through AWS</text>
+    <rect x="60" y="196" width="640" height="52" rx="10" fill="#6B6B80"/>
+    <text class="bvgB" x="78" y="220">FIRST-PARTY API</text>
+    <text class="bvgS" x="78" y="238">same Claude, x-api-key auth, one global endpoint</text>
+    <path d="M716,104 h14 v144 h-14" fill="none" stroke="#312E81" stroke-width="1.6"/>
+    <text class="bvgE" x="740" y="178">= a governed</text>
+    <text class="bvgE" x="740" y="194">front door</text>
+    <text class="bvgN" x="60" y="276">Same prompts, same model: the front door is what changes for a production review.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - same Claude, same prompts; Bedrock changes who holds the keys and the bill</figcaption>
+</figure>
+
         </div>
       </div>
     </details>
@@ -217,6 +249,35 @@ print(msg.content[0].text)</div>
         <div class="callout example">
           <span class="ex-pill">Real world</span>
           <p>Our context makes this a short conversation: the estate is AWS, and the WorkSpaces reality from Session 5 means our production workloads already live inside AWS-managed boundaries with IAM everywhere. So <strong>Bedrock is our production lane</strong> - private networking, roles instead of keys, usage on the AWS bill. The first-party API stays in the toolkit for prototyping and for trying features before they reach Bedrock. Build on first-party, ship on Bedrock.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A decision tree showing that a workload that has passed a production security review runs on Bedrock with a VPC endpoint, an IAM role and the AWS bill, while a workload still prototyping stays on the first-party API.">
+    <style>
+      .cylT { font: 700 13px Inter, sans-serif; fill: #1B1B2F; }
+      .cylQ { font: 700 12.5px Inter, sans-serif; fill: #FFFFFF; }
+      .cylO { font: 700 12px Inter, sans-serif; fill: #312E81; }
+      .cylE { font: 600 11px Inter, sans-serif; fill: #6B6B80; }
+      .cylN { font: 400 12px Inter, sans-serif; fill: #6B6B80; }
+    </style>
+    <rect x="0" y="0" width="880" height="340" fill="#FFFFFF"/>
+    <text class="cylT" x="40" y="28">First-party or Bedrock for this workload</text>
+    <rect x="40" y="40" width="240" height="56" rx="10" fill="#312E81"/>
+    <text class="cylQ" x="160" y="62" text-anchor="middle">Has it passed a</text>
+    <text class="cylQ" x="160" y="80" text-anchor="middle">production security review?</text>
+    <line x1="280" y1="68" x2="640" y2="72" stroke="#C9C9D6" stroke-width="1.5"/>
+    <line x1="280" y1="68" x2="640" y2="212" stroke="#C9C9D6" stroke-width="1.5"/>
+    <text class="cylE" x="460" y="60" text-anchor="middle">yes</text>
+    <text class="cylE" x="460" y="134" text-anchor="middle">no</text>
+    <rect x="640" y="40" width="200" height="64" rx="10" fill="#EEF2FF" stroke="#312E81" stroke-width="1.5"/>
+    <text class="cylO" x="740" y="66" text-anchor="middle">Bedrock</text>
+    <text class="cylO" x="740" y="84" text-anchor="middle">VPC, IAM role, AWS bill</text>
+    <rect x="640" y="180" width="200" height="64" rx="10" fill="#EEF2FF" stroke="#312E81" stroke-width="1.5"/>
+    <text class="cylO" x="740" y="206" text-anchor="middle">First-party API</text>
+    <text class="cylO" x="740" y="224" text-anchor="middle">prototype here first</text>
+    <text class="cylN" x="40" y="316">Our estate is AWS: build on first-party, ship on Bedrock once it clears review.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - build on first-party, ship on Bedrock once it clears review</figcaption>
+</figure>
+
         </div>
       </div>
     </details>

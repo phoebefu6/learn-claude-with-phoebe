@@ -132,6 +132,35 @@ print(final)</div>
       <summary><span class="mode live">Core</span>Routing: classify first, then dispatch to a specialist<span class="mini">5 min</span><span class="caret">▶</span></summary>
       <div class="body">
         <p>When inputs fall into distinct categories, don't build one prompt that handles everything - classify the input first, then send it to a specialized prompt (and a right-sized model). Easy tickets go to a cheap fast model with a short prompt; hard ones go to the capable model with the full playbook.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A decision tree showing that easy, common tickets route to a cheap fast model with a short specialist prompt, while hard or unusual tickets route to the capable model with the full playbook.">
+    <style>
+      .rtcT { font: 700 13px Inter, sans-serif; fill: #1B1B2F; }
+      .rtcQ { font: 700 12.5px Inter, sans-serif; fill: #FFFFFF; }
+      .rtcO { font: 700 12px Inter, sans-serif; fill: #312E81; }
+      .rtcE { font: 600 11px Inter, sans-serif; fill: #6B6B80; }
+      .rtcN { font: 400 12px Inter, sans-serif; fill: #6B6B80; }
+    </style>
+    <rect x="0" y="0" width="880" height="340" fill="#FFFFFF"/>
+    <text class="rtcT" x="40" y="28">Routing a ticket: fast tier or capable tier</text>
+    <rect x="40" y="40" width="240" height="56" rx="10" fill="#312E81"/>
+    <text class="rtcQ" x="160" y="62" text-anchor="middle">Is this an easy,</text>
+    <text class="rtcQ" x="160" y="80" text-anchor="middle">common case?</text>
+    <line x1="280" y1="68" x2="640" y2="72" stroke="#C9C9D6" stroke-width="1.5"/>
+    <line x1="280" y1="68" x2="640" y2="212" stroke="#C9C9D6" stroke-width="1.5"/>
+    <text class="rtcE" x="460" y="60" text-anchor="middle">yes</text>
+    <text class="rtcE" x="460" y="134" text-anchor="middle">no</text>
+    <rect x="640" y="40" width="200" height="64" rx="10" fill="#EEF2FF" stroke="#312E81" stroke-width="1.5"/>
+    <text class="rtcO" x="740" y="66" text-anchor="middle">Fast model: Haiku</text>
+    <text class="rtcO" x="740" y="84" text-anchor="middle">short specialist prompt</text>
+    <rect x="640" y="180" width="200" height="64" rx="10" fill="#EEF2FF" stroke="#312E81" stroke-width="1.5"/>
+    <text class="rtcO" x="740" y="206" text-anchor="middle">Capable model</text>
+    <text class="rtcO" x="740" y="224" text-anchor="middle">full playbook prompt</text>
+    <text class="rtcN" x="40" y="316">Classify first, then dispatch: cheap ticket, cheap model; hard ticket, the full playbook.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - classify first so you stop paying frontier prices for password resets</figcaption>
+</figure>
+
         <div class="prompt-box good"><span class="label">★ Router: cheap classifier, specialist handlers</span>ROUTES = {
     "refund":  {"model": "claude-haiku-4-5",
                 "system": "You handle refund requests. Policy: ..."},
@@ -292,6 +321,38 @@ for step in range(MAX_STEPS):
       <summary><span class="mode live">Core</span>Claude Code as the case study<span class="mini">5 min</span><span class="caret">▶</span></summary>
       <div class="body">
         <p>Map Claude Code onto everything above: it's an agent loop (the model decides which file to read next), with environment inspection (it greps before editing, runs tests after), tool allowlists (your permission settings), step budgets and human gates (approval prompts on risky commands). Three practices from the official module:</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A two-layer diagram showing a single Claude call gives one response with no tools or loop, while the Claude Code agent loop adds environment checks, tool allowlists, and step budgets with human gates, equalling bounded autonomy instead of an open-ended one-shot answer.">
+    <style>
+      .aclT { font: 700 13px Inter, sans-serif; fill: #1B1B2F; }
+      .aclB { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+      .aclS { font: 400 11.5px Inter, sans-serif; fill: rgba(255,255,255,.84); }
+      .aclC { font: 700 11px Inter, sans-serif; fill: #312E81; }
+      .aclE { font: 700 11.5px Inter, sans-serif; fill: #312E81; }
+      .aclN { font: 400 12px Inter, sans-serif; fill: #6B6B80; }
+    </style>
+    <rect x="0" y="0" width="880" height="300" fill="#FFFFFF"/>
+    <text class="aclT" x="40" y="28">What the agent loop adds over one call</text>
+    <rect x="60" y="60" width="150" height="30" rx="8" fill="#EEF2FF"/>
+    <text class="aclC" x="135" y="80" text-anchor="middle">environment checks</text>
+    <rect x="220" y="60" width="150" height="30" rx="8" fill="#EEF2FF"/>
+    <text class="aclC" x="295" y="80" text-anchor="middle">tool allowlists</text>
+    <rect x="380" y="60" width="150" height="30" rx="8" fill="#EEF2FF"/>
+    <text class="aclC" x="455" y="80" text-anchor="middle">step budgets + gates</text>
+    <rect x="60" y="104" width="640" height="52" rx="10" fill="#4F46E5"/>
+    <text class="aclB" x="78" y="128">AGENT LOOP (Claude Code)</text>
+    <text class="aclS" x="78" y="146">reacts to tool results, keeps going until done</text>
+    <rect x="60" y="196" width="640" height="52" rx="10" fill="#6B6B80"/>
+    <text class="aclB" x="78" y="220">SINGLE CLAUDE CALL</text>
+    <text class="aclS" x="78" y="238">one response, no tools, no loop</text>
+    <path d="M716,104 h14 v144 h-14" fill="none" stroke="#312E81" stroke-width="1.6"/>
+    <text class="aclE" x="740" y="178">= bounded</text>
+    <text class="aclE" x="740" y="194">autonomy</text>
+    <text class="aclN" x="60" y="276">It greps before editing and runs tests after: inspection, not assumption.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - environment checks, allowlists and step budgets turn a call into a bounded agent</figcaption>
+</figure>
+
         <ul>
           <li><strong>Parallelizing Claude Code:</strong> run multiple instances on independent tasks at once - one per git worktree so they can't step on each other's files. One instance fixes a bug on a branch while another writes docs on a second worktree. This is the sectioning pattern, applied to your own workday.</li>
           <li><strong>Automated debugging:</strong> point Claude Code at a failing test and let the loop run: run test, read failure, form hypothesis, edit, re-run. The failing test is the "verifiable progress" signal in its purest form - which is exactly why this is the canonical agent demo.</li>

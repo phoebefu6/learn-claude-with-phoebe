@@ -72,6 +72,35 @@
           <li><strong>Context limits:</strong> even a huge context window cannot hold your whole wiki, and stuffing it costs money and attention - relevant needles do better in a small, clean haystack.</li>
         </ul>
         <p>The mechanism: at question time, retrieve the top-k most relevant chunks from your corpus and paste them into the prompt with the question. Claude answers from what it was shown, grounded and citable.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A decision tree showing that a stable corpus under about 100000 tokens should simply be pasted into the prompt, while a larger, frequently changing, or per-question corpus should go through a retrieval pipeline.">
+    <style>
+      .ptrT { font: 700 13px Inter, sans-serif; fill: #1B1B2F; }
+      .ptrQ { font: 700 12.5px Inter, sans-serif; fill: #FFFFFF; }
+      .ptrO { font: 700 12px Inter, sans-serif; fill: #312E81; }
+      .ptrE { font: 600 11px Inter, sans-serif; fill: #6B6B80; }
+      .ptrN { font: 400 12px Inter, sans-serif; fill: #6B6B80; }
+    </style>
+    <rect x="0" y="0" width="880" height="340" fill="#FFFFFF"/>
+    <text class="ptrT" x="40" y="28">Paste the document, or build RAG</text>
+    <rect x="40" y="40" width="240" height="56" rx="10" fill="#312E81"/>
+    <text class="ptrQ" x="160" y="62" text-anchor="middle">Is the corpus under</text>
+    <text class="ptrQ" x="160" y="80" text-anchor="middle">~100k stable tokens?</text>
+    <line x1="280" y1="68" x2="640" y2="72" stroke="#C9C9D6" stroke-width="1.5"/>
+    <line x1="280" y1="68" x2="640" y2="212" stroke="#C9C9D6" stroke-width="1.5"/>
+    <text class="ptrE" x="460" y="60" text-anchor="middle">yes</text>
+    <text class="ptrE" x="460" y="134" text-anchor="middle">no</text>
+    <rect x="640" y="40" width="200" height="64" rx="10" fill="#EEF2FF" stroke="#312E81" stroke-width="1.5"/>
+    <text class="ptrO" x="740" y="66" text-anchor="middle">Just paste it</text>
+    <text class="ptrO" x="740" y="84" text-anchor="middle">into the prompt</text>
+    <rect x="640" y="180" width="200" height="64" rx="10" fill="#EEF2FF" stroke="#312E81" stroke-width="1.5"/>
+    <text class="ptrO" x="740" y="206" text-anchor="middle">Retrieve: build the</text>
+    <text class="ptrO" x="740" y="224" text-anchor="middle">hybrid pipeline</text>
+    <text class="ptrN" x="40" y="316">RAG earns its complexity only once the corpus is too big, changes often, or needs per-question search.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - under 100k stable tokens, paste; above that, retrieve</figcaption>
+</figure>
+
         <div class="callout tip">
           <strong>Don't over-engineer small corpora</strong>
           If your entire knowledge base is one 30-page handbook, RAG is the wrong tool - just paste the document (6.5 covers PDFs and prompt caching, which makes repeat-pasting cheap). RAG earns its complexity when the corpus is too big for context, changes often, or must be searched per-question. Rule of thumb: under ~100k tokens of stable text, paste; above that, retrieve.
@@ -292,6 +321,30 @@ chunks = [
         <div class="callout example">
           <span class="ex-pill">Real world</span>
           <p>A team's docs-bot gave wrong answers on 30% of pilot questions and everyone blamed the model. A 25-question retrieval eval took an afternoon and showed recall@5 was 52% - the model never saw the right text. Structure-aware chunking took it to 70%, contextual retrieval to 88%, and answer accuracy followed almost one-for-one. Nobody touched the answering prompt. Measure retrieval first; it is usually the culprit and always the cheaper fix.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A bar chart showing recall at k equals 5 rising from 52 percent at baseline, to 70 percent after structure-aware chunking, to 88 percent after adding contextual retrieval, in a 25-question retrieval evaluation.">
+    <style>
+      .rcpT { font: 700 13px Inter, sans-serif; fill: #1B1B2F; }
+      .rcpL { font: 600 12px Inter, sans-serif; fill: #1B1B2F; text-anchor: end; }
+      .rcpV { font: 700 12px Inter, sans-serif; fill: #FFFFFF; }
+      .rcpN { font: 400 12px Inter, sans-serif; fill: #6B6B80; }
+    </style>
+    <rect x="0" y="0" width="880" height="300" fill="#FFFFFF"/>
+    <text class="rcpT" x="40" y="28">Recall at k=5 after each retrieval upgrade</text>
+    <text class="rcpL" x="240" y="90">Baseline (no upgrades)</text>
+    <rect x="260" y="70" width="250" height="30" rx="4" fill="#6B6B80"/>
+    <text class="rcpV" x="272" y="90">52%</text>
+    <text class="rcpL" x="240" y="142">+ structure chunking</text>
+    <rect x="260" y="122" width="336" height="30" rx="4" fill="#818CF8"/>
+    <text class="rcpV" x="272" y="142">70%</text>
+    <text class="rcpL" x="240" y="194">+ contextual retrieval</text>
+    <rect x="260" y="174" width="422" height="30" rx="4" fill="#4F46E5"/>
+    <text class="rcpV" x="272" y="194">88%</text>
+    <text class="rcpN" x="40" y="276">Recall at k=5 (%): the share of questions where the right chunk was actually retrieved.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - structure-aware chunking and contextual retrieval nearly closed the gap</figcaption>
+</figure>
+
         </div>
         <div class="callout tip">
           <strong>One knob at a time</strong>

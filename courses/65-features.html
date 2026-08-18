@@ -264,7 +264,32 @@ print(r2.usage.cache_read_input_tokens)      # big on the second: cache hit</div
           <li><strong>TTL:</strong> the cache lives about 5 minutes and every hit refreshes it, so steady traffic keeps it warm indefinitely. A 1-hour TTL option exists for spiky workloads.</li>
           <li><strong>The economics:</strong> cache writes cost a bit more than normal input, cache reads cost a small fraction of it. Check <code>usage.cache_read_input_tokens</code> in every response - that field is your proof the cache is actually hitting.</li>
         </ul>
-        <table class="clean">
+        
+<figure class="zoomable">
+  <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A bar chart showing token price relative to normal input, where normal input is 1.0 times baseline, a cache write on the first call is about 1.25 times, and a cache read on every hit is about 0.1 times, in the usage field named for each.">
+    <style>
+      .cprT { font: 700 13px Inter, sans-serif; fill: #1B1B2F; }
+      .cprL { font: 600 12px Inter, sans-serif; fill: #1B1B2F; text-anchor: end; }
+      .cprV { font: 700 12px Inter, sans-serif; fill: #FFFFFF; }
+      .cprVo { font: 700 12px Inter, sans-serif; fill: #1B1B2F; }
+      .cprN { font: 400 12px Inter, sans-serif; fill: #6B6B80; }
+    </style>
+    <rect x="0" y="0" width="880" height="300" fill="#FFFFFF"/>
+    <text class="cprT" x="40" y="28">Token price relative to normal input</text>
+    <text class="cprL" x="240" y="90">Normal input</text>
+    <rect x="260" y="70" width="384" height="30" rx="4" fill="#6B6B80"/>
+    <text class="cprV" x="272" y="90">1.0x</text>
+    <text class="cprL" x="240" y="142">Cache write (first call)</text>
+    <rect x="260" y="122" width="480" height="30" rx="4" fill="#4F46E5"/>
+    <text class="cprV" x="272" y="142">~1.25x</text>
+    <text class="cprL" x="240" y="194">Cache read (every hit)</text>
+    <rect x="260" y="174" width="38" height="30" rx="4" fill="#F59E0B"/>
+    <text class="cprVo" x="308" y="194">~0.1x</text>
+    <text class="cprN" x="40" y="276">A cache hit ratio below 80% on a document workload means one of the caching rules is being broken.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - a cache hit costs about a tenth of a normal input token</figcaption>
+</figure>
+<table class="clean">
           <thead><tr><th>Token type</th><th>Price vs normal input</th><th>Where you see it in usage</th></tr></thead>
           <tbody>
             <tr><td>Normal input</td><td>1.0x baseline</td><td>input_tokens</td></tr>
@@ -308,6 +333,35 @@ print(r2.usage.cache_read_input_tokens)      # big on the second: cache hit</div
       <summary><span class="mode self">Advanced</span>Upload a CSV, let Claude run pandas on it<span class="mini">5 min</span><span class="caret">▶</span></summary>
       <div class="body">
         <p>Two pieces: upload the file once via the Files API, then reference it in a message with the code execution tool enabled. Claude writes Python, runs it in the sandbox, reads the output, and iterates - the same loop a data scientist runs in a notebook.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A decision tree showing that code needing to touch your own infrastructure, such as the warehouse, internal packages or live APIs, needs a DIY tool from tool use, while ad-hoc analysis of uploaded files can use the managed, isolated code execution sandbox.">
+    <style>
+      .msdT { font: 700 13px Inter, sans-serif; fill: #1B1B2F; }
+      .msdQ { font: 700 12.5px Inter, sans-serif; fill: #FFFFFF; }
+      .msdO { font: 700 12px Inter, sans-serif; fill: #312E81; }
+      .msdE { font: 600 11px Inter, sans-serif; fill: #6B6B80; }
+      .msdN { font: 400 12px Inter, sans-serif; fill: #6B6B80; }
+    </style>
+    <rect x="0" y="0" width="880" height="340" fill="#FFFFFF"/>
+    <text class="msdT" x="40" y="28">Managed sandbox or your own code tool</text>
+    <rect x="40" y="40" width="240" height="56" rx="10" fill="#312E81"/>
+    <text class="msdQ" x="160" y="62" text-anchor="middle">Must the code touch</text>
+    <text class="msdQ" x="160" y="80" text-anchor="middle">YOUR infrastructure?</text>
+    <line x1="280" y1="68" x2="640" y2="72" stroke="#C9C9D6" stroke-width="1.5"/>
+    <line x1="280" y1="68" x2="640" y2="212" stroke="#C9C9D6" stroke-width="1.5"/>
+    <text class="msdE" x="460" y="60" text-anchor="middle">yes</text>
+    <text class="msdE" x="460" y="134" text-anchor="middle">no</text>
+    <rect x="640" y="40" width="200" height="64" rx="10" fill="#EEF2FF" stroke="#312E81" stroke-width="1.5"/>
+    <text class="msdO" x="740" y="66" text-anchor="middle">DIY tool (6.3)</text>
+    <text class="msdO" x="740" y="84" text-anchor="middle">warehouse, APIs, network</text>
+    <rect x="640" y="180" width="200" height="64" rx="10" fill="#EEF2FF" stroke="#312E81" stroke-width="1.5"/>
+    <text class="msdO" x="740" y="206" text-anchor="middle">Managed sandbox</text>
+    <text class="msdO" x="740" y="224" text-anchor="middle">ad-hoc file analysis</text>
+    <text class="msdN" x="40" y="316">The managed sandbox is deliberately isolated: no network is a feature there, a blocker here.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - isolation is a feature for uploads, a blocker for your warehouse</figcaption>
+</figure>
+
         <div class="prompt-box good"><span class="label">★ CSV analysis in the managed sandbox</span>import anthropic
 
 client = anthropic.Anthropic()
